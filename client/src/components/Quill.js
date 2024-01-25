@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
@@ -70,11 +70,39 @@ const UploadReactQuill = styled(ReactQuill)`
 `;
 
 const Quill = ({
+	details,
 	detailImages,
+	setDetails,
 	setDetailImages,
-	setDetails
 }) => {
 	const quillRef = useRef();
+
+	useEffect(() => {
+		const updatedDetails = details.map((htmlString) => {
+			const matchSource = htmlString.match(/<img.*?src=['"](.*?)['"].*?>/);
+
+			if (matchSource && matchSource[1]) {
+				const base64Source = matchSource[1];
+	
+				const matchingImage = detailImages.find((image) => image.imgSrc === base64Source); //details와 detailImages의 이미지 소스비교
+	
+				if (matchingImage) {
+					const updatedHtmlString = htmlString.replace(base64Source, matchingImage.fileName); //base64 소스를 uuid를 적용한 고유 소스로 변경
+
+					return updatedHtmlString;
+				}
+			}
+
+			//details에 없는 이미지 지워야함
+	
+			return htmlString;
+		});
+	
+		if (JSON.stringify(updatedDetails) !== JSON.stringify(details)) {
+      setDetails(updatedDetails);
+    }
+		
+	}, [details, detailImages, setDetails]);
 
 	const purifyHandler = (value) => {
 		const sanitizedHTML = DOMPurify.sanitize(value); //공격성 코드 검열
@@ -114,15 +142,19 @@ const Quill = ({
           fileReader.onerror = (err) => reject(err);
         });
 
-				setDetailImages((prevDetailsImages) => [...prevDetailsImages, {
-					formData,
-					imgSrc,
-					fileName: fileUuid,
-					originalname: file.name
-				}]);
+				setDetailImages((prevDetailsImages) => [
+					...prevDetailsImages,
+					{
+						formData,
+						imgSrc,
+						fileName: fileUuid,
+						originalname: file.name,
+					},
+				]);
 
 				if (imgSrc) {
 					const range = quillRef.current.getEditor().getSelection();
+
 					quillRef.current.getEditor().insertEmbed(range.index, 'image', imgSrc);
 				}
 				
@@ -148,32 +180,21 @@ const Quill = ({
     ["bold", "image"]
 	), []);
 
-	const handleQuillChange = (value) => {
-		// Quill 에디터의 내용을 정제합니다.
-		purifyHandler(value);
-	
-		// const extractedBase64Sources = value.match(/<img[^>]+src=['"]([^'"]+)['"][^>]*>/g) || [];
-
-		// const extractedBase64Images = extractedBase64Sources.map(source => {
-		// 	const matches = source.match(/src=['"]([^'"]+)['"]/);
-		// 	return matches ? matches[1] : null;
-		// });
-
-		// console.log(extractedBase64Images);
-	};
-
 	return (
 		<>
 			<UploadReactQuill
-			ref={quillRef}
-			theme="snow"
-			onChange={(value) => handleQuillChange(value)}
-			modules={quillModules}
-			formats={quillFormats}
-			placeholder="상세 이미지 및 설명을 작성하세요."
-		/>
+				ref={quillRef}
+				theme="snow"
+				onChange={(value) => purifyHandler(value)}
+				modules={quillModules}
+				formats={quillFormats}
+				placeholder="상세 이미지 및 설명을 작성하세요."
+			/>
 
-		{/* <button type="button" onClick={() => console.log(detailImages)}>123123</button> */}
+			<button type="button" onClick={() => {
+				console.log(details);
+				console.log(detailImages);
+			}}>aaaaaa</button>
 		</>
 	)
 }
