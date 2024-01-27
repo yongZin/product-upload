@@ -78,14 +78,15 @@ const Quill = ({
 	const quillRef = useRef();
 
 	useEffect(() => {
-		const updatedDetails = details.map((htmlString) => {
+    const updatedDetails = details.map((htmlString) => {
+			//details의 base64 이미지소스 고유 네이밍으로 변경(uuid)
+
 			const matchSource = htmlString.match(/<img.*?src=['"](.*?)['"].*?>/);
 
 			if (matchSource && matchSource[1]) {
 				const base64Source = matchSource[1];
-	
 				const matchingImage = detailImages.find((image) => image.imgSrc === base64Source); //details와 detailImages의 이미지 소스비교
-	
+
 				if (matchingImage) {
 					const updatedHtmlString = htmlString.replace(base64Source, matchingImage.fileName); //base64 소스를 uuid를 적용한 고유 소스로 변경
 
@@ -93,19 +94,31 @@ const Quill = ({
 				}
 			}
 
-			//details에 없는 이미지 지워야함
-	
 			return htmlString;
-		});
-	
-		if (JSON.stringify(updatedDetails) !== JSON.stringify(details)) {
-      setDetails(updatedDetails);
+    });
+
+    const updatedDetailImages = detailImages.filter((image) => {
+			//삭제된 이미지 detailImages에 적용하여 재배열
+
+			return updatedDetails.some((detail) => {
+				const matchSource = detail.match(/<img.*?src=['"](.*?)['"].*?>/);
+
+				return matchSource && matchSource[1] === image.fileName;
+			});
+    });
+
+    if (JSON.stringify(updatedDetails) !== JSON.stringify(details)) {
+			setDetails(updatedDetails);
     }
-		
-	}, [details, detailImages, setDetails]);
+
+    if (JSON.stringify(updatedDetailImages) !== JSON.stringify(detailImages)) {
+			setDetailImages(updatedDetailImages);
+    }
+	}, [details, detailImages, setDetails, setDetailImages]);
 
 	const purifyHandler = (value) => {
-		const sanitizedHTML = DOMPurify.sanitize(value); //공격성 코드 검열
+		//공격성 코드 검열
+		const sanitizedHTML = DOMPurify.sanitize(value);
 		const resultHTML = sanitizedHTML.replace(/<p>(.*?)<img/g, "<p>$1</p><p><img"); //<img> 앞에 강제로 <p> 추가 (텍스트와 이미지 분리용)
 		const cleanedHTML = resultHTML.replace(/<p><br\s?\/?><\/p>|<p><\/p>/g, "");
 		const splitHTML = cleanedHTML.split("</p>").filter(Boolean);
@@ -115,6 +128,7 @@ const Quill = ({
 	};
 
 	const imageHandler = () => {
+		//quill 에디터의 이미지 선택시 formData형식으로 상태관리
 		const input = document.createElement("input");
 		input.setAttribute("type", "file");
 		input.setAttribute("accept", "image/*");
@@ -181,21 +195,14 @@ const Quill = ({
 	), []);
 
 	return (
-		<>
-			<UploadReactQuill
-				ref={quillRef}
-				theme="snow"
-				onChange={(value) => purifyHandler(value)}
-				modules={quillModules}
-				formats={quillFormats}
-				placeholder="상세 이미지 및 설명을 작성하세요."
-			/>
-
-			<button type="button" onClick={() => {
-				console.log(details);
-				console.log(detailImages);
-			}}>aaaaaa</button>
-		</>
+		<UploadReactQuill
+			ref={quillRef}
+			theme="snow"
+			onChange={(value) => purifyHandler(value)}
+			modules={quillModules}
+			formats={quillFormats}
+			placeholder="상세 이미지 및 설명을 작성하세요."
+		/>
 	)
 }
 
