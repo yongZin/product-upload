@@ -12,7 +12,7 @@ mongoose
 		console.log("MongoDB 연결");
 		app.use("/uploads", express.static("uploads"));
 
-		app.post("/upload", upload.fields([{ name: 'mainImage', maxCount: 10 }, { name: 'detailImage', maxCount: 10 }]), async (req, res) => {
+		app.post("/upload", upload.fields([{ name: 'mainImage', maxCount: 10 }, { name: 'detailImage', maxCount: 10 }]), async (req, res) => { //DB 저장
 			const { name, price, details, type, material, color } = req.body;
 			const mainImages = req.files.mainImage;
 			const detailImages = req.files.detailImage;
