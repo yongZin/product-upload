@@ -242,10 +242,6 @@ const UploadForm = ({ setModalView }) => {
 	const onSubmit = async (e) => {
 		e.preventDefault();
 
-    console.log(mainImages);
-    console.log(detailImages);
-    console.log(details);
-
     const formData = new FormData();
 
     mainImages.forEach((image, index) => {
@@ -271,6 +267,8 @@ const UploadForm = ({ setModalView }) => {
       });
 
       console.log(res.data);
+
+      //form 유효성 검사 필요
 
       setTimeout(() =>{ //초기화
         setName("");
@@ -343,7 +341,7 @@ const UploadForm = ({ setModalView }) => {
       </ImgWrap>
 
 			<Quill
-				// details={details}
+				details={details}
         detailImages={detailImages}
 				setDetails={setDetails}
         setDetailImages={setDetailImages}
@@ -373,15 +371,7 @@ const UploadForm = ({ setModalView }) => {
       <BtnBox>
         <button type="button" onClick={() => setModalView(false)}>닫기</button>
         {/* <button type="submit">업로드</button> */}
-        <button type="submit" onClick={() => console.log(
-					// {name},
-					// {price},
-					// {mainImages},
-					// {details},
-					// {type},
-					// {material},
-					// {color},
-				)}>업로드</button>
+        <button type="submit">업로드</button>
       </BtnBox>
 		</form>
 	)
