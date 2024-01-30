@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useContext } from "react";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import DOMPurify from 'isomorphic-dompurify';
 import { v4 as uuid } from 'uuid';
 import mime from "mime-types";
+import { ProductContext } from "../context/productContext";
 
 const UploadReactQuill = styled(ReactQuill)`
   height:500px;
@@ -69,13 +70,12 @@ const UploadReactQuill = styled(ReactQuill)`
   }
 `;
 
-const Quill = ({
-	details,
-	detailImages,
-	setDetails,
-	setDetailImages,
-}) => {
+const Quill = () => {
 	const quillRef = useRef();
+	const {
+    details, setDetails,
+    detailImages, setDetailImages,
+  } = useContext(ProductContext);
 
 	useEffect(() => {
     const updatedDetails = details.map((htmlString) => {

@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 // import { Link } from "react-router-dom";
-import axios from "axios";
 import styled from "styled-components";
+import { ProductContext } from "../context/productContext";
 
 const Wrap = styled.div`
 	width:100%;
-	display:flex;
-	justify-content:space-between;
 	max-width:750px;
 	margin:0 auto;
 `;
 const Item = styled.ul`
-	width:calc(33.333% - 10px);
+	width:calc(33.333% - 12px);
+	display:inline-block;
+	vertical-align:top;
+	margin:0 6px 20px;
 	.item{
 		&-image{
 			margin-bottom:12px;
@@ -38,15 +39,8 @@ const Item = styled.ul`
 `;
 
 const ProductList = () => {
-	const [products, setProducts] = useState([]);
-
-	useEffect(() => {
-		axios
-			.get("/upload")
-			.then((result) => setProducts(result.data))
-			.catch((error) => console.error(error));
-	}, []);
-
+	const {products} = useContext(ProductContext);
+	
 	const productList = products.map((item, index) => (
 		// <Link to="" key={item._id}>
 			<Item key={item._id}>

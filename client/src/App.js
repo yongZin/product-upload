@@ -27,18 +27,18 @@ const App = () => {
 
   useEffect(() => {
     if (modalView) document.body.classList.add("scroll-ban");
-    else document.body.classList.remove("scroll-ban")
+    else document.body.classList.remove("scroll-ban");
   }, [modalView])
 
   return (
     <Container>
       <ToastContainer />
       <UploadBtn type="button" onClick={() => setModalView(1)}>상풉 업로드</UploadBtn>
-      <ProductList />
+      <ProductList/>
       {modalView > 0 &&
         <Modal setModalView={setModalView}>
           {modalView === 1 &&
-            <UploadForm setModalView={setModalView} />
+            <UploadForm setModalView={setModalView}/>
           }
           {/* {modalView === 1 ?
             <UploadForm setModalView={setModalView} />

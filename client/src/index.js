@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { ImageProvider }  from "./context/ImageContext";
+import { ProductProvider }  from "./context/productContext";
 import { AuthProvider } from './context/AuthContext';
 // import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from 'styled-components';
@@ -13,14 +13,14 @@ root.render(
   // <React.StrictMode>
     // <BrowserRouter>
       <AuthProvider>
-        <ImageProvider>
+        <ProductProvider>
           <ThemeProvider theme={theme}>
             {/* <Suspense fallback={<Loading />}> */}
               <App />
             {/* </Suspense> */}
             <GlobalStyle />
           </ThemeProvider>
-        </ImageProvider>
+        </ProductProvider>
       </AuthProvider>
     // </BrowserRouter>
   // </React.StrictMode>

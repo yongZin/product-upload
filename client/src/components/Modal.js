@@ -5,6 +5,7 @@ const Background = styled.div`
   position:fixed;
   inset:0;
   z-index:1000;
+  cursor:pointer;
 `;
 const Popup = styled.div`
   width:82%;
@@ -51,9 +52,7 @@ const Popup = styled.div`
 const Modal = ({ children, setModalView }) => {
 	return (
 		<>
-      <Background onClick={() => {
-        setModalView(false);
-      }} />
+      <Background onClick={() => setModalView(0)} />
 
       <Popup>
         {children}

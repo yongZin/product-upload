@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"; //useContext
+import React, { useState, useRef, useContext } from "react"; //useContext
 import axios from "axios";
 import styled from "styled-components";
 import { v4 as uuid } from 'uuid';
@@ -6,6 +6,7 @@ import mime from "mime-types";
 import { toast } from "react-toastify";
 import Quill from "./Quill";
 import UploadInput from "./UploadInput";
+import { ProductContext } from "../context/productContext";
 
 const ImgWrap = styled.div`
   margin:40px 0 30px;
@@ -163,15 +164,18 @@ const BtnBox = styled.div`
 
 const UploadForm = ({ setModalView }) => {
 	const inputRef = useRef();
-	const [name, setName] = useState("");
-	const [price, setPrice] = useState("");
-	const [mainImages, setMainImages] = useState([]);
-	const [details, setDetails] = useState([]);
-	const [detailImages, setDetailImages] = useState([]);
-	const [type, setType] = useState("");
-	const [material, setMaterial] = useState("");
-	const [color, setColor] = useState("");
   const [mainImgChecked, setMainImgChecked] = useState(0);
+  const {
+    setProducts,
+    name, setName,
+    price, setPrice,
+    mainImages, setMainImages,
+    details, setDetails,
+    detailImages, setDetailImages,
+    type, setType,
+    material, setMaterial,
+    color, setColor,
+  } = useContext(ProductContext);
 
 	const imageHandler = async (e) => {
     const imgFiles = e.target.files; //파일정보 가져오기
@@ -270,22 +274,35 @@ const UploadForm = ({ setModalView }) => {
 
       //form 유효성 검사 필요
 
+      setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
+      toast.success("업로드 성공");
+
       setTimeout(() =>{ //초기화
-        setName("");
-        setPrice("");
-        setMainImages([]);
-        setDetails([]);
-        setType("");
-        setMaterial("");
-        setColor("");
-        if (inputRef.current) inputRef.current.value = null;
+        resetData();
       }, 1000);
 		} catch (error) {
+      toast.error(error.response.data.message);
+      
+      resetData();
+
 			console.error(error);
 		}
-	}
+	};
 
-	const previewsImg = mainImages.map((preview,index) => (
+  const resetData = () => {
+    setName("");
+    setPrice("");
+    setMainImages([]);
+    setDetails([]);
+    setType("");
+    setMaterial("");
+    setColor("");
+    setModalView(0);
+
+    if (inputRef.current) inputRef.current.value = null;
+  };
+
+	const previewsImg = mainImages && mainImages.map((preview,index) => (
     <li key={`previewsImg-` + index}>
       <input
         type="radio"
@@ -369,7 +386,7 @@ const UploadForm = ({ setModalView }) => {
 			/>
 
       <BtnBox>
-        <button type="button" onClick={() => setModalView(false)}>닫기</button>
+        <button type="button" onClick={() => resetData()}>닫기</button>
         {/* <button type="submit">업로드</button> */}
         <button type="submit">업로드</button>
       </BtnBox>
