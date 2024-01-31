@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { ToastContainer } from "react-toastify"; //alert 라이브러리
 import styled from "styled-components";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "./components/Modal";
 import UploadForm from "./components/UploadForm";
 import ProductList from "./components/ProductList";
+import Navigation from "./components/Navigation";
+import LoginForm from "./components/LoginForm";
+import { ModalContext } from "./context/ModalContext";
 
 const Container = styled.div`
   margin:0 auto;
@@ -23,32 +26,20 @@ const UploadBtn = styled.button`
 `;
 
 const App = () => {
-  const [modalView, setModalView] = useState(0);
-
-  useEffect(() => {
-    if (modalView) document.body.classList.add("scroll-ban");
-    else document.body.classList.remove("scroll-ban");
-  }, [modalView])
+  const {modalView, setModalView} = useContext(ModalContext);
 
   return (
     <Container>
       <ToastContainer />
+      <Navigation />
       <UploadBtn type="button" onClick={() => setModalView(1)}>상풉 업로드</UploadBtn>
       <ProductList/>
       {modalView > 0 &&
-        <Modal setModalView={setModalView}>
-          {modalView === 1 &&
-            <UploadForm setModalView={setModalView}/>
+        <Modal>
+          {
+            modalView === 1 ? <UploadForm />
+            : modalView === 2 && <LoginForm />
           }
-          {/* {modalView === 1 ?
-            <UploadForm setModalView={setModalView} />
-
-            : modalView === 2 ?
-            <p>222222</p>
-
-            : modalView === 3 &&
-            <p>3333333</p>
-          } */}
         </Modal>
       }
     </Container>
