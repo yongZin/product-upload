@@ -3,15 +3,24 @@ import React, { createContext, useState, useEffect } from "react";
 export const ModalContext = createContext();
 
 export const ModalProvider = (prop) => {
-	const [modalView, setModalView] = useState(0);
+	const [modalView, setModalView] = useState("off");
+	const [close, setClose] = useState(false);
 
 	useEffect(() => {
-    if (modalView) document.body.classList.add("scroll-ban");
-    else document.body.classList.remove("scroll-ban");
+    if (modalView !== "off") {
+			document.body.classList.add("scroll-fix");
+		} else if (modalView === "off") {
+			setTimeout(() => {
+				document.body.classList.remove("scroll-fix");
+			}, 500);
+		}
   }, [modalView])
 	
 	return (
-		<ModalContext.Provider value={{modalView, setModalView}}>
+		<ModalContext.Provider value={{
+			modalView, setModalView,
+			close, setClose
+			}}>
 			{prop.children}
 		</ModalContext.Provider>
 	)

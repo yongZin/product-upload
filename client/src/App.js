@@ -7,6 +7,7 @@ import UploadForm from "./components/UploadForm";
 import ProductList from "./components/ProductList";
 import Navigation from "./components/Navigation";
 import LoginForm from "./components/LoginForm";
+import RegisterForm from "./components/RegisterForm";
 import { ModalContext } from "./context/ModalContext";
 
 const Container = styled.div`
@@ -32,13 +33,14 @@ const App = () => {
     <Container>
       <ToastContainer />
       <Navigation />
-      <UploadBtn type="button" onClick={() => setModalView(1)}>상풉 업로드</UploadBtn>
+      <UploadBtn type="button" onClick={() => setModalView("upload")}>상풉 업로드</UploadBtn>
       <ProductList/>
-      {modalView > 0 &&
+      {modalView !== "off" &&
         <Modal>
           {
-            modalView === 1 ? <UploadForm />
-            : modalView === 2 && <LoginForm />
+            modalView === "upload" ? <UploadForm />
+            : modalView === "login" ? <LoginForm />
+            : modalView === "register" && <RegisterForm />
           }
         </Modal>
       }

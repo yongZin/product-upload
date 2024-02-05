@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+//로그인 컴포넌트
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import UserInput from "./UserInput";
+import { ModalContext } from "../context/ModalContext";
 
 const Wrap = styled.div`
 	width:100%;
@@ -10,20 +12,39 @@ const Wrap = styled.div`
 		text-align:center;
 		font-size:30px;
 	}
-	@media ${props => props.theme.tablet} {
+	/* @media ${props => props.theme.tablet} {
 		padding:0 20px;
+	} */
+`;
+const BtnBox = styled.div`
+	padding-top:10px;
+	font-size:0;
+	button{
+		display:inline-block;
+		vertical-align:middle;
+		padding:14px 0;
+		font-size:16px;
+		border-radius:6px;
+		transition:0.2s;
+	}
+`;
+const CloseBtn = styled.button`
+	width:20%;
+	border:1px solid rgba(255, 255, 255, 0.65);
+	color:#555;
+	background-color:rgba(255, 255, 255, 0.5);
+	&:hover{
+		border-color:rgba(255, 255, 255, 0.75);
+		color:#111;
+		background-color:rgba(255, 255, 255, 0.65);
 	}
 `;
 const SubmitBtn = styled.button`
-	width:100%;
-	height:48px;
-	margin-top:10px;
-	font-size:16px;
-	border:0;
-	border-radius:6px;
+	width:calc(80% - 8px);
+	margin-left:8px;
+	border:1px solid #555;
 	color:#fff;
 	background-color:#333;
-	transition:0.3s;
 	&:hover{
 		background-color:#555;
 	}
@@ -68,12 +89,22 @@ const FootBth = styled.ul`
 `;
 
 const LoginForm = () => {
+	const {setModalView, setClose} = useContext(ModalContext);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
 	const loginHandler = async (e) => {
 		e.preventDefault();
 	};
+
+	const handleClose = () => {
+    setClose(true);
+
+    setTimeout(() => {
+      setModalView("off");
+      setClose(false);
+    }, 300);
+  };
 
 	return(
 		<Wrap>
@@ -95,12 +126,27 @@ const LoginForm = () => {
 						type="password"
 					/>
 
-					<SubmitBtn type="submit">로그인</SubmitBtn>
+					<BtnBox>
+						<CloseBtn type="button" onClick={handleClose}>닫기</CloseBtn>
+						<SubmitBtn type="submit">로그인</SubmitBtn>
+					</BtnBox>
 				</form>
 
 				<FootBth>
 					<li>
-						<button type="button">회원가입</button>
+						<button
+							type="button"
+							onClick={() => {
+								setClose(true);
+
+								setTimeout(() => {
+									setModalView("register");
+									setClose(false);
+								}, 300);
+							}}
+						>
+							회원가입
+						</button>
 					</li>
 					<li>
 						<button type="button">관리자 로그인</button>

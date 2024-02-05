@@ -30,7 +30,7 @@ const GlobalStyle = createGlobalStyle`
     border:0;
     font-family:var(--f-bold);
     overflow-x:hidden;
-    &.scroll-ban{ //모달팝업 활성화 시 스크롤 금지
+    &.scroll-fix{ //모달팝업 활성화 시 스크롤 금지
       overflow:hidden;
     }
   }

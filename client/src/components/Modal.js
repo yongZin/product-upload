@@ -9,6 +9,13 @@ const Background = styled.div`
   inset:0;
   z-index:1000;
   cursor:pointer;
+  &.form{
+    &-close{
+      & + div{
+        animation:close ease 0.4s;
+      }
+    }
+  }
 `;
 const Popup = styled.div`
   max-width:800px;
@@ -25,7 +32,7 @@ const Popup = styled.div`
   transform:translateX(-50%);
   overflow:hidden;
   z-index:1001;
-  animation:fade cubic-bezier(.17,.67,.83,.67) 0.1s;
+  animation:open ease 0.25s;
   &.form{
     &-upload{
       width:82%;
@@ -37,6 +44,7 @@ const Popup = styled.div`
     &-user{
       width:65%;
       max-width:600px;
+      padding-bottom:40px;
     }
   }
   form{
@@ -53,26 +61,53 @@ const Popup = styled.div`
       }
     }
   }
-  @keyframes fade {
+  @keyframes open {
     0%{
-      opacity:0;
+      top:-100%;
     }
     100%{
-      opacity:1;
+      top:9%;
+    }
+  }
+  @keyframes close {
+    0%{
+      top:9%;
+    }
+    100%{
+      top:-100%;
     }
   }
 `;
 
 const Modal = ({ children }) => {
-  const {modalView, setModalView} = useContext(ModalContext);
+  const {
+    modalView, setModalView,
+    close, setClose
+  } = useContext(ModalContext);
+
+  const handleClose = () => {
+    setClose(true);
+
+    setTimeout(() => {
+      setModalView("off");
+      setClose(false);
+    }, 300);
+  };
+
 	return (
 		<>
-      <Background onClick={() => setModalView(0)} />
+      <Background
+        className={close ? "form-close" : ""}
+        onClick={handleClose}
+      />
 
       <Popup
         className={
-          modalView === 1 ? "form-upload"
-          : modalView === 2 && "form-user"
+         modalView === "upload" ? "form-upload"
+          : (
+            modalView === "login" ||
+            modalView === "register"
+          ) && "form-user"
         }
       >
         {children}

@@ -65,7 +65,7 @@ const Navigation = () => {
 					<a href="/">홈</a>
 
 					<ul>
-						<li onClick={() => setModalView(2)}>로그인</li>
+						<li onClick={() => setModalView("login")}>로그인</li>
 						{/* <li>로그아웃</li> */}
 					</ul>
 				</Content>

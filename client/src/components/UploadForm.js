@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Quill from "./Quill";
 import UploadInput from "./UploadInput";
 import { ProductContext } from "../context/productContext";
+import { ModalContext } from "../context/ModalContext";
 
 const ImgWrap = styled.div`
   margin:40px 0 30px;
@@ -162,9 +163,10 @@ const BtnBox = styled.div`
   }
 `;
 
-const UploadForm = ({ setModalView }) => {
+const UploadForm = () => {
 	const inputRef = useRef();
   const [mainImgChecked, setMainImgChecked] = useState(0);
+  const {setModalView, setClose} = useContext(ModalContext);
   const {
     setProducts,
     name, setName,
@@ -297,7 +299,12 @@ const UploadForm = ({ setModalView }) => {
     setType("");
     setMaterial("");
     setColor("");
-    setModalView(0);
+    setClose(true);
+
+    setTimeout(() => {
+      setModalView("off");
+      setClose(false);
+    }, 300);
 
     if (inputRef.current) inputRef.current.value = null;
   };
@@ -387,7 +394,6 @@ const UploadForm = ({ setModalView }) => {
 
       <BtnBox>
         <button type="button" onClick={() => resetData()}>닫기</button>
-        {/* <button type="submit">업로드</button> */}
         <button type="submit">업로드</button>
       </BtnBox>
 		</form>
