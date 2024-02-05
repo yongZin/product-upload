@@ -2,6 +2,8 @@
 const multer = require("multer");
 const { v4: uuid } = require("uuid");
 const mime = require("mime-types");
+// const multerS3 = require("multer-s3");
+// const { s3 } = require("../aws");
 
 const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
@@ -11,6 +13,21 @@ const storage = multer.diskStorage({
 		callback(null, `${uuid()}.${mime.extension(file.mimetype)}`)
 	}
 });
+
+// const storage = multerS3({
+//   s3,
+//   bucket: "yongzin3",
+//   key: (req, file, cb) =>
+//     cb(null, `raw/${uuid()}.${mime.extension(file.mimetype)}`),
+// });
+
+// const storage = multerS3({ //클라이언트에서 uuid를 사용한 경우
+//   s3,
+//   bucket: "yongzin3",
+//   key: (req, file, cb) => {
+//     cb(null, `raw/${file.filename}`);
+//   },
+// });
 
 const upload = multer({
 	storage,
