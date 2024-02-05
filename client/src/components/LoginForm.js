@@ -3,6 +3,9 @@ import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import UserInput from "./UserInput";
 import { ModalContext } from "../context/ModalContext";
+import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Wrap = styled.div`
 	width:100%;
@@ -30,11 +33,11 @@ const BtnBox = styled.div`
 `;
 const CloseBtn = styled.button`
 	width:20%;
-	border:1px solid rgba(255, 255, 255, 0.65);
+	border:1px solid #ccc;
 	color:#555;
 	background-color:rgba(255, 255, 255, 0.5);
 	&:hover{
-		border-color:rgba(255, 255, 255, 0.75);
+		border-color:#bbb;
 		color:#111;
 		background-color:rgba(255, 255, 255, 0.65);
 	}
@@ -90,11 +93,34 @@ const FootBth = styled.ul`
 
 const LoginForm = () => {
 	const {setModalView, setClose} = useContext(ModalContext);
+	const {setUserInfo} = useContext(AuthContext);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
 	const loginHandler = async (e) => {
-		e.preventDefault();
+		try {
+			e.preventDefault();
+
+			if(username.length < 3 || password.length < 6)
+				throw new Error("입력하신 정보가 올바르지 않습니다.");
+
+			const result = await axios.patch(
+				"/users/login",
+				{ username, password }
+			);
+
+			setUserInfo({
+				userId: result.data.userId,
+				sessionId: result.data.sessionId,
+				name: result.data.name,
+			});
+			
+			toast.success("로그인 성공");
+			handleClose();
+		} catch (error) {
+			console.error(error);
+			toast.error(error.message);
+		}
 	};
 
 	const handleClose = () => {

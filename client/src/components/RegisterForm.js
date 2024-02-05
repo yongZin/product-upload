@@ -3,6 +3,9 @@ import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import UserInput from "./UserInput";
 import { ModalContext } from "../context/ModalContext";
+import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Wrap = styled.div`
 	width:100%;
@@ -30,11 +33,11 @@ const BtnBox = styled.div`
 `;
 const CloseBtn = styled.button`
 	width:20%;
-	border:1px solid rgba(255, 255, 255, 0.65);
+	border:1px solid #ccc;
 	color:#555;
 	background-color:rgba(255, 255, 255, 0.5);
 	&:hover{
-		border-color:rgba(255, 255, 255, 0.75);
+		border-color:#bbb;
 		color:#111;
 		background-color:rgba(255, 255, 255, 0.65);
 	}
@@ -53,9 +56,42 @@ const SubmitBtn = styled.button`
 
 const RegisterForm = () => {
 	const {setModalView, setClose} = useContext(ModalContext);
+	const {setUserInfo} = useContext(AuthContext);
 	const [name, setName] = useState("");
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [passwordCheck, setPasswordCheck] = useState("");
+
+	const onSubmit = async (e) => {
+		try {
+			e.preventDefault();
+			
+			if(username.length < 3)
+				throw new Error("아이디를 3글자 이상으로 해주세요.");
+			if(password.length < 6)
+				throw new Error("비밀번호를 6글자 이상으로 해주세요.");
+			if(password !== passwordCheck)
+				throw new Error("비밀번호를 확인해주세요.");
+
+			const result = await axios.post("/users/register", {
+				name,
+				username,
+				password
+			});
+
+			setUserInfo({ //유저정보 저장
+				userId: result.data.userId,
+				sessionId: result.data.sessionId,
+				name: result.data.name,
+			});
+
+			toast.success("회원가입 완료");
+			handleClose();
+		} catch (error) {
+			console.error(error);
+			toast.error(error.message);
+		}
+	}
 
 	const handleClose = () => {
     setClose(true);
@@ -71,7 +107,7 @@ const RegisterForm = () => {
 			<div>
 				<h3>회원가입</h3>
 
-				<form>
+				<form onSubmit={onSubmit}>
 					<UserInput
 						id="inputName"
 						label="이름"
@@ -90,6 +126,13 @@ const RegisterForm = () => {
 						label="비밀번호"
 						value={password}
 						setValue={setPassword}
+						type="password"
+					/>
+					<UserInput
+						id="inpuChk"
+						label="비밀번호 확인"
+						value={passwordCheck}
+						setValue={setPasswordCheck}
 						type="password"
 					/>
 

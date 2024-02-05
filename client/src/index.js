@@ -4,7 +4,6 @@ import App from "./App";
 import { ProductProvider }  from "./context/productContext";
 import { AuthProvider } from './context/AuthContext';
 import { ModalProvider } from './context/ModalContext';
-// import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from 'styled-components';
 import GlobalStyle from "./components/style/GlobalStyle";
 import theme from "./components/style/theme";
@@ -12,7 +11,6 @@ import theme from "./components/style/theme";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
-    // <BrowserRouter>
       <AuthProvider>
         <ProductProvider>
           <ModalProvider>
@@ -25,6 +23,5 @@ root.render(
           </ModalProvider>
         </ProductProvider>
       </AuthProvider>
-    // </BrowserRouter>
   // </React.StrictMode>
 );
