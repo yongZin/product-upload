@@ -13,24 +13,27 @@ export const AuthProvider = ({ children }) => {
 		if(userInfo) {
 			axios.defaults.headers.common.sessionid = userInfo.sessionId; //로그인 정보에 세션id 넣어주기
 			localStorage.setItem("sessionId", userInfo.sessionId);//새로고침시 로그아웃 방지 (localStorage에 세션id저장)
-		} else if(sessionId) { //세션id가 존재하면 API호출
+		}
+		else if(sessionId) { //세션id가 존재하면 API호출
 			axios
-				.get(
-					"/users/userInfo",
-					{ headers: { sessionid: sessionId } }
+			.get(
+				"/users/userInfo",
+				{ headers: { sessionid: sessionId } }
 				)
 				.then((result) => {
 					setUserInfo({
-						userId: result.data.userId,
 						sessionId: result.data.sessionId,
 						name: result.data.name,
+						userID: result.data.userID,
 					});
+					// setUserInfo(result.data)
 				})
 				.catch(() => {
 					localStorage.removeItem("sessionId");
 					delete axios.defaults.headers.common.sessionid;
 				});
-		} else { //로그인 정보에 과거 세션id 지우기
+		}
+		else { //로그인 정보에 과거 세션id 지우기
 			delete axios.defaults.headers.common.sessionid;
 		} 
 	}, [userInfo]);

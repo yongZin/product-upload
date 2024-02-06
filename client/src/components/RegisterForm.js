@@ -80,7 +80,7 @@ const RegisterForm = () => {
 			});
 
 			setUserInfo({ //유저정보 저장
-				userId: result.data.userId,
+				userID: result.data.userID,
 				sessionId: result.data.sessionId,
 				name: result.data.name,
 			});

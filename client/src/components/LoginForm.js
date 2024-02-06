@@ -112,13 +112,13 @@ const LoginForm = () => {
 			);
 
 			setUserInfo({
-				userId: result.data.userId,
+				userID: result.data.userID,
 				sessionId: result.data.sessionId,
 				name: result.data.name,
 			});
 			
-			toast.success("로그인 성공");
 			handleClose();
+			toast.success("로그인 성공");
 		} catch (error) {
 			console.error(error.response);
 			toast.error(error.response.data.message);

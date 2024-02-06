@@ -21,21 +21,15 @@ const UploadBtn = styled.button`
 
 const MainPage = () => {
 	const {modalView, setModalView} = useContext(ModalContext);
-	const {userInfo, setUserInfo} = useContext(AuthContext);
+	const {userInfo} = useContext(AuthContext);
 
 	return (
 		<>
-    {userInfo && (
-      (userInfo.userId) === ADMIN_ID
-      || (userInfo.userId) === GUEST_ID
-    ) &&
-      <UploadBtn
-        type="button"
-        onClick={() => setModalView("upload")}
-      >
-        상풉 업로드
-      </UploadBtn>
-    }
+      {userInfo && 
+        ((userInfo.userID) === ADMIN_ID
+        || (userInfo.userID) === GUEST_ID)
+        && <UploadBtn type="button" onClick={() => setModalView("upload")}>상풉 업로드</UploadBtn>
+      }
       
       <ProductList/>
       {modalView !== "off" &&

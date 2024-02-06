@@ -53,6 +53,7 @@ userRouter.patch("/login", async (req, res) => {
 			message: "로그인 성공",
 			sessionId: session._id,
 			name: user.name,
+			userID: user._id,
 		});
 	} catch (error) {
 		console.log(error);
@@ -79,12 +80,12 @@ userRouter.patch("/logout", async (req, res) => {
 userRouter.get("/userInfo", (req, res) => { // 세션id를 가진 유저정보 불러오기
 	try {
 		if(!req.user) return;
-		
+
 		res.json({
 			message: "성공",
 			sessionId: req.headers.sessionid,
 			name: req.user.name,
-			userId: req.user._id
+			userID: req.user._id,
 		});
 	} catch (error) {
 		console.log(error);
