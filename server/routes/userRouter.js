@@ -4,6 +4,7 @@ const userRouter = Router();
 const User = require("../models/User");
 const { hash, compare } = require("bcryptjs");
 const mongoose = require("mongoose");
+const Product = require("../models/Product");
 
 userRouter.post("/register", async (req, res) => {
 	try {
@@ -35,6 +36,9 @@ userRouter.post("/register", async (req, res) => {
 userRouter.patch("/login", async (req, res) => {
 	try {
 		const user = await User.findOne({ userID: req.body.username });
+
+		if (!user) throw new Error("입력하신 정보가 옳바르지 않습니다.");
+
 		const isValid = await compare(req.body.password, user.hashedPassword);
 
 		if (!isValid) throw new Error("입력하신 정보가 옳바르지 않습니다.");
@@ -71,5 +75,34 @@ userRouter.patch("/logout", async (req, res) => {
 		res.status(400).json({ message: error.message });
 	}
 });
+
+userRouter.get("/userInfo", (req, res) => { // 세션id를 가진 유저정보 불러오기
+	try {
+		if(!req.user) return;
+		
+		res.json({
+			message: "성공",
+			sessionId: req.headers.sessionid,
+			name: req.user.name,
+			userId: req.user._id
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(400).json({ message: error.message });
+	}
+});
+
+// userRouter.get("/userInfo/products", async (req, res) => {
+// 	try {
+// 		if(!req.user) return;
+		
+// 		const producus = await Product.find({ "user._id": req.user.id }); //특정 아이디의 이미지만 찾기
+		
+// 		res.json(producus);
+// 	} catch (error) {
+// 		console.log(error);
+// 		res.status(400).json({ message: error.message });
+// 	}
+// });
 
 module.exports = { userRouter };
