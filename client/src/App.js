@@ -2,7 +2,7 @@ import React from "react";
 import { ToastContainer } from "react-toastify"; //alert 라이브러리
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import MainPage from "./pages/MainPage";
 
@@ -18,11 +18,10 @@ const App = () => {
   return (
     <Container>
       <ToastContainer />
-      <Router>
-        <Navigation />
+      <Navigation />
+      <Routes>
         <Route path="/" element={<MainPage />} />
-      </Router>
-      <MainPage />
+      </Routes>
     </Container>
   )
 }
