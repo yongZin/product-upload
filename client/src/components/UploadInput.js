@@ -49,6 +49,7 @@ const UploadInput = ({ label, placeholder, value, onChange }) => {
 			<li>{label}</li>
 			<li>
 				<input
+					autoComplete="off"
 					type="text"
 					placeholder={placeholder}
 					value={value}

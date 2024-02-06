@@ -6,6 +6,8 @@ import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+const GUEST_ID = process.env.REACT_APP_GUEST_LOGIN_ID; //임시관리자 ID
+const GUEST_PWD = process.env.REACT_APP_GUEST_LOGIN_PWD; //임시관리자 Password
 
 const Wrap = styled.div`
 	width:100%;
@@ -118,8 +120,8 @@ const LoginForm = () => {
 			toast.success("로그인 성공");
 			handleClose();
 		} catch (error) {
-			console.error(error);
-			toast.error(error.message);
+			console.error(error.response);
+			toast.error(error.response.data.message);
 		}
 	};
 
@@ -131,6 +133,11 @@ const LoginForm = () => {
       setClose(false);
     }, 300);
   };
+
+	const guestHandler = () => {
+		setUsername(GUEST_ID);
+		setPassword(GUEST_PWD);
+	}
 
 	return(
 		<Wrap>
@@ -156,31 +163,36 @@ const LoginForm = () => {
 						<CloseBtn type="button" onClick={handleClose}>닫기</CloseBtn>
 						<SubmitBtn type="submit">로그인</SubmitBtn>
 					</BtnBox>
+
+					<FootBth>
+						<li>
+							<button
+								type="button"
+								onClick={() => {
+									setClose(true);
+
+									setTimeout(() => {
+										setModalView("register");
+										setClose(false);
+									}, 300);
+								}}
+							>
+								회원가입
+							</button>
+						</li>
+						<li>
+							<button
+								type="submit"
+								onClick={guestHandler}
+							>
+								관리자 로그인
+							</button>
+						</li>
+					</FootBth>
 				</form>
-
-				<FootBth>
-					<li>
-						<button
-							type="button"
-							onClick={() => {
-								setClose(true);
-
-								setTimeout(() => {
-									setModalView("register");
-									setClose(false);
-								}, 300);
-							}}
-						>
-							회원가입
-						</button>
-					</li>
-					<li>
-						<button type="button">관리자 로그인</button>
-					</li>
-				</FootBth>
 			</div>
 		</Wrap>
 	)
 }
 
-export default LoginForm
+export default LoginForm;

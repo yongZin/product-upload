@@ -48,7 +48,7 @@ const ProductList = () => {
 					<img
 						key={item.mainImages[0]._id}
 						src={`http://localhost:4000/uploads/${item.mainImages[0].key}`}
-						alt={item.name}
+						alt="상품 이미지"
 					/>
 				</li>
 

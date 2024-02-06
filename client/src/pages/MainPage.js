@@ -6,6 +6,9 @@ import ProductList from "../components/ProductList";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
 import { ModalContext } from "../context/ModalContext";
+import { AuthContext } from "../context/AuthContext";
+const ADMIN_ID = process.env.REACT_APP_ADMIN_ID; //관리자 확인용
+const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
 const UploadBtn = styled.button`
   padding:7px;
@@ -18,10 +21,22 @@ const UploadBtn = styled.button`
 
 const MainPage = () => {
 	const {modalView, setModalView} = useContext(ModalContext);
+	const {userInfo, setUserInfo} = useContext(AuthContext);
 
 	return (
 		<>
-      <UploadBtn type="button" onClick={() => setModalView("upload")}>상풉 업로드</UploadBtn>
+    {userInfo && (
+      (userInfo.userId) === ADMIN_ID
+      || (userInfo.userId) === GUEST_ID
+    ) &&
+      <UploadBtn
+        type="button"
+        onClick={() => setModalView("upload")}
+      >
+        상풉 업로드
+      </UploadBtn>
+    }
+      
       <ProductList/>
       {modalView !== "off" &&
         <Modal>

@@ -272,8 +272,6 @@ const UploadForm = () => {
         },
       });
 
-      console.log(res.data);
-
       //form 유효성 검사 필요
 
       setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
@@ -284,9 +282,7 @@ const UploadForm = () => {
       }, 1000);
 		} catch (error) {
       toast.error(error.response.data.message);
-      
       resetData();
-
 			console.error(error);
 		}
 	};

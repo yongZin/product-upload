@@ -96,6 +96,7 @@ const UserInput = ({ id, label, value, setValue, type = "text" }) => {
 	return(
 		<InputWrap>
 			<input
+				autoComplete="off"
 				id={id}
 				type={type}
 				value={value}
