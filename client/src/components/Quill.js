@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import DOMPurify from 'isomorphic-dompurify';
 import { v4 as uuid } from 'uuid';
 import mime from "mime-types";
-import { ProductContext } from "../context/productContext";
+import { ProductContext } from "../context/ProductContext";
 
 const UploadReactQuill = styled(ReactQuill)`
   height:500px;
@@ -78,43 +78,56 @@ const Quill = () => {
   } = useContext(ProductContext);
 
 	useEffect(() => {
-    const updatedDetails = details.map((htmlString) => {
-			//details의 base64 이미지소스 고유 네이밍으로 변경(uuid)
+		const updatedDetails = details.map((detail) => {
+			let newDetail = detail;
+			const imgTags = newDetail.match(/<img.*?src="(.*?)".*?>/g);
 
-			const matchSource = htmlString.match(/<img.*?src=['"](.*?)['"].*?>/);
+			if (imgTags) {
+				for (const imgTag of imgTags) {
+					const imgSrc = imgTag.match(/src="(.*?)"/)[1];
 
-			if (matchSource && matchSource[1]) {
-				const base64Source = matchSource[1];
-				const matchingImage = detailImages.find((image) => image.imgSrc === base64Source); //details와 detailImages의 이미지 소스비교
-
-				if (matchingImage) {
-					const updatedHtmlString = htmlString.replace(base64Source, matchingImage.fileName); //base64 소스를 uuid를 적용한 고유 소스로 변경
-
-					return updatedHtmlString;
+					for (const image of detailImages) {
+						if (imgSrc === image.imgSrc) {
+							newDetail = newDetail.replace(imgSrc, image.fileName);
+						}
+					}
 				}
-			}
+			};
 
-			return htmlString;
-    });
+			return newDetail;
+		});
 
-    const updatedDetailImages = detailImages.filter((image) => {
-			//삭제된 이미지 detailImages에 적용하여 재배열
-
-			return updatedDetails.some((detail) => {
-				const matchSource = detail.match(/<img.*?src=['"](.*?)['"].*?>/);
-
-				return matchSource && matchSource[1] === image.fileName;
-			});
-    });
-
-    if (JSON.stringify(updatedDetails) !== JSON.stringify(details)) {
+		if (JSON.stringify(details) !== JSON.stringify(updatedDetails)) {
+			//무한루프 방지 후 업데이트
 			setDetails(updatedDetails);
-    }
+		}
 
-    if (JSON.stringify(updatedDetailImages) !== JSON.stringify(detailImages)) {
-			setDetailImages(updatedDetailImages);
-    }
-	}, [details, detailImages, setDetails, setDetailImages]);
+	}, [details, detailImages, setDetails]);
+
+	useEffect(() => {
+		const imgTagsCount = details.reduce((count, detail) => {
+			//details의 img태그 개수 알아내기
+			const imgTags = detail.match(/<img.*?src="(.*?)".*?>/g);
+			return count + (imgTags ? imgTags.length : 0);
+		}, 0);
+	
+		if (imgTagsCount !== detailImages.length) {
+			const imgSrcs = details.flatMap((detail) => {
+				//<img>에서 src 추출
+				const imgTags = detail.match(/<img.*?src="(.*?)".*?>/g) || [];
+				return imgTags.map((imgTag) => imgTag.match(/src="(.*?)"/)[1]);
+			});
+	
+			const updatedDetailImages = detailImages.filter((image) =>
+				imgSrcs.includes(image.imgSrc) // image.fileName이 아닌 image.imgSrc와 비교
+			);
+	
+			if (JSON.stringify(detailImages) !== JSON.stringify(updatedDetailImages)) {
+				//무한루프 방지 후 업데이트
+				setDetailImages(updatedDetailImages);
+			}
+		}
+	}, [details, detailImages, setDetailImages]);
 
 	const purifyHandler = (value) => {
 		//공격성 코드 검열

@@ -16,6 +16,7 @@ export const ProductProvider = (prop) => {
 	const [type, setType] = useState("");
 	const [material, setMaterial] = useState("");
 	const [color, setColor] = useState("");
+	const [selectedProduct, setSelectedProduct] = useState();
 
 	const productContextValue = {
 		products, setProducts,
@@ -27,6 +28,7 @@ export const ProductProvider = (prop) => {
 		type, setType,
 		material, setMaterial,
 		color, setColor,
+		selectedProduct, setSelectedProduct
 	};
 
 	useEffect(() => {

@@ -6,7 +6,7 @@ import mime from "mime-types";
 import { toast } from "react-toastify";
 import Quill from "./Quill";
 import UploadInput from "./UploadInput";
-import { ProductContext } from "../context/productContext";
+import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
 
 const ImgWrap = styled.div`
@@ -266,20 +266,22 @@ const UploadForm = () => {
     formData.append("color", color);
 
 		try {
-      const res = await axios.post("upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      console.log(details);
+      console.log(detailImages);
+      // const res = await axios.post("upload", formData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
 
-      //form 유효성 검사 필요
+      // //form 유효성 검사 필요
 
-      setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
-      toast.success("업로드 성공");
+      // setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
+      // toast.success("업로드 성공");
 
-      setTimeout(() =>{ //초기화
-        resetData();
-      }, 1000);
+      // setTimeout(() =>{ //초기화
+      //   resetData();
+      // }, 1000);
 		} catch (error) {
       toast.error(error.response.data.message);
       resetData();

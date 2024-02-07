@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 // import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { ProductContext } from "../context/productContext";
+import { ProductContext } from "../context/ProductContext";
+import { ModalContext } from "../context/ModalContext";
 
 const Wrap = styled.div`
 	width:100%;
@@ -13,6 +14,7 @@ const Item = styled.ul`
 	display:inline-block;
 	vertical-align:top;
 	margin:0 6px 20px;
+	cursor:pointer;
 	.item{
 		&-image{
 			margin-bottom:12px;
@@ -39,26 +41,40 @@ const Item = styled.ul`
 `;
 
 const ProductList = () => {
-	const {products} = useContext(ProductContext);
+	const {products, setSelectedProduct} = useContext(ProductContext);
+	const {setModalView} = useContext(ModalContext);
+
+	// useEffect(() => {
+  //   if (selectedProduct) {
+  //     console.log(selectedProduct);
+  //   }
+  // }, [selectedProduct]);
+
+	const productDetails = (itemID) => {
+		const selectedItem = products.find((item) => item._id === itemID);
+
+		setSelectedProduct(selectedItem);
+	}
 	
 	const productList = products.map((item, index) => (
-		// <Link to="" key={item._id}>
-			<Item key={item._id}>
-				<li className="item-image">
-					<img
-						key={item.mainImages[0]._id}
-						src={`http://localhost:4000/uploads/${item.mainImages[0].key}`}
-						alt="상품 이미지"
-					/>
-				</li>
+		<Item key={item._id} onClick={() => {
+			productDetails(item._id);
+			setModalView("details");
+		}}>
+			<li className="item-image">
+				<img
+					key={item.mainImages[0]._id}
+					src={`http://localhost:4000/uploads/${item.mainImages[0].key}`}
+					alt="상품 이미지"
+				/>
+			</li>
 
-				<li className="item-name">
-					{`${item.name}_${(index + 1).toString().padStart(4, '0')}`}
-				</li>
+			<li className="item-name">
+				{`${item.name}_${(index + 1).toString().padStart(4, '0')}`}
+			</li>
 
-				<li className="item-price">{item.price}</li>
-			</Item>
-		// </Link>
+			<li className="item-price">{item.price}</li>
+		</Item>
   ));
 
 	return (

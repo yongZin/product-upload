@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { ProductProvider }  from "./context/productContext";
+import { ProductProvider }  from "./context/ProductContext";
 import { AuthProvider } from './context/AuthContext';
 import { ModalProvider } from './context/ModalContext';
 import { ThemeProvider } from 'styled-components';
