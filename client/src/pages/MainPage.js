@@ -5,6 +5,7 @@ import UploadForm from "../components/UploadForm";
 import ProductList from "../components/ProductList";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
+import Details from "../components/Details";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
 const ADMIN_ID = process.env.REACT_APP_ADMIN_ID; //관리자 확인용
@@ -28,7 +29,7 @@ const MainPage = () => {
       {userInfo && 
         ((userInfo.userID) === ADMIN_ID
         || (userInfo.userID) === GUEST_ID)
-        && <UploadBtn type="button" onClick={() => setModalView("upload")}>상풉 업로드</UploadBtn>
+        && <UploadBtn type="button" onClick={() => setModalView("upload")}>상품 업로드</UploadBtn>
       }
       
       <ProductList/>
@@ -37,7 +38,8 @@ const MainPage = () => {
           {
             modalView === "upload" ? <UploadForm />
             : modalView === "login" ? <LoginForm />
-            : modalView === "register" && <RegisterForm />
+            : modalView === "register" ? <RegisterForm />
+            : modalView === "details" && <Details />
           }
         </Modal>
       }
