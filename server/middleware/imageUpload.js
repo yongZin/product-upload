@@ -9,9 +9,14 @@ const storage = multer.diskStorage({
 	destination: (req, file, callback) => {
 		callback(null, "./uploads");
 	},
-	filename: (req, file, callback) => {//고유 이름으로 저장
-		callback(null, `${uuid()}.${mime.extension(file.mimetype)}`)
+	filename: (req, file, callback) => {
+		// console.log(file);
+
+		callback(null, `${file.originalname}`)
 	}
+	// filename: (req, file, callback) => {//고유 이름으로 저장
+	// 	callback(null, `${uuid()}.${mime.extension(file.mimetype)}`)
+	// }
 });
 
 // const storage = multerS3({

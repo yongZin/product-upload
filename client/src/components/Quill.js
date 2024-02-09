@@ -88,7 +88,7 @@ const Quill = () => {
 
 					for (const image of detailImages) {
 						if (imgSrc === image.imgSrc) {
-							newDetail = newDetail.replace(imgSrc, image.fileName);
+							newDetail = newDetail.replace(imgSrc, "http://localhost:4000/uploads/" + image.fileName);
 						}
 					}
 				}

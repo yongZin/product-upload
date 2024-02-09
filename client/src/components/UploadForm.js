@@ -203,7 +203,7 @@ const UploadForm = () => {
           fileReader.onerror = (err) => reject(err);
         });
 
-        newPreviews.push({ formData, imgSrc, fileName: imgFile.name });
+        newPreviews.push({ formData, imgSrc, fileName: fileUuid });
         
       } catch (err) {
         console.error(err);
@@ -250,12 +250,12 @@ const UploadForm = () => {
 
     const formData = new FormData();
 
-    mainImages.forEach((image, index) => {
-      formData.append("mainImage", image.formData.get('file'));
+    mainImages.forEach((image) => {
+      formData.append("mainImage", image.formData.get('file'), image.fileName);
     });
 
-    detailImages.forEach((image, index) => {
-      formData.append("detailImage", image.formData.get('file'));
+    detailImages.forEach((image) => {
+      formData.append("detailImage", image.formData.get('file'), image.fileName);
     });
 
     formData.append("name", name);
@@ -266,22 +266,20 @@ const UploadForm = () => {
     formData.append("color", color);
 
 		try {
-      console.log(details);
-      console.log(detailImages);
-      // const res = await axios.post("upload", formData, {
-      //   headers: {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      // });
+      const res = await axios.post("upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      // //form 유효성 검사 필요
+      //form 유효성 검사 필요
 
-      // setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
-      // toast.success("업로드 성공");
+      setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
+      toast.success("업로드 성공");
 
-      // setTimeout(() =>{ //초기화
-      //   resetData();
-      // }, 1000);
+      setTimeout(() =>{ //초기화
+        resetData();
+      }, 1000);
 		} catch (error) {
       toast.error(error.response.data.message);
       resetData();
