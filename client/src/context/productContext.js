@@ -1,5 +1,5 @@
 //상품 데이터
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 
 export const ProductContext = createContext();
@@ -17,6 +17,18 @@ export const ProductProvider = (prop) => {
 	const [material, setMaterial] = useState("");
 	const [color, setColor] = useState("");
 	const [selectedProduct, setSelectedProduct] = useState();
+	const [uploadURL, setUploadURL] = useState("/upload");
+	const [uploadLoad, setUploadLoad] = useState(false);
+	const [uploadError, setUploadError] = useState(false);
+	const pastUploadUrlRef = useRef();
+
+	const lastProductId = products.length > 0 ? products[products.length - 1]._id : null;
+
+	const loadMoreProduct = useCallback(() => {
+		if (uploadLoad || !lastProductId) return;
+
+		setUploadURL(`/upload?lastid=${lastProductId}`);
+	}, [lastProductId, uploadLoad]);
 
 	const productContextValue = {
 		products, setProducts,
@@ -28,15 +40,28 @@ export const ProductProvider = (prop) => {
 		type, setType,
 		material, setMaterial,
 		color, setColor,
-		selectedProduct, setSelectedProduct
+		selectedProduct, setSelectedProduct,
+		uploadLoad, uploadError,
+		loadMoreProduct
 	};
 
 	useEffect(() => {
+		if(pastUploadUrlRef.current === uploadURL) return;
+		
+		setUploadLoad(true);
+
 		axios
-			.get("/upload")
-			.then((result) => setProducts(result.data))
-			.catch((error) => console.error(error));
-	}, []);
+			.get(uploadURL)
+			.then((result) => setProducts((prevData) => [...prevData, ...result.data]))
+			.catch((error) => {
+				console.error(error);
+				setUploadError(error);
+			})
+			.finally(() => {
+				setUploadLoad(false);
+				pastUploadUrlRef.current = uploadURL;
+			});
+	}, [uploadURL]);
 	
 	return (
 		<ProductContext.Provider value={productContextValue}>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 // import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ProductContext } from "../context/ProductContext";
@@ -11,6 +11,7 @@ const Wrap = styled.div`
 `;
 const Item = styled.ul`
 	width:calc(33.333% - 12px);
+	width:calc(50% - 12px);
 	display:inline-block;
 	vertical-align:top;
 	margin:0 6px 20px;
@@ -41,14 +42,28 @@ const Item = styled.ul`
 `;
 
 const ProductList = () => {
-	const {products, setSelectedProduct} = useContext(ProductContext);
+	const {
+		products,
+		setSelectedProduct,
+		uploadLoad,
+		uploadError,
+		loadMoreProduct
+	} = useContext(ProductContext);
 	const {setModalView} = useContext(ModalContext);
+	const elementRef = useRef();
 
-	// useEffect(() => {
-  //   if (selectedProduct) {
-  //     console.log(selectedProduct);
-  //   }
-  // }, [selectedProduct]);
+	useEffect(() => {
+		if(!elementRef.current) return;
+
+		const observer = new IntersectionObserver(([entry]) => {
+			console.log(entry.isIntersecting);
+			if(entry.isIntersecting) loadMoreProduct();
+		}, {threshold: 0.5});
+
+		observer.observe(elementRef.current);
+
+		return () => observer.disconnect();
+	}, [elementRef, loadMoreProduct]);
 
 	const productDetails = (itemID) => {
 		const selectedItem = products.find((item) => item._id === itemID);
@@ -57,10 +72,14 @@ const ProductList = () => {
 	}
 	
 	const productList = products.map((item, index) => (
-		<Item key={item._id} onClick={() => {
-			productDetails(item._id);
-			setModalView("details");
-		}}>
+		<Item
+			key={item._id}
+			ref={index + 1 === products.length ? elementRef : undefined}
+			onClick={() => {
+				productDetails(item._id);
+				setModalView("details");
+			}}
+		>
 			<li className="item-image">
 				<img
 					key={item.mainImages[0]._id}
@@ -70,7 +89,7 @@ const ProductList = () => {
 			</li>
 
 			<li className="item-name">
-				{`${item.name}_${(index + 1).toString().padStart(4, '0')}`}
+				{item.name}
 			</li>
 
 			<li className="item-price">{item.price}</li>
@@ -80,6 +99,9 @@ const ProductList = () => {
 	return (
 		<Wrap>
 			{productList}
+
+			{uploadLoad && <div>LOADING...</div>}
+			{uploadError && <p>Error...</p>}
 		</Wrap>
 	)
 }
