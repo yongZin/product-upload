@@ -46,6 +46,10 @@ const Popup = styled.div`
       max-width:600px;
       padding-bottom:40px;
     }
+    &-details{
+      width:82%;
+      height:88vh;
+    }
   }
   form{
     height:100%;
@@ -107,7 +111,8 @@ const Modal = ({ children }) => {
           : (
             modalView === "login" ||
             modalView === "register"
-          ) && "form-user"
+          ) ? "form-user"
+          : modalView === "details" && "form-details"
         }
       >
         {children}

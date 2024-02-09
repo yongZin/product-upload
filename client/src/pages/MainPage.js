@@ -27,9 +27,11 @@ const MainPage = () => {
 	return (
 		<>
       {userInfo && 
-        ((userInfo.userID) === ADMIN_ID
-        || (userInfo.userID) === GUEST_ID)
-        && <UploadBtn type="button" onClick={() => setModalView("upload")}>상품 업로드</UploadBtn>
+        ((userInfo.userID) === ADMIN_ID ||
+        (userInfo.userID) === GUEST_ID) &&
+
+        <UploadBtn type="button" onClick={() => setModalView("upload")}>상품 업로드</UploadBtn>
+
       }
       
       <ProductList/>
