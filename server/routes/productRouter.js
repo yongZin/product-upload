@@ -57,15 +57,26 @@ productRouter.post(
 });
 
 productRouter.get("/", async(req, res) => { //DB 불러오기
-	const product = await Product.find();
+	try {
+		const { lastid } = req.query;
 
-	res.json(product);
+		if(lastid && !mongoose.isValidObjectId(lastid)) throw new Error("lastid 오류");
+		
+		const product = await Product.find(
+			lastid && { _id: { $lt: lastid } }
+		).sort({ _id: -1 }).limit(6); //최신상품순, 페이지당 상품 개수
+
+		res.json(product);
+	} catch (error) {
+		console.log(error);
+		res.status(400).json({ message: error.message });
+	}
 });
 
 productRouter.delete("/:productId", async (req, res) => { //DB 삭제
 	try {
 		if(!req.user) throw new Error("권한이 없습니다."); //로그인 유무 확인
-		if(!mongoose.isValidObjectId(req.params.imageId))
+		if(!mongoose.isValidObjectId(req.params.productId))
 			throw new Error("올바르지 않은 상품 입니다.");
 
 		const product = await Product.findOneAndDelete({_id: req.params.productId}); //삭제한 상품 알아내기
