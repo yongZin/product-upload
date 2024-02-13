@@ -1,3 +1,4 @@
+//상품 DB 모델
 const mongoose = require("mongoose");
 
 const ProductSchma = new mongoose.Schema(

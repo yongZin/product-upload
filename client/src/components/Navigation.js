@@ -1,3 +1,4 @@
+//상단 헤더 컴포넌트(내비게이션)
 import React, { useContext } from "react";
 import styled from "styled-components";
 import logo from "./images/logo.svg";

@@ -1,3 +1,4 @@
+//Quill 에디터 컴포넌트
 import React, { useEffect, useMemo, useRef, useContext } from "react";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
@@ -88,7 +89,7 @@ const Quill = () => {
 
 					for (const image of detailImages) {
 						if (imgSrc === image.imgSrc) {
-							newDetail = newDetail.replace(imgSrc, "http://localhost:4000/uploads/" + image.fileName);
+							newDetail = newDetail.replace(imgSrc, "https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/" + image.fileName);
 						}
 					}
 				}

@@ -1,4 +1,4 @@
-//유저 API
+//유저관련 API
 const { Router } = require("express");
 const userRouter = Router();
 const User = require("../models/User");

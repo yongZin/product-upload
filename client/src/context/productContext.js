@@ -1,4 +1,4 @@
-//상품 데이터
+//상품 관련 컴포넌트
 import React, { createContext, useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 

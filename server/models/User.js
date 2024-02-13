@@ -1,3 +1,4 @@
+//회원정보 DB 모델
 const mongoose = require("mongoose");
 
 const UserSchma = new mongoose.Schema(

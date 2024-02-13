@@ -1,3 +1,4 @@
+//상품 업로드 인풋 컴포넌트
 import React from "react";
 import styled from "styled-components";
 

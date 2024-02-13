@@ -1,3 +1,4 @@
+//모달 팝업 관련 상태관리
 import React, { createContext, useState, useEffect } from "react";
 
 export const ModalContext = createContext();

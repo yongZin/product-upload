@@ -1,4 +1,4 @@
-// 회원가입정보 Nav로 보내주기
+//회원정보 관련 컴포넌트
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 

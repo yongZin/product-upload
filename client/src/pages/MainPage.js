@@ -1,3 +1,4 @@
+//메인 페이지 컴포넌트
 import React, { useContext } from "react";
 import styled from "styled-components";
 import Modal from "../components/Modal";

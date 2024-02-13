@@ -1,3 +1,4 @@
+//상품 업로드 컴포넌트
 import React, { useState, useRef, useContext } from "react"; //useContext
 import axios from "axios";
 import styled from "styled-components";
