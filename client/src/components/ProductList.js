@@ -1,5 +1,5 @@
+//상품 리스트 컴포넌트
 import React, { useContext, useEffect, useRef } from "react";
-// import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
@@ -56,7 +56,6 @@ const ProductList = () => {
 		if(!elementRef.current) return;
 
 		const observer = new IntersectionObserver(([entry]) => {
-			console.log(entry.isIntersecting);
 			if(entry.isIntersecting) loadMoreProduct();
 		}, {threshold: 0.5});
 
@@ -83,7 +82,7 @@ const ProductList = () => {
 			<li className="item-image">
 				<img
 					key={item.mainImages[0]._id}
-					src={`http://localhost:4000/uploads/${item.mainImages[0].key}`}
+					src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.mainImages[0].key}`}
 					alt="상품 이미지"
 				/>
 			</li>

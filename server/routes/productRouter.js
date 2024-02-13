@@ -1,4 +1,4 @@
-//상품 API
+//상품관련 API
 require("dotenv").config();
 const { Router } = require("express");
 const productRouter = Router();
@@ -7,6 +7,8 @@ const { upload } = require("../middleware/imageUpload");
 const fs = require("fs"); //file system
 const { promisify } = require("util");
 const mongoose = require("mongoose");
+const { s3, getSignedUrl } = require("../aws");
+const { DeleteObjectsCommand } = require("@aws-sdk/client-s3");
 
 const fileUnlink = promisify(fs.unlink);
 
@@ -29,17 +31,17 @@ productRouter.post(
 				name: req.user.name,
 				userID: req.user.userID,
 			},
-			key: mainImages[0].filename,
+			key: mainImages[0].originalname,
 			name: name,
 			price: price,
 			mainImages: mainImages.map((file) => ({
-				key: file.filename,
-				filename: file.filename,
+				key: file.originalname,
+				filename: file.originalname,
 				originalname: file.originalname,
 			})),
 			detailImages: detailImages.map((file) => ({
-				key: file.filename,
-				filename: file.filename,
+				key: file.originalname,
+				filename: file.originalname,
 				originalname: file.originalname,
 			})),
 			details: details,
@@ -83,7 +85,29 @@ productRouter.delete("/:productId", async (req, res) => { //DB 삭제
 
 		if(!product) return res.json({ message: "이미 삭제된 상품 입니다." });
 
-		await fileUnlink(`./uploads/${product.key}`);
+		if (product.mainImages || product.detailImages) { //s3.raw 버킷에서 이미지 삭제하기 
+			const mainImages = product.mainImages ? product.mainImages.map((image) => ({
+				Key: `raw/${image.key}`,
+			})) : [];
+
+			const detailImages = product.detailImages ? product.detailImages.map((image) => ({
+				Key: `raw/${image.key}`,
+			})) : [];
+
+			const command = new DeleteObjectsCommand({
+				Bucket: "yongzin",
+				Delete: {
+					Objects: [...mainImages, ...detailImages]
+				},
+			});
+
+			try {
+				const { Deleted } = await s3.send(command);
+			
+			} catch (error) {
+				console.error(error);
+			}
+		}
 
 		res.json({ message: "요청하신 상품이 삭제 되었습니다." });
 	} catch (error) {

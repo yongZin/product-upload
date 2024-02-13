@@ -1,3 +1,4 @@
+//상품 상세화면 컴포넌트
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
@@ -61,8 +62,21 @@ const Details = () => {
 		selectedProduct
 	} = useContext(ProductContext);
 	const {setModalView,setClose} = useContext(ModalContext);
+	const [product, setProduct] = useState();
 	const [hasLiked, setHasLiked] = useState(false);
+	const [error, setError] = useState(false);
 	const productId = selectedProduct._id;
+	
+	useEffect(() => { //선택한 상품 정보 DB에서 찾아오기
+		const item = products.find((item) => item._id === productId);
+		
+		if (item) {
+			setProduct(item);
+			setError(false);
+		} else {
+			setError(true);
+		}
+	}, [products, productId, setProduct, product]);
 
 	useEffect(() => { //좋아요 유무 확인
 		if (
@@ -74,6 +88,9 @@ const Details = () => {
 		}
 
 	}, [userInfo, selectedProduct]);
+
+	if (error) return <h3>Error...</h3>;
+	else if (!product) return <h3>Loading...</h3>;
 
 	const likeHandler = async () => {
 		const result = await axios.patch(`/upload/${productId}/${hasLiked ? "unlike" : "like"}`);
@@ -116,7 +133,7 @@ const Details = () => {
 		return(
 			<img
 				key={image.key}
-				src={`http://localhost:4000/uploads/${image.filename}`}
+				src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${image.filename}`}
 				alt="상품 대표 이미지"
 			/>
 		)
@@ -147,21 +164,21 @@ const Details = () => {
 					? <AiFillHeart style={{color: "red"}} />
 					: <AiOutlineHeart />
 				}
-				{selectedProduct.likes.length}
+				{product.likes.length}
 			</LikeBth>
 
 			<div>{mainImages}</div>
-			<p>{selectedProduct.name}</p>
-			<p>{selectedProduct.price}</p>
-			<div>{selectedProduct.detail}</div>
+			<p>{product.name}</p>
+			<p>{product.price}</p>
+			<div>{product.detail}</div>
 			<div>
-        {selectedProduct.details.map((content, index) => (
+        {product.details.map((content, index) => (
           <div key={index} dangerouslySetInnerHTML={{ __html: content }} />
         ))}
       </div>
-			<p>{selectedProduct.type}</p>
-			<p>{selectedProduct.material}</p>
-			<p>{selectedProduct.color}</p>
+			<p>{product.type}</p>
+			<p>{product.material}</p>
+			<p>{product.color}</p>
 		</Wrap>
 	)
 }

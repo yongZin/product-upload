@@ -2,37 +2,32 @@
 const multer = require("multer");
 const { v4: uuid } = require("uuid");
 const mime = require("mime-types");
-// const multerS3 = require("multer-s3");
-// const { s3 } = require("../aws");
+const multerS3 = require("multer-s3");
+const { s3 } = require("../aws");
 
-const storage = multer.diskStorage({
-	destination: (req, file, callback) => {
-		callback(null, "./uploads");
-	},
-	filename: (req, file, callback) => {
-		// console.log(file);
-
-		callback(null, `${file.originalname}`)
-	}
-	// filename: (req, file, callback) => {//고유 이름으로 저장
-	// 	callback(null, `${uuid()}.${mime.extension(file.mimetype)}`)
-	// }
-});
+// const storage = multer.diskStorage({
+// 	destination: (req, file, callback) => {
+// 		callback(null, "./uploads");
+// 	},
+// 	filename: (req, file, callback) => {
+// 		callback(null, `${file.originalname}`)
+// 	}
+// });
 
 // const storage = multerS3({
 //   s3,
-//   bucket: "yongzin3",
+//   bucket: "yongzin",
 //   key: (req, file, cb) =>
 //     cb(null, `raw/${uuid()}.${mime.extension(file.mimetype)}`),
 // });
 
-// const storage = multerS3({ //클라이언트에서 uuid를 사용한 경우
-//   s3,
-//   bucket: "yongzin3",
-//   key: (req, file, cb) => {
-//     cb(null, `raw/${file.filename}`);
-//   },
-// });
+const storage = multerS3({ //클라이언트에서 uuid를 사용한 경우
+  s3,
+  bucket: "yongzin",
+  key: (req, file, callback) => {
+    callback(null, `raw/${file.originalname}`);
+  },
+});
 
 const upload = multer({
 	storage,
