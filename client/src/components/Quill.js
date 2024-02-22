@@ -177,6 +177,7 @@ const Quill = () => {
 						imgSrc,
 						fileName: fileUuid,
 						originalname: file.name,
+						type: file.type,
 					},
 				]);
 

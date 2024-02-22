@@ -8,10 +8,10 @@ import MainPage from "./pages/MainPage";
 
 const Container = styled.div`
   margin:0 auto;
-  padding:100px 0 0;
+  /* padding:100px 0 0;
   @media ${props => props.theme.tablet} {
 		padding:100px 0 0;
-  }
+  } */
 `;
 
 const App = () => {

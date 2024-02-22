@@ -34,21 +34,34 @@ const Popup = styled.div`
   z-index:1001;
   animation:open ease 0.25s;
   &.form{
-    &-upload{
+    &-upload{ //상품 업로드
       width:82%;
       height:88vh;
       form{
         padding:0 6px 10px;
       }
     }
-    &-user{
+    &-user{ //로그인 & 회원가입
       width:65%;
       max-width:600px;
       padding-bottom:40px;
     }
-    &-details{
+    &-details{  //상품 상세
       width:82%;
       height:88vh;
+      padding:60px 30px;
+      >div{
+        &::-webkit-scrollbar{
+          width:14px;
+          background-color:transparent;
+          &-thumb{
+            border-radius:10px;
+            border:4px solid transparent;
+            background-clip:padding-box;
+            background-color:#b9b9b9;
+          }
+        }
+      }
     }
   }
   form{

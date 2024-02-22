@@ -204,7 +204,13 @@ const UploadForm = () => {
           fileReader.onerror = (err) => reject(err);
         });
 
-        newPreviews.push({ formData, imgSrc, fileName: fileUuid });
+        newPreviews.push({
+          formData,
+          imgSrc,
+          fileName: fileUuid,
+          originalname: imgFile.name,
+          type: imgFile.type
+        });
         
       } catch (err) {
         console.error(err);
@@ -223,6 +229,7 @@ const UploadForm = () => {
         imgSrc: preview.imgSrc,
         fileName: preview.fileName,
         originalname: preview.originalname,
+        type: preview.type,
       })),
     ]);
   };
@@ -267,11 +274,80 @@ const UploadForm = () => {
     formData.append("color", color);
 
 		try {
+
       const res = await axios.post("upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      
+      // const presignedDataMain = await axios.post("upload/presigned", {
+      //   contentTypes: mainImages.map((file) => ({
+      //     type: file.type,
+      //     fileName: file.fileName,
+      //   })),
+      // });
+      
+      // const presignedDataDetail = await axios.post("upload/presigned", {
+      //   contentTypes: detailImages.map((file) => ({
+      //     type: file.type,
+      //     fileName: file.fileName,
+      //   })),
+      // });
+      
+      // await Promise.all(
+      //   mainImages.map((file, index) => {
+      //     const { presigned } = presignedDataMain.data[index];
+      
+      //     const formData = new FormData();
+      
+      //     for (const key in presigned.fields) {
+      //       formData.append(key, presigned.fields[key]);
+      //     }
+      
+      //     formData.append("Content-Type", file.type);
+      //     formData.append("file", file);
+      
+      //     return axios.post(presigned.url, formData);
+      //   })
+      // );
+      
+      // await Promise.all(
+      //   detailImages.map((file, index) => {
+      //     const { presigned } = presignedDataDetail.data[index];
+      
+      //     const formData = new FormData();
+      
+      //     for (const key in presigned.fields) {
+      //       formData.append(key, presigned.fields[key]);
+      //     }
+      
+      //     formData.append("Content-Type", file.type);
+      //     formData.append("file", file);
+      
+      //     return axios.post(presigned.url, formData);
+      //   })
+      // );
+      
+      // const res = await axios.post("upload", {
+      //   mainImages: presignedDataMain.data.map((item) => ({
+      //     imageKey: item.imageKey,
+      //     originalname: item.originalname,
+      //   })),
+      //   detailImages: presignedDataDetail.data.map((item) => ({
+      //     imageKey: item.imageKey,
+      //     originalname: item.originalname,
+      //   })),
+      //   name,
+      //   price,
+      //   details,
+      //   type,
+      //   material,
+      //   color,
+      // });
+
+      console.log({res});
+  
 
       //form 유효성 검사 필요
 
@@ -330,6 +406,7 @@ const UploadForm = () => {
 			<UploadInput
 				label="상품명"
 				placeholder="ex) F41 HAWAII FIVE-O"
+        type="text"
 				value={name}
 				onChange={(e) => setName(e.target.value)}
 			/>
@@ -337,6 +414,7 @@ const UploadForm = () => {
 			<UploadInput
 				label="상품가격"
 				placeholder="ex) 248000"
+        type="text"
 				value={price}
 				onChange={(e) => priceCommaToNumber(e)}
 			/>
@@ -371,6 +449,7 @@ const UploadForm = () => {
 			<UploadInput
 				label="종류"
 				placeholder="ex) 메신저백"
+        type="text"
 				value={type}
 				onChange={(e) => setType(e.target.value)}
 			/>
@@ -378,16 +457,26 @@ const UploadForm = () => {
 			<UploadInput
 				label="소재"
 				placeholder="ex) 타프원단"
+        type="text"
 				value={material}
 				onChange={(e) => setMaterial(e.target.value)}
 			/>
 
-			<UploadInput
+			{/* <UploadInput
 				label="색상"
 				placeholder="ex) 검정"
+        type="radio"
 				value={color}
 				onChange={(e) => setColor(e.target.value)}
-			/>
+			/> */}
+
+      <UploadInput
+        label="색상"
+        type="radio"
+        value={color}
+        onChange={(e) => setColor(e.target.value)}
+        colorOptions={["red", "orange", "yellow", "saddlebrown", "antiquewhite", "green", "blue", "purple", "pink", "white", "gray", "black", "etc"]}
+      />
 
       <BtnBox>
         <button type="button" onClick={() => resetData()}>닫기</button>

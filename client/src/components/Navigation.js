@@ -10,8 +10,9 @@ import { toast } from "react-toastify";
 
 const Wrap = styled.div`
 	width:100%;
-	background-image: linear-gradient(to bottom, #ffffff, transparent);
-	backdrop-filter:blur(2px);
+	/* background-image:linear-gradient(to bottom, #ffffff, transparent); */
+	background-image:linear-gradient(to bottom, #000000, transparent);
+	/* backdrop-filter:blur(2px); */
 	position:fixed;
 	top:0;
 	left:0;
@@ -38,8 +39,10 @@ const Content = styled.div`
 		&-btnBox{
 			li{
 				font-size:16px;
-				font-family:var(--f-ebold);
-				color:#414141;
+				/* font-family:var(--f-ebold);
+				color:#414141; */
+				text-shadow:1px 1px 0 rgba(0,0,0,0.5);
+				color:#ededed;
 				cursor:pointer;
 				&:hover{
 					text-decoration:underline;
