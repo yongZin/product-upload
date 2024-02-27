@@ -136,21 +136,44 @@ productRouter.post(
 	}
 });
 
-productRouter.get("/", async(req, res) => { //DB 불러오기
+productRouter.get("/", async(req, res) => { //DB(상품리스트) 불러오기
 	try {
-		const { lastid } = req.query;
+		const { lastid, color, type } = req.query;
 
 		if(lastid && !mongoose.isValidObjectId(lastid)) throw new Error("lastid 오류");
+
+		let query = lastid ? { _id: { $lt: lastid } } : {};
+
+		if (color) {
+			query.color = color;
+		}
+		if (type) {
+			query.type = type;
+		}
+
 		
-		const product = await Product.find(
-			lastid && { _id: { $lt: lastid } }
-		).sort({ _id: -1 }).limit(6); //최신상품순, 페이지당 상품 개수
+		const product = await Product.find(query).sort({ _id: -1 }).limit(6);
+		
+		// const product = await Product.find(
+		// 	lastid && { _id: { $lt: lastid } }
+		// ).sort({ _id: -1 }).limit(6); //최신상품순, 페이지당 상품 개수
 
 		res.json(product);
 	} catch (error) {
 		console.log(error);
 		res.status(400).json({ message: error.message });
 	}
+});
+
+productRouter.get("/all", async (req, res) => { //DB(모든정보) 불러오기
+  try {
+    const products = await Product.find();
+		
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 productRouter.delete("/:productId", async (req, res) => { //DB 삭제

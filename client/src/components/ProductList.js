@@ -1,8 +1,11 @@
 //상품 리스트 컴포넌트
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
+import { AuthContext } from "../context/AuthContext";
+const ADMIN_ID = process.env.REACT_APP_ADMIN_ID; //관리자 확인용
+const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
 const Wrap = styled.div`
 	width:100%;
@@ -48,6 +51,7 @@ const DetailFilter = styled.div`
 			&:first-child{
 				padding-bottom:10px;
 				font-size:15px;
+				font-family:var(--f-ebold);
 			}
 		}
 	}
@@ -89,7 +93,8 @@ const FilterRadio = styled.div`
 		position:relative;
 		cursor:pointer;
 		span{
-			font-size:12px;
+			font-size:13px;
+			font-family:var(--f-reular);
 		}
 		&:hover{
 			background-color:#ccc;
@@ -167,6 +172,8 @@ const Item = styled.ul`
 	.item{
 		&-image{
 			margin-bottom:12px;
+			border-radius:3px;
+			overflow:hidden;
 			position:relative;
 			&:before{
 				content:"";
@@ -188,100 +195,119 @@ const Item = styled.ul`
 		}
 	}
 `;
+const UploadBtn = styled.button`
+  width:calc(33.333% - 12px);
+	display:inline-block;
+	vertical-align:top;
+	margin:0 6px 20px;
+	cursor:pointer;
+	background-color:#e6e6e4;
+	position:relative;
+	border-radius:3px;
+	transition:0.2s;
+	&:before{
+		content: "";
+    width:60px;
+    height:6px;
+		display:block;
+		margin:calc(50% - 3px) auto;
+    border-radius:5px;
+    background-color:#acacac;
+    /* background-color:#999; */
+	}
+	&:after{
+		content:"";
+		width:6px;
+		height:60px;
+		border-radius:5px;
+    background-color:#acacac;
+		position:absolute;
+		top:50%;
+		left:50%;
+		transform:translate(-50%, -50%);
+	}
+	&:hover{
+		background-color:#d6d6d6;
+	}
+`;
 
 const ProductList = () => {
 	const {
-		products,
-		setSelectedProduct,
-		uploadLoad,
+		products, setSelectedProduct,
+		productsAll,
 		uploadError,
-		loadMoreProduct
+		loadMoreProduct,
+		uploadLoad, setUploadLoad,
+		srotFilterValue, setSrotFilterValue,
+		colorFilterValue, setColorFilterValue,
+		typeFilterValue, setTypeFilterValue,
 	} = useContext(ProductContext);
 	const {setModalView} = useContext(ModalContext);
+	const {userInfo} = useContext(AuthContext);
 	const elementRef = useRef();
-	const [defaultChecked, setDefaultChecked] = useState("new");
 	const filterSortOption = [
 		{ value: "new", label: "신상품순" },
 		{ value: "likes", label: "인기순" },
 		{ value: "highPrice", label: "높은가격순" },
 		{ value: "lowPrice", label: "낮은가격순" },
 	];
+	const predefinedColorOrder = [
+		"red", "orange", "yellow", "saddlebrown", "antiquewhite",
+		"green", "blue", "purple", "pink", "white", "gray", "black", "etc"
+	];
 
-	useEffect(() => {
-		if(!elementRef.current) return;
+	useEffect(() => { //infinite scroll
+		if(!elementRef.current || uploadLoad) return;
 
 		const observer = new IntersectionObserver(([entry]) => {
-			if(entry.isIntersecting) loadMoreProduct();
+			if(entry.isIntersecting) {
+				loadMoreProduct();
+				setUploadLoad(false);
+			}
 		}, {threshold: 0.5});
 
 		observer.observe(elementRef.current);
 
 		return () => observer.disconnect();
-	}, [elementRef, loadMoreProduct]);
+	}, [elementRef, loadMoreProduct, uploadLoad, setUploadLoad]);
 
-	const productDetails = (itemID) => {
+	const productDetails = (itemID) => { //선택 상품의 정보를 상세화면으로 전달
 		const selectedItem = products.find((item) => item._id === itemID);
 
 		setSelectedProduct(selectedItem);
 	};
 
-	const test = (value) => {
-		console.log(value);
-	};
+	const filterHandler = (filterType, target) => { //필터 이벤트
+		switch (filterType) {
+			case "default":
+				setSrotFilterValue("new");
+				setColorFilterValue("");
+				setTypeFilterValue("");
 
-	const radioFilters = (value) => {
-		let filterItem;
-		const predefinedColorOrder = [
-			"red", "orange", "yellow", "saddlebrown", "antiquewhite",
-			"green", "blue", "purple", "pink", "white", "gray", "black", "etc"
-		];
+				break;
+			case "sort":
+				setSrotFilterValue(target);
 
-		if (value === "color") {
-			filterItem = [...new Set(products.map(item => item[value]))]
-				.filter(color => predefinedColorOrder.includes(color))
-				.sort((a, b) => predefinedColorOrder.indexOf(a) - predefinedColorOrder.indexOf(b));
-		} else{
-			filterItem = [...new Set(products.map(item => item[value]))].sort((a, b) => a.localeCompare(b, 'ko-KR', { numeric: true }))
+				break;
+			case "color":
+				setColorFilterValue(target);
+
+				break;
+			case "type":
+				setTypeFilterValue(target);
+
+				break;
+			default:
+				break;
 		}
-
-		const filterList = filterItem.map((filterValue, index) => (
-			<FilterRadio
-				key={filterValue + index}
-				className={value === "color" ? "colorValue" : ""}
-			>
-				<input
-					id={filterValue + "2"}
-					type="radio"
-					name={value}
-					value={filterValue}
-					onChange={(e) => test(e.target.value)}
-				/>
-				<label htmlFor={filterValue + "2"}>
-					{value === "color" 
-						? (
-							<span
-								style={
-									filterValue === "etc"
-										? { background: "linear-gradient(to right, red 0%, orange 12%, yellow 24%, green 48%, blue 70%, violet 85%)" }
-										: { background: filterValue }
-								}
-							></span>
-						)
-						: (
-							<span>{filterValue}</span>
-						)
-					}
-				</label>
-			</FilterRadio>
-		));
-
-		return filterList;
 	};
 	
 	const productList = products.map((item, index) => (
+	// const productList = productsAll.map((item, index) => (
 		<Item
 			key={item._id}
 			ref={index + 1 === products.length ? elementRef : undefined}
+			// ref={index + 1 === productsAll.length ? elementRef : undefined}
 			onClick={() => {
 				productDetails(item._id);
 				setModalView("details");
@@ -309,7 +335,7 @@ const ProductList = () => {
 				<DetailFilterTop>
 					<li>필터</li>
 					<li>
-						<button type="button">초기화</button>
+						<button type="button" onClick={() => filterHandler("default")}>초기화</button>
 					</li>
 				</DetailFilterTop>
 
@@ -323,29 +349,80 @@ const ProductList = () => {
 									type="radio"
 									name="filterSrot"
 									value={option.value}
-									checked={defaultChecked === option.value}
-									onChange={(e) => {
-										test(e.target.value);
-										setDefaultChecked(option.value);
+									checked={srotFilterValue === option.value}
+									onChange={() => {
+										filterHandler("sort",option.value);
+										setSrotFilterValue(option.value);
 									}}
 								/>
 								<label htmlFor={option.value}>
 									<span>{option.label}</span>
 								</label>
 							</FilterRadio>
-						))
-						}
+						))}
 					</li>
 				</ul>
 
 				<ul>
 					<li>색상</li>
-					<li>{radioFilters("color")}</li>
+					<li>
+						{[...new Set(productsAll.map(item => item["color"]))]
+						.filter(color => predefinedColorOrder.includes(color))
+						.sort((a, b) => predefinedColorOrder.indexOf(a) - predefinedColorOrder.indexOf(b))
+						.map((option) => (
+							<FilterRadio
+								key={`${option}2`}
+								className="colorValue"
+							>
+								<input
+									id={`${option}2`}
+									type="radio"
+									name="filterColor"
+									value={option}
+									checked={colorFilterValue === option}
+									onChange={() => {
+										filterHandler("color", option);
+										setColorFilterValue(option);
+									}}
+								/>
+								<label htmlFor={`${option}2`}>
+									<span
+										style={
+											option === "etc"
+												? { background: "linear-gradient(to right, red 0%, orange 12%, yellow 24%, green 48%, blue 70%, violet 85%)" }
+												: { background: option }
+										}
+									></span>
+								</label>
+							</FilterRadio>
+						))}
+					</li>
 				</ul>
 
 				<ul>
 					<li>종류</li>
-					<li>{radioFilters("type")}</li>
+					<li>
+						{[...new Set(productsAll.map(item => item["type"]))]
+						.sort((a, b) => a.localeCompare(b, 'ko-KR', { numeric: true }))
+						.map((option) => (
+							<FilterRadio key={`${option}2`}>
+								<input
+									id={`${option}2`}
+									type="radio"
+									name="filterType"
+									value={option}
+									checked={typeFilterValue === option}
+									onChange={() => {
+										filterHandler("type", option);
+										setTypeFilterValue(option);
+									}}
+								/>
+								<label htmlFor={`${option}2`}>
+									<span>{option}</span>
+								</label>
+							</FilterRadio>
+						))}
+					</li>
 				</ul>
 			</DetailFilter>
 
@@ -359,7 +436,14 @@ const ProductList = () => {
 			</DetailFilterSelect>
 
 			<ProductListWrap>
-				<ProductLength>총 <span>{products.length}</span>개 상품</ProductLength>
+				<ProductLength>총 <span>{productsAll.length}</span>개 상품</ProductLength>
+
+				{userInfo && 
+					((userInfo.userID) === ADMIN_ID ||
+					(userInfo.userID) === GUEST_ID) &&
+
+					<UploadBtn type="button" onClick={() => setModalView("upload")} />
+				}
 
 				{productList}
 
