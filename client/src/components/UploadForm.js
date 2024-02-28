@@ -169,6 +169,7 @@ const UploadForm = () => {
   const [mainImgChecked, setMainImgChecked] = useState(0);
   const {setModalView, setClose} = useContext(ModalContext);
   const {
+    setProductsAll,
     setProducts,
     name, setName,
     price, setPrice,
@@ -350,6 +351,7 @@ const UploadForm = () => {
       //form 유효성 검사 필요
 
       setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
+      setProductsAll((prevData) => [res.data, ...prevData]);
       toast.success("업로드 성공");
 
       setTimeout(() =>{ //초기화
