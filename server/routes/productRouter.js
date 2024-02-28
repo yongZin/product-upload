@@ -138,27 +138,58 @@ productRouter.post(
 
 productRouter.get("/", async(req, res) => { //DB(상품리스트) 불러오기
 	try {
-		const { lastid, color, type } = req.query;
+		const { lastid, sort, color, type } = req.query;
 
 		if(lastid && !mongoose.isValidObjectId(lastid)) throw new Error("lastid 오류");
 
 		let query = lastid ? { _id: { $lt: lastid } } : {};
+		let sortOption = {};
+		let filterCountQuery;
 
 		if (color) {
 			query.color = color;
+			filterCountQuery = Product.countDocuments({ color });
+			if (type) {
+				filterCountQuery = Product.countDocuments({ color, type });
+			}
 		}
 		if (type) {
 			query.type = type;
+			filterCountQuery = Product.countDocuments({ type });
+			if (color) {
+				filterCountQuery = Product.countDocuments({ color, type });
+			}
 		}
 
-		
-		const product = await Product.find(query).sort({ _id: -1 }).limit(6);
-		
-		// const product = await Product.find(
-		// 	lastid && { _id: { $lt: lastid } }
-		// ).sort({ _id: -1 }).limit(6); //최신상품순, 페이지당 상품 개수
+		switch (sort) {
+      case "new":
+        sortOption = { _id: -1 }; // 최신 상품순
+        break;
+      case "likes":
+        sortOption = { likes: -1 }; // 인기순
+        break;
+      case "highPrice":
+        sortOption = { price: -1 }; // 높은 가격순
+        break;
+      case "lowPrice":
+        sortOption = { price: 1 }; // 낮은 가격순
+        break;
+      default:
+        sortOption = { _id: -1 }; // 기본은 최신 상품순
+    }
 
-		res.json(product);
+		const productsQuery = Product.find(query).sort(sortOption).limit(6);
+		const totalProductCountQuery = Product.countDocuments({});
+
+		const [products, totalProductCount, filterCount] = await Promise.all([
+			productsQuery,
+			totalProductCountQuery,
+			filterCountQuery
+		]);
+
+		const productCount = color || type ? filterCount : totalProductCount;
+
+		res.json({ products, productCount });
 	} catch (error) {
 		console.log(error);
 		res.status(400).json({ message: error.message });

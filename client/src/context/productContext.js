@@ -1,5 +1,5 @@
 //상품 관련 컴포넌트
-import React, { createContext, useState, useEffect, useRef, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 export const ProductContext = createContext();
@@ -18,14 +18,13 @@ export const ProductProvider = (prop) => {
 	const [material, setMaterial] = useState("");
 	const [color, setColor] = useState("");
 	const [selectedProduct, setSelectedProduct] = useState();
-	// const [uploadURL, setUploadURL] = useState("/upload");
 	const [uploadLoad, setUploadLoad] = useState(false);
 	const [uploadError, setUploadError] = useState(false);
 	const [srotFilterValue, setSrotFilterValue] = useState("new");
 	const [colorFilterValue, setColorFilterValue] = useState("");
-	const [typeFilterValue, setTypeFilterValue] = useState(null);
+	const [typeFilterValue, setTypeFilterValue] = useState("");
+	const [totalProductCount, setTotalProductCount] = useState("");
 	const [lastProductId, setLastProductId] = useState("");
-	// const pastUploadUrlRef = useRef();
 
 	const loadMoreProduct = useCallback(() => {
 		if (uploadLoad || !lastProductId) return;
@@ -36,14 +35,16 @@ export const ProductProvider = (prop) => {
 			.get(`/upload`, {
 				params: {
 					lastid: lastProductId,
+					sort: srotFilterValue,
 					color: colorFilterValue,
 					type: typeFilterValue,
 				}
 			})
 			.then((result) => {
-				if (result.data.length > 0) {
-					setProducts((prevData) => [...prevData, ...result.data]);
-					setLastProductId(result.data[result.data.length - 1]._id);
+				if (result.data.products.length > 0) {
+					setProducts((prevData) => [...prevData, ...result.data.products]);
+					setLastProductId(result.data.products[result.data.products.length - 1]._id);
+					setTotalProductCount(result.data.productCount);
 				}
 			})
 			.catch((error) => {
@@ -53,25 +54,28 @@ export const ProductProvider = (prop) => {
 			.finally(() => {
 				setUploadLoad(false);
 			});
-}, [lastProductId, uploadLoad, colorFilterValue, typeFilterValue]);
+	}, [uploadLoad, lastProductId, srotFilterValue, colorFilterValue, typeFilterValue]);
 
 	useEffect(() => {
 		setProducts([]);
 		setLastProductId(null);
+		setTotalProductCount(0);
 
 		setUploadLoad(true);
 
 		axios
 			.get(`/upload`, {
 				params: {
+					sort: srotFilterValue,
 					color: colorFilterValue,
 					type: typeFilterValue,
 				}
 			})
 			.then((result) => {
-				if (result.data.length > 0) {
-					setProducts(result.data);
-					setLastProductId(result.data[result.data.length - 1]._id);
+				if (result.data.products.length > 0) {
+					setProducts(result.data.products);
+					setLastProductId(result.data.products[result.data.products.length - 1]._id);
+					setTotalProductCount(result.data.productCount);
 				}
 			})
 			.catch((error) => {
@@ -81,81 +85,7 @@ export const ProductProvider = (prop) => {
 			.finally(() => {
 				setUploadLoad(false);
 			});
-	}, [colorFilterValue, typeFilterValue]);
-
-
-
-
-
-	
-
-	// const loadMoreProduct = useCallback(() => {
-	// 	if (uploadLoad || !lastProductId) return;
-
-	// 	setUploadURL(`/upload?lastid=${lastProductId}`);
-	// }, [lastProductId, uploadLoad]);
-
-	// useEffect(() => {
-  //   if (!lastProductId || pastUploadUrlRef.current === uploadURL) return;
-	
-	// 	loadMoreProduct();
-	// }, [uploadURL, lastProductId, loadMoreProduct]);
-
-	// useEffect(() => {
-	// 	setProducts([]);
-	// 	setLastProductId(null);
-	// }, [colorFilterValue, typeFilterValue]);
-
-	// useEffect(() => {
-	// 	setUploadLoad(true);
-	
-	// 	axios
-	// 		.get(`/upload?lastid=${lastProductId}`, {
-	// 			params: {
-	// 				color: colorFilterValue,
-	// 				type: typeFilterValue,
-	// 			}
-	// 		})
-	// 		.then((result) => {
-	// 			setProducts((prevData) => [...prevData, ...result.data]);
-	
-	// 			if (result.data.length > 0) {
-	// 				setLastProductId(result.data[result.data.length - 1]._id);
-	// 			}
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error(error);
-	// 			setUploadError(error);
-	// 		})
-	// 		.finally(() => {
-	// 			setUploadLoad(false);
-	// 			pastUploadUrlRef.current = uploadURL;
-	// 		});
-	// }, [colorFilterValue, typeFilterValue])
-
-	// useEffect(() => { //products에 상품정보 담기(상품 6개씩 저장)
-	// 	if(pastUploadUrlRef.current === uploadURL) return;
-
-	// 	setUploadLoad(true);
-
-	// 	axios
-	// 		.get(uploadURL)
-	// 		.then((result) => {
-	// 			setProducts((prevData) => [...prevData, ...result.data]);
-
-	// 			if (result.data.length > 0) {
-	// 				setLastProductId(result.data[result.data.length - 1]._id);
-	// 			}
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error(error);
-	// 			setUploadError(error);
-	// 		})
-	// 		.finally(() => {
-	// 			setUploadLoad(false);
-	// 			pastUploadUrlRef.current = uploadURL;
-	// 		});
-	// }, [uploadURL]);
+	}, [srotFilterValue, colorFilterValue, typeFilterValue]);
 
 	useEffect(() => {//productsAll에 상품정보 담기(모든 상품 저장)
 		setUploadLoad(true);
@@ -171,6 +101,11 @@ export const ProductProvider = (prop) => {
 				setUploadLoad(false);
 			});
 	}, []);
+
+	const toggleClick = (e) => {
+		if (!e.target.className) e.target.className = "on"
+		else e.target.className = ""
+	};
 
 	const productContextValue = {
 		products, setProducts,
@@ -189,7 +124,9 @@ export const ProductProvider = (prop) => {
 		srotFilterValue, setSrotFilterValue,
 		colorFilterValue, setColorFilterValue,
 		typeFilterValue, setTypeFilterValue,
+		totalProductCount, setTotalProductCount,
 		loadMoreProduct,
+		toggleClick,
 	};
 	
 	return (

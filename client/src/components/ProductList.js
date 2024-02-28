@@ -45,13 +45,43 @@ const DetailFilter = styled.div`
 	top:120px;
 	ul:not(${DetailFilterTop}){
 		margin-bottom:40px;
-		padding-bottom:15px;
+		padding-bottom:5px;
 		border-bottom:1px solid #e4e4e4;
 		li{
+			overflow:hidden;
+			transition:0.3s;
 			&:first-child{
+				display:flex;
+				justify-content:space-between;
+				align-items:flex-start;
 				padding-bottom:10px;
 				font-size:15px;
 				font-family:var(--f-ebold);
+				cursor:pointer;
+				&:after{
+					content:"";
+					width:10px;
+					height:10px;
+					display:inline-block;
+					margin:2px 2px 0 0;
+					border-right:3px solid #e4e4e4;
+					border-bottom:3px solid #e4e4e4;
+					transform-origin:center;
+					transform:rotate(45deg);
+					transition:0.3s;
+				}
+			}
+			&:last-child{
+				max-height:0;
+			}
+			&.on{
+				&:after{
+					transform:translateY(5px) rotate(-135deg);
+				}
+				& + li{
+					transition:0.6s;
+					max-height:400px;
+				}
 			}
 		}
 	}
@@ -237,6 +267,8 @@ const ProductList = () => {
 		productsAll,
 		uploadError,
 		loadMoreProduct,
+		toggleClick,
+		totalProductCount,
 		uploadLoad, setUploadLoad,
 		srotFilterValue, setSrotFilterValue,
 		colorFilterValue, setColorFilterValue,
@@ -340,7 +372,7 @@ const ProductList = () => {
 				</DetailFilterTop>
 
 				<ul>
-					<li>상품 정렬</li>
+					<li className="on" onClick={(e) => toggleClick(e)}>상품 정렬</li>
 					<li>
 						{filterSortOption.map((option) => (
 							<FilterRadio key={option.value}>
@@ -364,7 +396,7 @@ const ProductList = () => {
 				</ul>
 
 				<ul>
-					<li>색상</li>
+					<li className="on" onClick={(e) => toggleClick(e)}>색상</li>
 					<li>
 						{[...new Set(productsAll.map(item => item["color"]))]
 						.filter(color => predefinedColorOrder.includes(color))
@@ -400,7 +432,7 @@ const ProductList = () => {
 				</ul>
 
 				<ul>
-					<li>종류</li>
+					<li className="on" onClick={(e) => toggleClick(e)}>종류</li>
 					<li>
 						{[...new Set(productsAll.map(item => item["type"]))]
 						.sort((a, b) => a.localeCompare(b, 'ko-KR', { numeric: true }))
@@ -436,7 +468,7 @@ const ProductList = () => {
 			</DetailFilterSelect>
 
 			<ProductListWrap>
-				<ProductLength>총 <span>{productsAll.length}</span>개 상품</ProductLength>
+				<ProductLength>총 <span>{totalProductCount}</span>개 상품</ProductLength>
 
 				{userInfo && 
 					((userInfo.userID) === ADMIN_ID ||
