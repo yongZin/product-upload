@@ -21,7 +21,7 @@ const upload = multer({
 		else callback(new Error("file type error"), false)
 	},
 	limits: {
-		fileSize: 1024 * 1024 * 5000, //5MB 크기 제한
+		fileSize: 1024 * 1024 * 5, //5MB 크기 제한
 	},
 });
 
