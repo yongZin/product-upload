@@ -537,7 +537,7 @@ const Details = () => {
 						? (userInfo.userID === GUEST_ID)
 							? "admin disabled" // 임시관리자(게스트)는 관리자가 업로드한 상품 삭제 불가
 							: "admin" // 관리자, 임시관리자 로그인 시
-						: "")
+						: "admin")
 					: ""
 			}
 		>
