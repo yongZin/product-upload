@@ -345,8 +345,6 @@ const UploadForm = () => {
       //   material,
       //   color,
       // });
-
-      console.log({res});
   
 
       //form 유효성 검사 필요

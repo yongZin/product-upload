@@ -93,6 +93,19 @@ userRouter.get("/userInfo", (req, res) => { // 세션id를 가진 유저정보 �
 	}
 });
 
+userRouter.get("/userInfo/products", async (req, res) => { // 세션id를 가진 유저정보 불러오기
+	try {
+		if(!req.user) return;
+		
+		const products = await Product.find({ "user._id": req.user.id });
+
+		res.json(products);
+	} catch (error) {
+		console.log(error);
+		res.status(400).json({ message: error.message });
+	}
+});
+
 // userRouter.get("/userInfo/products", async (req, res) => {
 // 	try {
 // 		if(!req.user) return;

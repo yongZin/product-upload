@@ -1,12 +1,14 @@
 //상단 헤더 컴포넌트(내비게이션)
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import logo from "./images/logo.svg";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
-import { toast } from "react-toastify";
+import { ProductContext } from "../context/ProductContext";
+const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
 const Wrap = styled.div`
 	width:100%;
@@ -68,9 +70,60 @@ const Content = styled.div`
 const Navigation = () => {
 	const {setModalView} = useContext(ModalContext);
 	const {userInfo, setUserInfo} = useContext(AuthContext);
+	const {products, setProducts} = useContext(ProductContext);
+	const [guestProducts, setGuestProducts] = useState([]);
+
+	const deleteGuestProducts = useCallback(async () => {
+		for (const item of guestProducts) {
+			await axios.delete(`/upload/${item._id}`);
+		}
+	
+		setProducts(products.filter((product) => {
+			return !guestProducts.find((item) => item._id === product._id);
+		}));
+	}, [guestProducts, products, setProducts]);
+
+	const preventClose = useCallback(async (e) => {
+    e.preventDefault();
+    e.returnValue = ""; //Chrome에서 동작하도록;
+
+		deleteGuestProducts()
+  }, [deleteGuestProducts]);
+  
+  useEffect(() => {
+    if(userInfo && (userInfo.userID === GUEST_ID)) {
+      (() => {
+        window.addEventListener("beforeunload", preventClose);
+      })();
+
+      return () => {
+        window.removeEventListener("beforeunload", preventClose);
+      };
+    }
+  }, [userInfo, preventClose]);
+
+	useEffect(() => {
+		setTimeout(() => {
+			if (userInfo && userInfo.userID === GUEST_ID) {
+				axios
+					.get("/users/userInfo/products")
+					.then((result) => {
+						setGuestProducts(result.data);
+						// setConfirm(true);
+					})
+					.catch((error) => {
+						toast.error(error.response.data.message)
+						console.error(error);
+					})
+			} else{
+				setGuestProducts([]);
+			}
+		}, 100);
+	}, [userInfo, products]);
 
 	const logoutHandler = async () => {
 		try {
+			await deleteGuestProducts();
 			await axios.patch("/users/logout");
 			setUserInfo();
 
