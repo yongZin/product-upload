@@ -24,6 +24,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body{
+    min-width:800px;
     margin:0;
     padding:0;
     line-height:normal;
