@@ -260,19 +260,38 @@ const UploadBtn = styled.button`
 		background-color:#d6d6d6;
 	}
 `;
+const Loading = styled.div`
+	width:35px;
+	height:35px;
+	display:block;
+	margin:0 auto;
+	border-radius:50%;
+	border:5px solid #eee;
+	border-bottom-color:#ccc;
+	animation:rotation 0.6s linear infinite;
+	@keyframes rotation {
+		0%{
+			transform:rotate(0deg);
+		}
+		100%{
+			transform:rotate(360deg);
+		}
+	}
+`;
 
 const ProductList = () => {
 	const {
-		products, setSelectedProduct,
+		products,
 		productsAll,
 		uploadError,
-		loadMoreProduct,
-		toggleClick,
 		totalProductCount,
 		uploadLoad, setUploadLoad,
 		srotFilterValue, setSrotFilterValue,
 		colorFilterValue, setColorFilterValue,
 		typeFilterValue, setTypeFilterValue,
+		loadMoreProduct,
+		toggleClick,
+		productDetails
 	} = useContext(ProductContext);
 	const {setModalView} = useContext(ModalContext);
 	const {userInfo} = useContext(AuthContext);
@@ -303,12 +322,6 @@ const ProductList = () => {
 		return () => observer.disconnect();
 	}, [elementRef, loadMoreProduct, uploadLoad, setUploadLoad]);
 
-	const productDetails = (itemID) => { //선택 상품의 정보를 상세화면으로 전달
-		const selectedItem = products.find((item) => item._id === itemID);
-
-		setSelectedProduct(selectedItem);
-	};
-
 	const filterHandler = (filterType, target) => { //필터 이벤트
 		switch (filterType) {
 			case "default":
@@ -335,11 +348,9 @@ const ProductList = () => {
 	};
 	
 	const productList = products.map((item, index) => (
-	// const productList = productsAll.map((item, index) => (
 		<Item
 			key={item._id}
 			ref={index + 1 === products.length ? elementRef : undefined}
-			// ref={index + 1 === productsAll.length ? elementRef : undefined}
 			onClick={() => {
 				productDetails(item._id);
 				setModalView("details");
@@ -479,7 +490,7 @@ const ProductList = () => {
 
 				{productList}
 
-				{uploadLoad && <div>LOADING...</div>}
+				{uploadLoad && <Loading />}
 				{uploadError && <p>Error...</p>}
 			</ProductListWrap>
 		</Wrap>
