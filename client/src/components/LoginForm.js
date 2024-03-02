@@ -94,7 +94,11 @@ const FootBth = styled.ul`
 `;
 
 const LoginForm = () => {
-	const {setModalView, setClose} = useContext(ModalContext);
+	const {
+		setModalView,
+		setClose,
+		handleClose
+	} = useContext(ModalContext);
 	const {setUserInfo} = useContext(AuthContext);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -124,15 +128,6 @@ const LoginForm = () => {
 			toast.error(error.response.data.message);
 		}
 	};
-
-	const handleClose = () => {
-    setClose(true);
-
-    setTimeout(() => {
-      setModalView("off");
-      setClose(false);
-    }, 300);
-  };
 
 	const guestHandler = () => {
 		setUsername(GUEST_ID);

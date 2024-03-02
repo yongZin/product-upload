@@ -12,9 +12,7 @@ const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
 const Wrap = styled.div`
 	width:100%;
-	/* background-image:linear-gradient(to bottom, #ffffff, transparent); */
 	background-image:linear-gradient(to bottom, #000000, transparent);
-	/* backdrop-filter:blur(2px); */
 	position:fixed;
 	top:0;
 	left:0;

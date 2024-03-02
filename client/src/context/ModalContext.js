@@ -16,11 +16,21 @@ export const ModalProvider = (prop) => {
 			}, 500);
 		}
   }, [modalView])
+
+	const handleClose = () => {
+    setClose(true);
+
+    setTimeout(() => {
+      setModalView("off");
+      setClose(false);
+    }, 300);
+  };
 	
 	return (
 		<ModalContext.Provider value={{
 			modalView, setModalView,
-			close, setClose
+			close, setClose,
+			handleClose
 			}}>
 			{prop.children}
 		</ModalContext.Provider>

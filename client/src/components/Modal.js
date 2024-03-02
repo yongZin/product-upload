@@ -98,18 +98,10 @@ const Popup = styled.div`
 
 const Modal = ({ children }) => {
   const {
-    modalView, setModalView,
-    close, setClose
+    modalView,
+    close,
+    handleClose
   } = useContext(ModalContext);
-
-  const handleClose = () => {
-    setClose(true);
-
-    setTimeout(() => {
-      setModalView("off");
-      setClose(false);
-    }, 300);
-  };
 
 	return (
 		<>
