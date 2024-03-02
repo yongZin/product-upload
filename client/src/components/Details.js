@@ -8,6 +8,11 @@ import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
 import { AiOutlineHeart, AiFillHeart, AiTwotoneShopping } from "react-icons/ai";
 import { TbTrash, TbTrashX } from "react-icons/tb";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import logo from "./images/logo-xs.svg";
 const ADMIN_ID = process.env.REACT_APP_ADMIN_ID; //관리자 확인용
 const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
@@ -145,6 +150,30 @@ const OrderBtn = styled.button`
 		background-color:#555 !important;
 	}
 `;
+const MoreBtn = styled.button`
+	display:none;
+	width:100%;
+	padding:10px 30px;
+	font-size:16px;
+	border-radius:0 0 4px 4px;
+	color:#fff;
+	background-color:rgba(0,0,0,0.5);
+	backdrop-filter:blur(3px);
+	position:absolute;
+	bottom:0;
+	left:0;
+	&:after{
+		content:"";
+		width:8px;
+		height:8px;
+		display:inline-block;
+		vertical-align:text-top;
+		margin:2px 0 0 8px;
+		border-bottom:2px solid;
+		border-right:2px solid;
+		transform:rotate(45deg);
+	}
+`;
 const ColorBox = styled.div`
 	position:relative;
 	span{
@@ -232,15 +261,44 @@ const Wrap = styled.div`
 		}
 	}
 `;
-const TopImages = styled.div`
+const TopImages = styled(Swiper)`
 	width:45%;
 	display:inline-block;
 	vertical-align:top;
+	.swiper{
+		&-button{
+			&-prev,
+			&-next{
+				width:40px;
+				height:40px;
+				color:#000;
+				background-color:rgba(0,0,0,0.1);
+				&:after{
+					font-size:20px;
+				}
+			}
+			&-prev{
+				left:0;
+			}
+			&-next{
+				right:0;
+			}
+		}
+		&-pagination{
+			&-bullet{
+				width:20px;
+				height:4px;
+				margin:0 2px !important;
+				border-radius:2px;
+				background:#555;
+				&-active{
+					background:#555;
+				}
+			}
+		}
+	}
 	img{
 		width:100%;
-		&:last-child{
-			display:none;
-		}
 	}
 `;
 const TopInfo = styled.div`
@@ -255,6 +313,8 @@ const ProductInfo = styled.div`
 	font-size:0;
 	border-radius:4px;
 	background-color:rgba(0,0,0,0.1);
+	overflow:hidden;
+	position:relative;
 	>div{
 		width:75%;
 		max-width:500px;
@@ -274,8 +334,14 @@ const ProductInfo = styled.div`
 			}
 		}
 	}
+	&.on{
+		max-height:400px;
+		${(MoreBtn)}{
+			display:block;
+		}
+	}
 `;
-const ProductInfoTitle = styled.p`
+const DetailTitle = styled.p`
 	padding:50px 10px 30px;
 	font-size:18px;
 	text-align:center;
@@ -348,33 +414,11 @@ const BrandStory = styled.div`
 		}
 	}
 `;
-// const ScrollTopBtn = styled.button`
-// 	display:block;
-// 	padding:10px;
-// 	border-radius:50%;
-// 	background-color:rgba(0,0,0,0.2);
-// 	position:absolute;
-// 	bottom:80px;
-// 	right:60px;
-// 	transition:0.3s;
-// 	&:before{
-// 		content:"";
-// 		width:6px;
-// 		height:6px;
-// 		display:block;
-// 		border-top:2px solid #fff;
-// 		border-left:2px solid #fff;
-// 		transform:translateY(2px) rotate(45deg);
-// 	}
-// 	&:hover{
-// 		background-color:rgba(0,0,0,0.15);
-// 	}
-// `;
 const CloseBtn = styled.button`
 	width:30px;
 	height:30px;
 	border-radius:50%;
-	background-color:rgba(0,0,0,0.07);
+	background-color:rgba(0,0,0,0.1);
 	position:absolute;
 	bottom:15px;
 	left:50%;
@@ -395,19 +439,81 @@ const CloseBtn = styled.button`
 		transform:rotate(-45deg);
 	}
 	&:hover{
- 		background-color:rgba(0,0,0,0.15);
+ 		background-color:rgba(0,0,0,0.2);
  	}
 `;
-
+const Recommend = styled(Swiper)`
+	margin-bottom:20px;
+	padding:20px;
+	border-radius:4px;
+	background-color:rgba(0,0,0,0.1);
+	.swiper{
+		&-slide{
+			ul{
+				font-size:0;
+				cursor:pointer;
+				li{
+					&.item{
+						&-image{
+							margin-bottom:10px;
+							border-radius:3px;
+							position:relative;
+						}
+						&-name{
+							margin-bottom:2px;
+							font-size:14px;
+						}
+						&-price{
+							font-size:16px;
+							font-family:var(--f-ebold);
+						}
+					}
+				}
+			}
+		}
+		&-button{
+			&-prev,
+			&-next{
+				width:40px;
+				height:40px;
+				color:#000;
+				background-color:rgba(0,0,0,0.1);
+				&:after{
+					font-size:20px;
+				}
+			}
+			&-prev{
+				left:0;
+			}
+			&-next{
+				right:0;
+			}
+		}
+		&-pagination{
+			&-bullet{
+				width:20px;
+				height:4px;
+				margin:0 2px !important;
+				border-radius:2px;
+				background:#555;
+				&-active{
+					background:#555;
+				}
+			}
+		}
+	}
+`;
 
 const Details = () => {
 	const {userInfo} = useContext(AuthContext);
 	const {
 		products, setProducts,
-		selectedProduct
+		selectedProduct,
+		productDetails,
 	} = useContext(ProductContext);
-	const {setModalView,setClose} = useContext(ModalContext);
+	const {setModalView, handleClose} = useContext(ModalContext);
 	const [product, setProduct] = useState();
+	const [recommendedProducts, setRecommendedProducts] = useState();
 	const [hasLiked, setHasLiked] = useState(false);
 	const [error, setError] = useState(false);
 	const wrapRef = useRef();
@@ -423,6 +529,13 @@ const Details = () => {
 			setError(true);
 		}
 	}, [products, productId, setProduct, product]);
+
+	useEffect(() => { //추천상품 불러오기(현재 상품을 제외한 같은 종류의 상품)
+		if (product) {
+				const filteredProducts = products.filter((item) => item.type === product.type && item._id !== product._id);
+				setRecommendedProducts(filteredProducts.slice(0, 6));
+		}
+	}, [product, products, setRecommendedProducts]);
 
 	useEffect(() => { //좋아요 유무 확인
 		if (
@@ -477,12 +590,16 @@ const Details = () => {
 	const deleteHandler = async () => { //상품 삭제 이벤트
 		try {
 			if(!window.confirm("정말 삭제 하시겠습니까?")) return;
-
-			const result = await axios.delete(`/upload/${productId}`);
-
+			
 			handleClose();
-			toast.success(result.data.message);
-			setProducts(products.filter(product => product._id !== productId)); //삭제후 바로 리스트에서 제거
+
+			setTimeout(async () => {
+				const result = await axios.delete(`/upload/${productId}`);
+				toast.success(result.data.message);
+				
+				setProducts(products.filter(product => product._id !== productId)); //삭제후 바로 리스트에서 제거
+			}, 300)
+
 		} catch (err) {
 			console.error(err.message);
 		}
@@ -500,34 +617,6 @@ const Details = () => {
 		}
 	};
 
-	const handleClose = () => { //모달 닫기 이벤트
-    setClose(true);
-
-    setTimeout(() => {
-      setModalView("off");
-      setClose(false);
-    }, 300);
-  };
-
-	// const scrollTopHandler = () => {
-	// 	if (wrapRef.current) {
-	// 		wrapRef.current.scrollTo({
-	// 			top:0,
-	// 			behavior: "smooth"
-	// 		});
-	// 	}
-	// };
-
-	const mainImages = selectedProduct.mainImages.map((image) => {
-		return(
-			<img
-				key={image.key}
-				src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${image.filename}`}
-				alt="상품 대표 이미지"
-			/>
-		)
-	});
-
 	return (
 		<Wrap
 			ref={wrapRef}
@@ -542,7 +631,22 @@ const Details = () => {
 			}
 		>
 			<div>
-				<TopImages>{mainImages}</TopImages>
+				<TopImages
+					modules={[Navigation, Pagination]}
+					slidesPerView={1}
+					loop={true}
+					pagination={{ clickable: true }}
+					navigation
+				>
+					{selectedProduct.mainImages.map((image) => (
+						<SwiperSlide key={image.key}>
+							<img
+								src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${image.filename}`}
+								alt="상품 대표 이미지"
+							/>
+						</SwiperSlide>
+					))}
+				</TopImages>
 
 				<TopInfo>
 					<TopText>
@@ -610,12 +714,21 @@ const Details = () => {
 					</ul>
 				</BrandStory>
 
-				<ProductInfoTitle>상품 정보</ProductInfoTitle>
+				<DetailTitle>상품 정보</DetailTitle>
 
-				<ProductInfo>
+				<ProductInfo className="on">
 					{product.details.map((content, index) => (
 						<div key={index} dangerouslySetInnerHTML={{ __html: content }} />
 					))}
+
+					<MoreBtn
+						type="button"
+						onClick={(e) => {
+							e.target.parentElement.classList.toggle("on")
+						}}
+					>
+						더보기
+					</MoreBtn>
 				</ProductInfo>
 			</div>
 
@@ -638,12 +751,45 @@ const Details = () => {
 				</ProductDetail>
 			</div>
 
-			{/* <ScrollTopBtn
-				type="button"
-				onClick={scrollTopHandler}
-			></ScrollTopBtn> */}
+			<div>
+				<DetailTitle>추천 상품</DetailTitle>
 
-			<CloseBtn type="button"></CloseBtn>
+				<Recommend
+					modules={[Navigation, Pagination]}
+					slidesPerView={3}
+					spaceBetween={20}
+					loop={true}
+					pagination={{ clickable: true }}
+					navigation
+				>
+					{recommendedProducts && recommendedProducts.map((item) => (
+						<SwiperSlide key={item._id}>
+							<ul
+								onClick={() => {
+									handleClose()
+
+									setTimeout(() => {
+										productDetails(item._id);
+										setModalView("details");
+									}, 400);
+								}}
+							>
+								<li className="item-image">
+									<img
+										key={item.mainImages[0]._id}
+										src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.mainImages[0].key}`}
+										alt="추천상품 이미지"
+									/>	
+								</li>
+								<li className="item-name">{item.name}</li>
+								<li className="item-price">{item.price}</li>
+							</ul>
+						</SwiperSlide>
+					))}
+				</Recommend>
+			</div>
+
+			<CloseBtn type="button" onClick={() => handleClose()}></CloseBtn>
 		</Wrap>
 	)
 }

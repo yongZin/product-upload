@@ -102,6 +102,12 @@ export const ProductProvider = (prop) => {
 			});
 	}, []);
 
+	const productDetails = (itemID) => { //선택 상품의 정보를 상세화면으로 전달
+		const selectedItem = products.find((item) => item._id === itemID);
+
+		setSelectedProduct(selectedItem);
+	};
+
 	const toggleClick = (e) => {
 		if (!e.target.className) e.target.className = "on"
 		else e.target.className = ""
@@ -127,6 +133,7 @@ export const ProductProvider = (prop) => {
 		totalProductCount, setTotalProductCount,
 		loadMoreProduct,
 		toggleClick,
+		productDetails,
 	};
 	
 	return (
