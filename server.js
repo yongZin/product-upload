@@ -13,16 +13,10 @@ mongoose
 	.then(() => {
 		console.log("MongoDB 연결");
 
-		// app.use(express.static("build")); //빌드한 경우 경로
-    // app.get("/", (req, res) => {
-    //   res.sendFile(__dirname + "/build/index.html");
-    // });
-
-		app.use(express.static(path.join(__dirname, "client/build")));
-
-    app.get("*", (req, res) => {
-			res.sendFile(path.join(__dirname, "client/build", "index.html"));
-		});
+		app.use(express.static("build")); //빌드한 경우 경로
+    app.get("/", (req, res) => {
+      res.sendFile(__dirname + "/build/index.html");
+    });
 
 		// app.use("/uploads", express.static("uploads")); //로컬경로 사용시
 		app.use(express.json());
