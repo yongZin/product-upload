@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require('path');
 const express = require("express");
 const mongoose = require("mongoose");
 const { productRouter } = require("./routes/productRouter");
@@ -17,7 +18,13 @@ mongoose
     //   res.sendFile(__dirname + "/build/index.html");
     // });
 
-		app.use("/uploads", express.static("uploads")); //로컬경로 사용시
+		app.use(express.static(path.join(__dirname, "../client/build")));
+
+    app.get("/", (req, res) => {
+      res.sendFile(path.join(__dirname, "../client/build/index.html"));
+    });
+
+		// app.use("/uploads", express.static("uploads")); //로컬경로 사용시
 		app.use(express.json());
 		app.use(authentication); //유저인증 미들웨어
 		app.use("/upload", productRouter); //"upload"가 들어가면 productRouter 실행
