@@ -20,6 +20,7 @@ const BrandInfo = styled.div`
 	background-position:center;
 	background-size:cover;
 	position:relative;
+	z-index:10;
 	&:after{
 		content:"";
 		position:absolute;
