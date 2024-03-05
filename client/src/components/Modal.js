@@ -94,6 +94,48 @@ const Popup = styled.div`
       top:-100%;
     }
   }
+  @media ${props => props.theme.tablet} {
+    background-color:rgba(128,128,128,0.5);
+    &.form{
+      &-upload{
+        width:92%;
+        padding:30px 15px;
+        form{
+          padding:0 0 10px;
+        }
+      }
+      &-user{
+        width:90%;
+      }
+      &-details{
+        width:95%;
+        padding:40px 15px;
+        >div{
+          &::-webkit-scrollbar{
+            &-thumb{
+              background-color:#888;
+            }
+          }
+        }
+      }
+    }
+    form{
+      &::-webkit-scrollbar{
+        &-thumb{
+          background-color:#888;
+        }
+      }
+    }
+  }
+  @media ${props => props.theme.tablet} {
+    &.form{
+      &-upload,
+      &-details{
+        padding-left:12px;
+        padding-right:12px;
+      }
+    }
+  }
 `;
 
 const Modal = ({ children }) => {

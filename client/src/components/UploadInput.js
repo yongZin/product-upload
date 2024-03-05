@@ -5,6 +5,7 @@ import styled from "styled-components";
 const InputWrap = styled.ul`
   width:100%;
 	display:flex;
+	align-items:center;
 	border-radius:15px;
 	border:1px solid #ccc;
 	background-color:rgba(255, 255, 255, 0.5);
@@ -22,24 +23,48 @@ const InputWrap = styled.ul`
 			border-left:1px solid #ccc;
 			&:hover{
 				input{
-					border-bottom-color:rgba(0, 0, 0, 0.7);
+					border-bottom-color:rgba(0, 0, 0, 0.4);
 				}
 			}
 		}
 		> input{
-			width:50%;
-			min-width:250px;
+			width:100%;
 			padding:8px 0;
 			font-size:14px;
 			border:0;
-			border-bottom:2px solid rgba(0, 0, 0, 0.2);
+			border-bottom:1px solid rgba(0, 0, 0, 0.1);
 			background-color:transparent;
 			transition:0.2s;
 			&::placeholder{
 				font-style:italic;
 			}
 			&:focus{
-				border-bottom-color:rgba(0, 0, 0, 0.7);
+				border-bottom-color:rgba(0, 0, 0, 0.4);
+			}
+		}
+	}
+	@media ${props => props.theme.tablet} {
+		border-color:#bbb;
+		li{
+			&:last-child{
+				border-left-color:#bbb;
+			}
+		}
+	}
+	@media ${props => props.theme.mobile} {
+		li{
+			font-size:13px;
+			>input{
+				font-size:13px;
+			}
+		}
+	}
+	@media ${props => props.theme.mobile_xs} {
+		li{
+			padding:18px 12px;
+			font-size:12px;
+			>input{
+				font-size:12px;
 			}
 		}
 	}
@@ -110,6 +135,9 @@ const ColorRadio = styled.div`
 			background-color:#aaa;
 			border:1px solid #bbb;
 		}
+	}
+	@media ${props => props.theme.tablet} {
+		margin:0 8px 10px 0;
 	}
 `;
 

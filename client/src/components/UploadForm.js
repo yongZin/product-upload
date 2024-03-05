@@ -13,6 +13,9 @@ import { ModalContext } from "../context/ModalContext";
 const ImgWrap = styled.div`
   margin:40px 0 30px;
   font-size:0;
+  @media ${props => props.theme.mobile} {
+   margin:30px 0 0;
+  }
 `;
 const ImgUploader = styled.div`
   width:19%;
@@ -35,12 +38,16 @@ const ImgUploader = styled.div`
       top:50%;
       left:50%;
       transform:translate(-50%, -50%);
+      pointer-events:none;
     }
     &:after{
       transform:translate(-50%, -50%) rotate(90deg);
     }
   }
   input{
+    display:none;
+  }
+  label{
     width:100%;
     height:100%;
     opacity:0;
@@ -48,6 +55,14 @@ const ImgUploader = styled.div`
     position:absolute;
     top:0;
     left:0;
+  }
+  @media ${props => props.theme.mobile} {
+    width:85px;
+    vertical-align:top;
+    margin-bottom:30px;
+  }
+  @media ${props => props.theme.mobile_xs} {
+    width:calc(33.333% - 10px);
   }
 `;
 const ImgPreview = styled.div`
@@ -125,6 +140,30 @@ const ImgPreview = styled.div`
       }
     }
   }
+  @media ${props => props.theme.tablet} {
+    li{
+      label{
+        border-color:#aaa;
+      }
+      button{
+        background-color:#aaa;
+      }
+    }
+  }
+  @media ${props => props.theme.mobile} {
+    width:calc(100% - 85px);
+    vertical-align:top;
+    li{
+      width:85px;
+      margin:0 0 30px 10px;
+    }
+  }
+  @media ${props => props.theme.mobile_xs} {
+    width:66.666%;
+    li{
+      width:calc(50% - 10px);
+    }
+  }
 `;
 const BtnBox = styled.div`
   width:65%;
@@ -160,6 +199,19 @@ const BtnBox = styled.div`
       &:hover{
         background-color:rgba(0, 198, 4, 0.65);
       }
+    }
+  }
+  @media ${props => props.theme.tablet} {
+    button{
+      font-size:16px;
+    }
+  }
+  @media ${props => props.theme.mobile} {
+    width:100%;
+    text-align:center;
+    button{
+      width:100px;
+      font-size:14px;
     }
   }
 `;
@@ -431,6 +483,7 @@ const UploadForm = () => {
               onChange={imageHandler}
               name="mainImages"
             />
+            <label htmlFor="mainImage"></label>
           </div>
         </ImgUploader>
 

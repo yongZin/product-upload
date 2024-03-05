@@ -21,12 +21,21 @@ const BrandInfo = styled.div`
 	background-size:cover;
 	position:relative;
 	z-index:10;
+	transition:0.3s;
 	&:after{
 		content:"";
 		position:absolute;
 		inset:0;
-		/* background-color:rgba(0,0,0,0.5); */
 		background-color:rgba(255,255,255,0.1);
+	}
+	@media ${props => props.theme.tablet} {
+		height:350px;
+	}
+	@media ${props => props.theme.mobile} {
+		height:250px;
+	}
+	@media ${props => props.theme.mobile_xs} {
+		height:180px;
 	}
 `;
 

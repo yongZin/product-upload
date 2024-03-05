@@ -17,7 +17,7 @@ const MobileFilter = styled.div`
 		background-color:#fff;
 		box-shadow:0 1px 10px rgba(0,0,0,0.2);
 		position:sticky;
-		top:65px;
+		top:64px;
 		z-index:9;
 		&:before{
 			content:"";
@@ -48,6 +48,7 @@ const MobileFilter = styled.div`
 			}
 			&.mobile{
 				&-reset{
+					width:80px;
 					&:after{
 						content:"";
 						width:1px;
@@ -59,6 +60,7 @@ const MobileFilter = styled.div`
 					}
 				}
 				&-filter{
+					width:calc(100% - 80px);
 					overflow-x:auto;
 					overflow-y:hidden;
 					scrollbar-width:none;
@@ -88,6 +90,28 @@ const MobileFilter = styled.div`
 							}
 						}
 					}
+				}
+			}
+		}
+	}
+	@media ${props => props.theme.mobile_xs} {
+		padding:6px 10px;
+		top:58px;
+		&:before{
+			height:58px;
+			top:-58px;
+		}
+		div{
+			button{
+				padding:6px 10px;
+				font-size:13px;
+			}
+			&.mobile{
+				&-reset{
+					width:73px;
+				}
+				&-filter{
+					width:calc(100% - 73px);
 				}
 			}
 		}
@@ -424,8 +448,11 @@ const Item = styled.ul`
 	@media ${props => props.theme.tablet} {
 		width:calc(50% - 12px);
   }
-	@media ${props => props.theme.mobile} {
-
+	@media ${props => props.theme.mobile_xs} {
+		width:90%;
+		max-width:320px;
+		display:block;
+		margin:0 auto 40px;
 	}
 `;
 const UploadBtn = styled.button`
@@ -464,6 +491,12 @@ const UploadBtn = styled.button`
 	@media ${props => props.theme.tablet} {
 		width:calc(50% - 12px);
   }
+	@media ${props => props.theme.mobile_xs} {
+		width:90%;
+		max-width:320px;
+		display:block;
+		margin:0 auto 40px;
+	}
 `;
 const Loading = styled.div`
 	width:35px;

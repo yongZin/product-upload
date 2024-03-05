@@ -15,9 +15,16 @@ const Wrap = styled.div`
 		text-align:center;
 		font-size:30px;
 	}
-	/* @media ${props => props.theme.tablet} {
-		padding:0 20px;
-	} */
+	@media ${props => props.theme.mobile} {
+		h3{
+			font-size:25px;
+		}
+	}
+	@media ${props => props.theme.mobile_xs} {
+		h3{
+			font-size:20px;
+		}
+	}
 `;
 const BtnBox = styled.div`
 	padding-top:10px;
@@ -41,6 +48,9 @@ const CloseBtn = styled.button`
 		color:#111;
 		background-color:rgba(255, 255, 255, 0.65);
 	}
+	@media ${props => props.theme.mobile} {
+		width:85px;	
+	}
 `;
 const SubmitBtn = styled.button`
 	width:calc(80% - 8px);
@@ -51,6 +61,9 @@ const SubmitBtn = styled.button`
 	&:hover{
 		border-color:rgba(0, 198, 4, 0.6);
 		background-color:rgba(0, 198, 4, 0.65);
+	}
+	@media ${props => props.theme.mobile} {
+		width:calc(100% - 93px);	
 	}
 `;
 

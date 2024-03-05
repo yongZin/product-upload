@@ -45,6 +45,25 @@ const InputWrap = styled.div`
 		top:1px;
 		left:0;
 	}
+	@media ${props => props.theme.mobile} {
+		&:before{
+			width:70px;
+			margin:0;
+		}
+		input{
+			width:calc(100% - 70px);
+			&#inpuChk{
+			& + label{
+				font-size:13px;
+				letter-spacing:-1.1px;
+			}
+		}
+		}
+		label{
+			width:86px;
+			font-size:14px;
+		}
+	}
 `;
 
 const UserInput = ({ id, label, value, setValue, type = "text" }) => {

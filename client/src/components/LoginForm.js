@@ -17,9 +17,16 @@ const Wrap = styled.div`
 		text-align:center;
 		font-size:30px;
 	}
-	/* @media ${props => props.theme.tablet} {
-		padding:0 20px;
-	} */
+	@media ${props => props.theme.mobile} {
+		h3{
+			font-size:25px;
+		}
+	}
+	@media ${props => props.theme.mobile_xs} {
+		h3{
+			font-size:20px;
+		}
+	}
 `;
 const BtnBox = styled.div`
 	padding-top:10px;
@@ -32,6 +39,11 @@ const BtnBox = styled.div`
 		border-radius:6px;
 		transition:0.2s;
 	}
+	@media ${props => props.theme.mobile} {
+		button{
+			font-size:14px;
+		}
+	}
 `;
 const CloseBtn = styled.button`
 	width:20%;
@@ -43,6 +55,9 @@ const CloseBtn = styled.button`
 		color:#111;
 		background-color:rgba(255, 255, 255, 0.65);
 	}
+	@media ${props => props.theme.mobile} {
+		width:85px;	
+	}
 `;
 const SubmitBtn = styled.button`
 	width:calc(80% - 8px);
@@ -52,6 +67,9 @@ const SubmitBtn = styled.button`
 	background-color:#333;
 	&:hover{
 		background-color:#555;
+	}
+	@media ${props => props.theme.mobile} {
+		width:calc(100% - 93px);	
 	}
 `;
 const FootBth = styled.ul`
@@ -89,6 +107,17 @@ const FootBth = styled.ul`
 		transition:0.2s;
 		&:hover{
 			color:#444;
+		}
+	}
+	@media ${props => props.theme.tablet} {
+		button{
+			color:#484848;
+		}
+	}
+	@media ${props => props.theme.mobile} {
+		margin-top:30px;
+		button{
+			font-size:13px;
 		}
 	}
 `;

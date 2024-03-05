@@ -39,8 +39,6 @@ const Content = styled.div`
 		&-btnBox{
 			li{
 				font-size:16px;
-				/* font-family:var(--f-ebold);
-				color:#414141; */
 				text-shadow:1px 1px 0 rgba(0,0,0,0.5);
 				color:#ededed;
 				cursor:pointer;
@@ -50,19 +48,27 @@ const Content = styled.div`
 			}
 		}
 	}
-	/* @media ${props => props.theme.tablet} {
+	@media ${props => props.theme.tablet} {
 		padding:15px 20px;
   }
-	@media ${props => props.theme.mobile_xs} {
-		a, span{
-			font-size:14px;
-			text-align:center;
-			.user{
-				display:block;
-				font-size:13px;
+	@media ${props => props.theme.mobile} {
+		padding:15px 10px;
+		.nav{
+			&-btnBox{
+				li{
+					font-size:14px;
+				}
 			}
 		}
-  } */
+  }
+	@media ${props => props.theme.mobile_xs} {
+		.nav{
+			&-logo{
+				width:85px;
+				height:28px;
+			}
+		}
+  }
 `;
 
 const Navigation = () => {

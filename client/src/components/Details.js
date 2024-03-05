@@ -38,6 +38,18 @@ const TopText = styled.div`
 			}
 		}
 	}
+	@media ${props => props.theme.tablet} {
+		padding:14px 0 0 10px;
+		p{
+			font-size:20px;
+			&:first-child{
+				font-size:16px;
+			}
+		}
+	}
+	@media ${props => props.theme.mobile} {
+		border-top:0;
+	}
 `;
 const TopEtc =  styled.div`
 	margin:20px 0;
@@ -49,6 +61,11 @@ const TopEtc =  styled.div`
 		font-size:14px;
 		color:#515151;
 	}
+	@media ${props => props.theme.tablet} {
+		margin:10px 0;
+		padding:15px 0 15px 10px;
+	}
+	
 `;
 const TopBtn =  styled.div`
 	display:flex;
@@ -61,6 +78,12 @@ const TopBtn =  styled.div`
 		border:1px solid #ccc;
     background-color:rgba(255, 255, 255, 0.5);
 		position:relative;
+	}
+	@media ${props => props.theme.tablet} {
+		button{
+			width:40px;
+			height:40px;
+		}
 	}
 `;
 const LikeBtn = styled.button`
@@ -93,6 +116,11 @@ const LikeBtn = styled.button`
 			color:rgba(255,0,0,0.5);
 		}
 	}
+	@media ${props => props.theme.tablet} {
+		svg{
+			font-size:34px;
+		}
+	}
 `;
 const ShoppingBtn = styled.button`
 	svg{
@@ -112,6 +140,11 @@ const ShoppingBtn = styled.button`
 					fill:#bbb;
 				}
 			}
+		}
+	}
+	@media ${props => props.theme.tablet} {
+		svg{
+			font-size:34px;
 		}
 	}
 `;
@@ -137,6 +170,11 @@ const DeleteBtn = styled.button`
 			}
 		}
 	}
+	@media ${props => props.theme.tablet} {
+		svg{
+			font-size:32px;
+		}
+	}
 `;
 const OrderBtn = styled.button`
 	width:calc(100% - 108px) !important;
@@ -148,6 +186,13 @@ const OrderBtn = styled.button`
 	&:hover{
 		border:1px solid #555 !important;
 		background-color:#555 !important;
+	}
+	@media ${props => props.theme.tablet} {
+		width:calc(100% - 92px) !important;
+		font-size:16px;	
+	}
+	@media ${props => props.theme.mobile} {
+		font-size:15px;	
 	}
 `;
 const MoreBtn = styled.button`
@@ -172,6 +217,13 @@ const MoreBtn = styled.button`
 		border-bottom:2px solid;
 		border-right:2px solid;
 		transform:rotate(45deg);
+	}
+	@media ${props => props.theme.mobile} {
+		font-size:14px;
+		&:after{
+			width:6px;
+			height:6px;
+		}
 	}
 `;
 const ColorBox = styled.div`
@@ -269,12 +321,12 @@ const TopImages = styled(Swiper)`
 		&-button{
 			&-prev,
 			&-next{
-				width:40px;
-				height:40px;
+				width:35px;
+				height:35px;
 				color:#000;
 				background-color:rgba(0,0,0,0.1);
 				&:after{
-					font-size:20px;
+					font-size:15px;
 				}
 			}
 			&-prev{
@@ -300,6 +352,10 @@ const TopImages = styled(Swiper)`
 	img{
 		width:100%;
 	}
+	@media ${props => props.theme.mobile} {
+		width:100%;
+		display:block;
+	}
 `;
 const TopInfo = styled.div`
 	width:55%;
@@ -307,6 +363,11 @@ const TopInfo = styled.div`
 	vertical-align:top;
 	padding-left:20px;
 	font-size:0;
+	@media ${props => props.theme.mobile} {
+		width:100%;
+		display:block;
+		padding:0;
+	}
 `;
 const ProductInfo = styled.div`
 	padding:30px 0;
@@ -322,6 +383,7 @@ const ProductInfo = styled.div`
 		p{
 			line-height:1.4;
 			font-size:16px;
+			word-break:keep-all;
 			strong{
 				display:block;
 				padding:30px 0 8px;
@@ -340,6 +402,22 @@ const ProductInfo = styled.div`
 			display:block;
 		}
 	}
+	@media ${props => props.theme.tablet} {
+		padding:20px 0;
+		>div{
+			p{
+				font-size:15px;
+				strong{
+					font-size:20px;
+				}
+			}
+		}
+	}
+	@media ${props => props.theme.mobile} {
+		>div{
+			width:85%;
+		}
+	}
 `;
 const DetailTitle = styled.p`
 	padding:50px 10px 30px;
@@ -352,6 +430,9 @@ const DetailTitle = styled.p`
 		display:block;
 		margin:0 auto 15px;
 		background-color:rgba(0,0,0,0.1);
+	}
+	@media ${props => props.theme.mobile} {
+		padding:40px 10px 20px;
 	}
 `;
 const ProductDetail = styled.div`
@@ -394,6 +475,7 @@ const BrandStory = styled.div`
 		overflow:hidden;
 	}
 	ul{
+		width:calc(100% - 60px);
 		display:inline-block;
 		vertical-align:middle;
 		padding-left:14px;
@@ -411,6 +493,47 @@ const BrandStory = styled.div`
 				border-radius:4px;
 				background-color:rgba(255, 255, 255, 0.5);
 			}
+		}
+	}
+	@media ${props => props.theme.mobile} {
+		margin-top:50px;
+		position:relative;
+		ul{
+			width:calc(100% - 96px);
+			li{
+				button{
+					width:60px;
+					height:100%;
+					margin:0;
+					padding:8px;
+					font-size:0;
+					border-radius:50%;
+					background-color:transparent;
+					position:absolute;
+					top:50%;
+					right:0;
+					transform:translateY(-50%);
+					&:before{
+						content:"";
+						width:12px;
+						height:12px;
+						display:block;
+						margin:0 12px 0 auto;
+						border-top:3px solid #666;
+						border-right:3px solid #666;
+						transform:rotate(45deg);
+					}
+				}
+			}
+		}
+	}
+	@media ${props => props.theme.mobile_xs} {
+		&:before{
+			width:50px;
+			height:50px;
+		}
+		ul{
+			width:calc(100% - 86px);
 		}
 	}
 `;
@@ -474,12 +597,12 @@ const Recommend = styled(Swiper)`
 		&-button{
 			&-prev,
 			&-next{
-				width:40px;
-				height:40px;
+				width:35px;
+				height:35px;
 				color:#000;
 				background-color:rgba(0,0,0,0.1);
 				&:after{
-					font-size:20px;
+					font-size:15px;
 				}
 			}
 			&-prev{
@@ -756,11 +879,19 @@ const Details = () => {
 
 				<Recommend
 					modules={[Navigation, Pagination]}
-					slidesPerView={3}
+					slidesPerView={1}
 					spaceBetween={20}
 					loop={true}
 					pagination={{ clickable: true }}
 					navigation
+					breakpoints={{
+						401: {
+							slidesPerView:2,
+						},
+						601: {
+							slidesPerView:3,
+						}
+					}}
 				>
 					{recommendedProducts && recommendedProducts.map((item) => (
 						<SwiperSlide key={item._id}>
