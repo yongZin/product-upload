@@ -434,22 +434,32 @@ const UploadForm = () => {
     if (inputRef.current) inputRef.current.value = null;
   };
 
+  const firstMainImageCheck = (index) => {
+    setMainImgChecked(index);
+
+    const checkedImage = mainImages.splice(index, 1)[0];
+
+    mainImages.unshift(checkedImage);
+    setMainImages([...mainImages]);
+    setMainImgChecked(0);
+  }
+
 	const previewsImg = mainImages && mainImages.map((preview,index) => (
-    <li key={`previewsImg-` + index}>
+    <li key={preview.fileName}>
       <input
         type="radio"
         name="previewsImg"
-        id={`previewsImg-` + index}
+        id={preview.fileName}
         checked={mainImgChecked === index}
-        onChange={() => setMainImgChecked(index)}
+        onChange={() => firstMainImageCheck(index)}
       />
-      <label htmlFor={`previewsImg-` + index}>
+      <label htmlFor={preview.fileName}>
         <img 
           alt="상품 이미지"
           src={preview.imgSrc}
         />
       </label>
-      <button onClick={() => imageDeleteHandler(index)}></button>
+      <button type="button" onClick={() => imageDeleteHandler(index)}></button>
     </li>
   ));
 
