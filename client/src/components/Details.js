@@ -317,6 +317,7 @@ const TopImages = styled(Swiper)`
 	width:45%;
 	display:inline-block;
 	vertical-align:top;
+	font-size:0;
 	.swiper{
 		&-button{
 			&-prev,
@@ -351,6 +352,9 @@ const TopImages = styled(Swiper)`
 	}
 	img{
 		width:100%;
+	}
+	@media ${props => props.theme.tablet} {
+		border:1px solid rgba(201, 201, 201, 0.5);
 	}
 	@media ${props => props.theme.mobile} {
 		width:100%;

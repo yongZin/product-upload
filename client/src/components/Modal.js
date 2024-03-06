@@ -16,6 +16,9 @@ const Background = styled.div`
       }
     }
   }
+  @media ${props => props.theme.tablet} {
+    background-color:rgba(0,0,0,0.3);
+  }
 `;
 const Popup = styled.div`
   max-width:800px;
@@ -95,7 +98,7 @@ const Popup = styled.div`
     }
   }
   @media ${props => props.theme.tablet} {
-    background-color:rgba(128,128,128,0.5);
+    background-color:#ddd;
     &.form{
       &-upload{
         width:92%;
