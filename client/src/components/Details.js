@@ -635,6 +635,7 @@ const Details = () => {
 	const {userInfo} = useContext(AuthContext);
 	const {
 		products, setProducts,
+		productsAll, setProductsAll,
 		selectedProduct,
 		productDetails,
 	} = useContext(ProductContext);
@@ -725,6 +726,7 @@ const Details = () => {
 				toast.success(result.data.message);
 				
 				setProducts(products.filter(product => product._id !== productId)); //삭제후 바로 리스트에서 제거
+				setProductsAll(productsAll.filter(product => product._id !== productId));
 			}, 300)
 
 		} catch (err) {

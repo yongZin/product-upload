@@ -74,7 +74,10 @@ const Content = styled.div`
 const Navigation = () => {
 	const {setModalView} = useContext(ModalContext);
 	const {userInfo, setUserInfo} = useContext(AuthContext);
-	const {products, setProducts} = useContext(ProductContext);
+	const {
+		products, setProducts,
+		productsAll, setProductsAll
+	} = useContext(ProductContext);
 	const [guestProducts, setGuestProducts] = useState([]);
 
 	const deleteGuestProducts = useCallback(async () => {
@@ -85,7 +88,11 @@ const Navigation = () => {
 		setProducts(products.filter((product) => {
 			return !guestProducts.find((item) => item._id === product._id);
 		}));
-	}, [guestProducts, products, setProducts]);
+
+		setProductsAll(productsAll.filter((product) => {
+			return !guestProducts.find((item) => item._id === product._id);
+		}));
+	}, [guestProducts, products, setProducts, productsAll, setProductsAll]);
 
 	const preventClose = useCallback(async (e) => {
     e.preventDefault();

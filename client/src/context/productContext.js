@@ -100,7 +100,7 @@ export const ProductProvider = (prop) => {
 			.finally(() => {
 				setUploadLoad(false);
 			});
-	}, []);
+	}, [productsAll]);
 
 	const productDetails = (itemID) => { //선택 상품의 정보를 상세화면으로 전달
 		const selectedItem = products.find((item) => item._id === itemID);
