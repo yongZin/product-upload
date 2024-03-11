@@ -16,14 +16,14 @@ const ProductSchma = new mongoose.Schema(
       {
         key: { type: String, required: true },
         filename: { type: String, required: true },
-        originalname: { type: String, required: true },
+        // originalname: { type: String, required: true },
       },
     ],
     detailImages: [
       {
         key: { type: String, required: true },
         filename: { type: String, required: true },
-        originalname: { type: String, required: true },
+        // originalname: { type: String, required: true },
       },
     ],
     details: [{ type: String, required: true }],

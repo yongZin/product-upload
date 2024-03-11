@@ -12,6 +12,7 @@ export const ProductProvider = (prop) => {
 	const [name, setName] = useState("");
 	const [price, setPrice] = useState("");
 	const [mainImages, setMainImages] = useState([]);
+	const [previews, setPreviews] = useState([]);
 	const [details, setDetails] = useState([]);
 	const [detailImages, setDetailImages] = useState([]);
 	const [type, setType] = useState("");
@@ -100,7 +101,7 @@ export const ProductProvider = (prop) => {
 			.finally(() => {
 				setUploadLoad(false);
 			});
-	}, [productsAll]);
+	}, []);
 
 	const productDetails = (itemID) => { //선택 상품의 정보를 상세화면으로 전달
 		const selectedItem = products.find((item) => item._id === itemID);
@@ -113,12 +114,24 @@ export const ProductProvider = (prop) => {
 		else e.target.className = ""
 	};
 
+	const resetData = () => {
+		setName("");
+    setPrice("");
+    setMainImages([]);
+    setPreviews([]);
+    setDetails([]);
+    setType("");
+    setMaterial("");
+    setColor("");
+	};
+
 	const productContextValue = {
 		products, setProducts,
 		productsAll, setProductsAll,
 		name, setName,
 		price, setPrice,
 		mainImages, setMainImages,
+		previews, setPreviews,
 		details, setDetails,
 		detailImages, setDetailImages,
 		type, setType,
@@ -134,6 +147,7 @@ export const ProductProvider = (prop) => {
 		loadMoreProduct,
 		toggleClick,
 		productDetails,
+		resetData,
 	};
 	
 	return (

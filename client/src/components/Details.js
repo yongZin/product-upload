@@ -651,16 +651,26 @@ const Details = () => {
 		const item = products.find((item) => item._id === productId);
 		
 		if (item) {
-			setProduct(item);
+			const updatedDetails = item.details.map((detail, index) => {
+				return detail.replace(/<img src="">/g, `<img src="https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.detailImages[index].key}">`)
+			});
+
+
+			setProduct((prevProduct) => ({
+				...prevProduct,
+				...item,
+				details: updatedDetails,
+			}));
 			setError(false);
 		} else {
 			setError(true);
 		}
-	}, [products, productId, setProduct, product]);
+	}, [products, productId]);
 
 	useEffect(() => { //추천상품 불러오기(현재 상품을 제외한 같은 종류의 상품)
 		if (product) {
 				const filteredProducts = products.filter((item) => item.type === product.type && item._id !== product._id);
+
 				setRecommendedProducts(filteredProducts.slice(0, 6));
 		}
 	}, [product, products, setRecommendedProducts]);

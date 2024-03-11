@@ -1,11 +1,9 @@
 //Quill 에디터 컴포넌트
-import React, { useEffect, useMemo, useRef, useContext } from "react";
+import React, { useMemo, useRef, useContext } from "react";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import DOMPurify from 'isomorphic-dompurify';
-import { v4 as uuid } from 'uuid';
-import mime from "mime-types";
 import { ProductContext } from "../context/ProductContext";
 
 const UploadReactQuill = styled(ReactQuill)`
@@ -73,72 +71,24 @@ const UploadReactQuill = styled(ReactQuill)`
 
 const Quill = () => {
 	const quillRef = useRef();
-	const {
-    details, setDetails,
-    detailImages, setDetailImages,
-  } = useContext(ProductContext);
-
-	useEffect(() => {
-		const updatedDetails = details.map((detail) => {
-			let newDetail = detail;
-			const imgTags = newDetail.match(/<img.*?src="(.*?)".*?>/g);
-
-			if (imgTags) {
-				for (const imgTag of imgTags) {
-					const imgSrc = imgTag.match(/src="(.*?)"/)[1];
-
-					for (const image of detailImages) {
-						if (imgSrc === image.imgSrc) {
-							newDetail = newDetail.replace(imgSrc, "https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/" + image.fileName);
-						}
-					}
-				}
-			};
-
-			return newDetail;
-		});
-
-		if (JSON.stringify(details) !== JSON.stringify(updatedDetails)) {
-			//무한루프 방지 후 업데이트
-			setDetails(updatedDetails);
-		}
-
-	}, [details, detailImages, setDetails]);
-
-	useEffect(() => {
-		const imgTagsCount = details.reduce((count, detail) => {
-			//details의 img태그 개수 알아내기
-			const imgTags = detail.match(/<img.*?src="(.*?)".*?>/g);
-			return count + (imgTags ? imgTags.length : 0);
-		}, 0);
-	
-		if (imgTagsCount !== detailImages.length) {
-			const imgSrcs = details.flatMap((detail) => {
-				//<img>에서 src 추출
-				const imgTags = detail.match(/<img.*?src="(.*?)".*?>/g) || [];
-				return imgTags.map((imgTag) => imgTag.match(/src="(.*?)"/)[1]);
-			});
-	
-			const updatedDetailImages = detailImages.filter((image) =>
-				imgSrcs.includes(image.imgSrc) // image.fileName이 아닌 image.imgSrc와 비교
-			);
-	
-			if (JSON.stringify(detailImages) !== JSON.stringify(updatedDetailImages)) {
-				//무한루프 방지 후 업데이트
-				setDetailImages(updatedDetailImages);
-			}
-		}
-	}, [details, detailImages, setDetailImages]);
+	const {setDetails, setDetailImages} = useContext(ProductContext);
 
 	const purifyHandler = (value) => {
-		//공격성 코드 검열
-		const sanitizedHTML = DOMPurify.sanitize(value);
-		const resultHTML = sanitizedHTML.replace(/<p>(.*?)<img/g, "<p>$1</p><p><img"); //<img> 앞에 강제로 <p> 추가 (텍스트와 이미지 분리용)
-		const cleanedHTML = resultHTML.replace(/<p><br\s?\/?><\/p>|<p><\/p>/g, "");
-		const splitHTML = cleanedHTML.split("</p>").filter(Boolean);
-		const arrayHTML = splitHTML.map((p) => p + "</p>");
+		deleteImageHandler(value);
+		
+    const sanitizedHTML = DOMPurify.sanitize(value); //공격성 코드 검열
+    const cleanedValue = sanitizedHTML.replace(/(<img[^>]*src=)"[^"]*"/g, '$1""'); //base64 이미지 소스 지우기
+		const arrayHTML = cleanedValue.replace(/<p><\/p>|<p><br><\/p>/g, ""); //불필요한 태그 삭제
 
-		setDetails(arrayHTML);
+    setDetails(arrayHTML);
+	};
+
+	const deleteImageHandler = (value) => { //에디터에서 삭제된 이미지 찾아 지우기
+		let parser = new DOMParser();
+		let htmlDoc = parser.parseFromString(value, "text/html");
+		let imgSrcValues = Array.from(htmlDoc.getElementsByTagName("img")).map(img => img.getAttribute("src")); //img태그 소스 가져오기
+
+		setDetailImages(prevImages => prevImages.filter(image => imgSrcValues.includes(image.dataUrl)));
 	};
 
 	const imageHandler = () => {
@@ -149,46 +99,24 @@ const Quill = () => {
 		input.click();
 
 		input.onchange = async () => {
-			const file = input.files[0];
+			const imageFile = input.files[0];
+			const fileReader = new FileReader();
+			
+			fileReader.onload = async (e) => {
+				const imgSrc = e.target.result;
 
-			try {
-				const fileReader = new FileReader();
-				const formData = new FormData();
-
-				const fileUuid = `${uuid()}.${mime.extension(file.type)}`;
-
-				formData.append("Content-Type", file.type);
-				formData.append("file", file);
-				formData.append("key", fileUuid);
-				formData.append("filename", fileUuid);
-				formData.append("originalname", file.name);
-
-				fileReader.readAsDataURL(file);
-
-        const imgSrc = await new Promise((resolve, reject) => {
-          fileReader.onload = (e) => resolve(e.target.result);
-          fileReader.onerror = (err) => reject(err);
-        });
-
-				setDetailImages((prevDetailsImages) => [
-					...prevDetailsImages,
-					{
-						formData,
-						imgSrc,
-						fileName: fileUuid,
-						originalname: file.name,
-						type: file.type,
-					},
-				]);
-
-				if (imgSrc) {
-					const range = quillRef.current.getEditor().getSelection();
-
-					quillRef.current.getEditor().insertEmbed(range.index, 'image', imgSrc);
-				}
+				// setDetailImages((prevImages) => [...prevImages, imageFile]);
+				setDetailImages((prevImages) => [...prevImages, { file: imageFile, dataUrl: imgSrc }]);
 				
-			} catch (error) {
-				console.error(error);
+				const range = quillRef.current.getEditor().getSelection();
+				
+				quillRef.current.getEditor().insertEmbed(range.index, "image", imgSrc);
+				quillRef.current.getEditor().insertText(range.index + 1, "\n");
+				quillRef.current.getEditor().setSelection(range.index + 2);
+			};
+
+			if (imageFile) {
+				fileReader.readAsDataURL(imageFile);
 			}
 		}
 	};

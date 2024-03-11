@@ -1,9 +1,9 @@
 //상품 업로드 컴포넌트
-import React, { useState, useRef, useContext } from "react"; //useContext
+import React, { useState, useRef, useContext } from "react";
 import axios from "axios";
 import styled from "styled-components";
-import { v4 as uuid } from 'uuid';
-import mime from "mime-types";
+// import { v4 as uuid } from 'uuid';
+// import mime from "mime-types";
 import { toast } from "react-toastify";
 import Quill from "./Quill";
 import UploadInput from "./UploadInput";
@@ -226,6 +226,7 @@ const UploadForm = () => {
     name, setName,
     price, setPrice,
     mainImages, setMainImages,
+    previews, setPreviews,
     details, setDetails,
     detailImages, setDetailImages,
     type, setType,
@@ -233,66 +234,50 @@ const UploadForm = () => {
     color, setColor,
   } = useContext(ProductContext);
 
-	const imageHandler = async (e) => {
-    const imgFiles = e.target.files; //파일정보 가져오기
-    const newPreviews = []; //추가로 선택된 파일정보 저장
+  const imageHandler = async (e) => {
+    const imageFiles = e.target.files; //파일정보 가져오기
+    setMainImages(imageFiles);
 
-    for (const imgFile of imgFiles) {
-      try {
-        const fileReader = new FileReader();
-        const formData = new FormData();
-
-        const fileUuid = `${uuid()}.${mime.extension(imgFile.type)}`;
-
-        formData.append("Content-Type", imgFile.type);
-        formData.append("file", imgFile);
-        formData.append("key", fileUuid);
-				formData.append("filename", fileUuid);
-				formData.append("originalname", imgFile.name);
-
-        fileReader.readAsDataURL(imgFile);
-
-        const imgSrc = await new Promise((resolve, reject) => {
-          fileReader.onload = (e) => resolve(e.target.result);
-          fileReader.onerror = (err) => reject(err);
-        });
-
-        newPreviews.push({
-          formData,
-          imgSrc,
-          fileName: fileUuid,
-          originalname: imgFile.name,
-          type: imgFile.type
-        });
-        
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    if (mainImages.length + newPreviews.length > 4) {
+    if (mainImages.length + imageFiles.length > 4) {
       toast.error("대표 이미지는 최대 4개까지 업로드 가능합니다.");
-      return;
+    } else{
+      const newImages = [...new Set([...mainImages, ...imageFiles])];
+
+      const imagePreviews = await Promise.all(
+        [...imageFiles].map(async (file) => {
+          return new Promise((resolve, reject) => {
+            try {
+              const fileReader = new FileReader();
+              fileReader.readAsDataURL(file);
+              fileReader.onload = (e) => resolve({
+                imgSrc: e.target.result,
+                fileName: file.name
+              })
+            } catch (error) {
+              reject(error);
+            }
+          })
+        })
+      )
+
+      setMainImages(newImages); 
+      setPreviews((prevPreviews) => [...prevPreviews, ...imagePreviews]);
     }
-    
-    setMainImages((prevMainImages) => [
-      ...prevMainImages,
-      ...newPreviews.map((preview) => ({
-        formData: preview.formData,
-        imgSrc: preview.imgSrc,
-        fileName: preview.fileName,
-        originalname: preview.originalname,
-        type: preview.type,
-      })),
-    ]);
-  };
+  }
 
   const imageDeleteHandler = (index) => {
-    const updatedPreviews = [...mainImages];
 
-    updatedPreviews.splice(index, 1);
+    setMainImages((prevMainImages) => {
+      const newMainImages = [...prevMainImages];
+      newMainImages.splice(index, 1);
+      return newMainImages;
+    });
 
-    setMainImages(updatedPreviews);
+    setPreviews((prevPreviews) => {
+      const newPreviews = [...prevPreviews];
+      newPreviews.splice(index, 1);
+      return newPreviews;
+    });
   };
 
 	const priceCommaToNumber = (e) => {
@@ -306,125 +291,102 @@ const UploadForm = () => {
     setPrice(numberWithCommas);
   };
 
-	const onSubmit = async (e) => {
-		e.preventDefault();
+  const onSubmit = async (e) => {
+    e.preventDefault();
 
-    const formData = new FormData();
+    try {
+      if (
+        !mainImages ||
+        !detailImages ||
+        !name ||
+        !price ||
+        !details ||
+        !type ||
+        !material ||
+        !color
+      ) throw new Error("모든 정보를 입력해주세요.");
 
-    mainImages.forEach((image) => {
-      formData.append("mainImage", image.formData.get('file'), image.fileName);
-    });
-
-    detailImages.forEach((image) => {
-      formData.append("detailImage", image.formData.get('file'), image.fileName);
-    });
-
-    formData.append("name", name);
-    formData.append("price", price);
-    formData.append("details", details);
-    formData.append("type", type);
-    formData.append("material", material);
-    formData.append("color", color);
-
-		try {
-
-      const res = await axios.post("upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const mainPresignedData = await axios.post("/upload/presigned", {
+        contentTypes: mainImages.map((image) => image.type)
       });
-      
-      // const presignedDataMain = await axios.post("upload/presigned", {
-      //   contentTypes: mainImages.map((file) => ({
-      //     type: file.type,
-      //     fileName: file.fileName,
-      //   })),
-      // });
-      
-      // const presignedDataDetail = await axios.post("upload/presigned", {
-      //   contentTypes: detailImages.map((file) => ({
-      //     type: file.type,
-      //     fileName: file.fileName,
-      //   })),
-      // });
-      
-      // await Promise.all(
-      //   mainImages.map((file, index) => {
-      //     const { presigned } = presignedDataMain.data[index];
-      
-      //     const formData = new FormData();
-      
-      //     for (const key in presigned.fields) {
-      //       formData.append(key, presigned.fields[key]);
-      //     }
-      
-      //     formData.append("Content-Type", file.type);
-      //     formData.append("file", file);
-      
-      //     return axios.post(presigned.url, formData);
-      //   })
-      // );
-      
-      // await Promise.all(
-      //   detailImages.map((file, index) => {
-      //     const { presigned } = presignedDataDetail.data[index];
-      
-      //     const formData = new FormData();
-      
-      //     for (const key in presigned.fields) {
-      //       formData.append(key, presigned.fields[key]);
-      //     }
-      
-      //     formData.append("Content-Type", file.type);
-      //     formData.append("file", file);
-      
-      //     return axios.post(presigned.url, formData);
-      //   })
-      // );
-      
-      // const res = await axios.post("upload", {
-      //   mainImages: presignedDataMain.data.map((item) => ({
-      //     imageKey: item.imageKey,
-      //     originalname: item.originalname,
-      //   })),
-      //   detailImages: presignedDataDetail.data.map((item) => ({
-      //     imageKey: item.imageKey,
-      //     originalname: item.originalname,
-      //   })),
-      //   name,
-      //   price,
-      //   details,
-      //   type,
-      //   material,
-      //   color,
-      // });
-  
 
-      //form 유효성 검사 필요
+      const detailPresignedData = await axios.post("/upload/presigned", {
+        contentTypes: detailImages.map((image) => image.file.type)
+      });
 
-      setProducts((prevData) => [res.data, ...prevData]); //실시간 업로드 반영
+      await Promise.all(mainImages.map(async (file, index) => {
+        const { presigned } = mainPresignedData.data[index];
+        const formData = new FormData();
+      
+        for (const key in presigned.fields) {
+          formData.append(key, presigned.fields[key]);
+        }
+      
+        formData.append("Content-Type", file.type);
+        formData.append("file", file);
+      
+        return axios.post(presigned.url, formData);
+      }));
+
+      await Promise.all(detailImages.map(async (file, index) => {
+        const { presigned } = detailPresignedData.data[index];
+        const formData = new FormData();
+      
+        for (const key in presigned.fields) {
+          formData.append(key, presigned.fields[key]);
+        }
+      
+        formData.append("Content-Type", file.file.type);
+        formData.append("file", file.file);
+      
+        return axios.post(presigned.url, formData);
+      }));
+
+      const res = await axios.post("/upload", {
+        mainImages: mainPresignedData.data.map((data) => ({
+          imageKey: data.imageKey,
+        })),
+        detailImages: detailPresignedData.data.map((data) => ({
+          imageKey: data.imageKey,
+        })),
+        name,
+        price,
+        details,
+        type,
+        material,
+        color,
+      });
+
+      console.log({ res });
+
+      setProducts((prevData) => [res.data, ...prevData]);
       setProductsAll((prevData) => [res.data, ...prevData]);
       toast.success("업로드 성공");
 
-      setTimeout(() =>{ //초기화
+      setTimeout(() => {
         resetData();
       }, 1000);
-		} catch (error) {
-      toast.error(error.response.data.message);
-      resetData();
-			console.error(error);
-		}
-	};
+
+    } catch (error) {
+      const errorMessage = error.response && error.response.data && error.response.data.message
+        ? error.response.data.message
+        : error.message;
+      toast.error(errorMessage);
+      // resetData();
+      console.error(error);
+    }
+  };
 
   const resetData = () => {
+    setClose(true);
     setName("");
     setPrice("");
     setMainImages([]);
+    setPreviews([]);
     setDetails([]);
     setType("");
     setMaterial("");
     setColor("");
-    setClose(true);
 
     setTimeout(() => {
       setModalView("off");
@@ -437,14 +399,18 @@ const UploadForm = () => {
   const firstMainImageCheck = (index) => {
     setMainImgChecked(index);
 
-    const checkedImage = mainImages.splice(index, 1)[0];
-
-    mainImages.unshift(checkedImage);
-    setMainImages([...mainImages]);
-    setMainImgChecked(0);
+    setMainImages((prevMainImages) => {
+      const newMainImages = [...prevMainImages]; 
+      const selectedImage = newMainImages[index];
+  
+      newMainImages.splice(index, 1);
+      newMainImages.unshift(selectedImage);
+  
+      return newMainImages; 
+    });
   }
 
-	const previewsImg = mainImages && mainImages.map((preview,index) => (
+	const previewsImg = previews && previews.map((preview,index) => (
     <li key={preview.fileName}>
       <input
         type="radio"
@@ -524,14 +490,6 @@ const UploadForm = () => {
 				value={material}
 				onChange={(e) => setMaterial(e.target.value)}
 			/>
-
-			{/* <UploadInput
-				label="색상"
-				placeholder="ex) 검정"
-        type="radio"
-				value={color}
-				onChange={(e) => setColor(e.target.value)}
-			/> */}
 
       <UploadInput
         label="색상"

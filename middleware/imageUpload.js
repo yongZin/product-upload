@@ -8,8 +8,11 @@ const { s3 } = require("../aws");
 const storage = multerS3({ //클라이언트에서 uuid를 사용한 경우
   s3,
   bucket: "yongzin",
-  key: (req, file, callback) => {
-    callback(null, `raw/${file.originalname}`);
+  // key: (req, file, callback) => {
+  //   callback(null, `raw/${file.originalname}`);
+  // },
+	key: (req, file, callback) => {
+    callback(null, `raw/${uuid()}.${mime.extension(file.mimetype)}`)
   },
 });
 

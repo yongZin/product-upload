@@ -9,8 +9,8 @@ const { promisify } = require("util");
 const mongoose = require("mongoose");
 const { s3, getSignedUrl } = require("../aws");
 const { DeleteObjectsCommand } = require("@aws-sdk/client-s3");
-
-// const fileUnlink = promisify(fs.unlink);
+const { v4: uuid } = require("uuid");
+const mime = require("mime-types");
 
 productRouter.post("/presigned", async (req, res) => {
 	try {
@@ -22,8 +22,7 @@ productRouter.post("/presigned", async (req, res) => {
 
 		const presignedData = await Promise.all(
 			contentTypes.map(async (contentType) => {
-
-        const imageKey = `${contentType.fileName}`;
+        const imageKey = `${uuid()}.${mime.extension(contentType)}`;
         const key = `raw/${imageKey}`;
         const presigned = await getSignedUrl({ key });
 
@@ -39,57 +38,6 @@ productRouter.post("/presigned", async (req, res) => {
 	}
 });
 
-// productRouter.post(
-// 	"/", upload.fields([
-// 		{ name: 'mainImage', maxCount: 10 },
-// 		{ name: 'detailImage', maxCount: 10 }
-// 	]), async (req, res) => {
-// 	//DB 저장
-// 	try {
-// 		if(!req.user) throw new Error("권한이 없습니다."); //로그인 유무 확인
-		
-// 		const { name, price, mainImages, detailImages, details, type, material, color } = req.body;
-// 		// const mainImages = req.files.mainImage || [];
-// 		// const detailImages = req.files.detailImage || [];
-		
-// 		const product = await new Product({
-// 			user: {
-// 				_id: req.user.id,
-// 				name: req.user.name,
-// 				userID: req.user.userID,
-// 			},
-// 			key: mainImages[0].imageKey,
-// 			name: name,
-// 			price: price,
-// 			mainImages: await Promise.all(
-// 				mainImages.map((file) => ({
-// 					key: file.imageKey,
-// 					filename: file.imageKey,
-// 					originalname: file.imageKey,
-// 				})),
-// 			),
-// 			detailImages: await Promise.all(
-// 				detailImages.map((file) => ({
-// 					key: file.imageKey,
-// 					filename: file.imageKey,
-// 					originalname: file.imageKey,
-// 				})),
-// 			),
-// 			details: details,
-// 			type: type,
-// 			material: material,
-// 			color: color,
-// 		}).save();
-
-// 		res.json(product);
-		
-// 	} catch (error) {
-// 		console.log(error);
-// 		res.status(400).json({ message: error.message });
-// 	}
-// });
-
-
 productRouter.post(
 	"/", upload.fields([
 		{ name: 'mainImage', maxCount: 10 },
@@ -99,9 +47,7 @@ productRouter.post(
 	try {
 		if(!req.user) throw new Error("권한이 없습니다."); //로그인 유무 확인
 
-		const { name, price, details, type, material, color } = req.body;
-		const mainImages = req.files.mainImage || [];
-		const detailImages = req.files.detailImage || [];
+		const { name, price, mainImages, detailImages, details, type, material, color } = req.body;
 		
 		const product = await new Product({
 			user: {
@@ -109,18 +55,18 @@ productRouter.post(
 				name: req.user.name,
 				userID: req.user.userID,
 			},
-			key: mainImages[0].originalname,
+			key: mainImages[0].imageKey,
 			name: name,
 			price: price,
 			mainImages: mainImages.map((file) => ({
-				key: file.originalname,
-				filename: file.originalname,
-				originalname: file.originalname,
+				key: file.imageKey,
+				filename: file.imageKey,
+				// originalFileName: file.originalname,
 			})),
 			detailImages: detailImages.map((file) => ({
-				key: file.originalname,
-				filename: file.originalname,
-				originalname: file.originalname,
+				key: file.imageKey,
+				filename: file.imageKey,
+				// originalFileName: file.originalname,
 			})),
 			details: details,
 			type: type,

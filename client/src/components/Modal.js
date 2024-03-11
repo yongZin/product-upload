@@ -1,9 +1,11 @@
 //모달 팝업 컴포넌트
 import React, { useContext } from "react";
 import styled from "styled-components";
+import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
 
 const Background = styled.div`
+  background-color:rgba(0,0,0,0.1);
 	backdrop-filter:blur(2px);
   position:fixed;
   inset:0;
@@ -142,6 +144,7 @@ const Popup = styled.div`
 `;
 
 const Modal = ({ children }) => {
+  const {resetData} = useContext(ProductContext);
   const {
     modalView,
     close,
@@ -152,7 +155,10 @@ const Modal = ({ children }) => {
 		<>
       <Background
         className={close ? "form-close" : ""}
-        onClick={handleClose}
+        onClick={() => {
+          resetData();
+          handleClose();
+        }}
       />
 
       <Popup
