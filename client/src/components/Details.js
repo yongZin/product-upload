@@ -446,6 +446,7 @@ const ProductDetail = styled.div`
 	ul{
 		width:100%;
 		display:flex;
+		align-items:center;
 		border-bottom:1px solid #ccc;
 		li{
 			width:25%;
@@ -454,7 +455,9 @@ const ProductDetail = styled.div`
 			color:#414141;
 			&:last-child{
 				width:75%;
+				line-height:1.25;
 				border-left:1px solid #ccc;
+				word-break:keep-all;
 			}
 		}
 		&:last-child{
@@ -553,21 +556,25 @@ const CloseBtn = styled.button`
 	transition:0.3s;
 	&:before,&:after{
 		content:"";
-		width:12px;
+		width:40%;
 		height:2px;
 		border:0;
 		background-color:#fff;
 		position:absolute;
-		top:14px;
-		left:9px;
-		transform:rotate(45deg);
+		top:50%;
+		left:50%;
+		transform-origin:center;
+		transform:translate(-50%, -50%) rotate(45deg);
 	}
 	&:after{
-		transform:rotate(-45deg);
+		transform:translate(-50%, -50%) rotate(-45deg);
 	}
 	&:hover{
  		background-color:rgba(0,0,0,0.2);
  	}
+	@media ${props => props.theme.tablet} {
+		bottom:10px;
+	}
 `;
 const Recommend = styled(Swiper)`
 	margin-bottom:20px;
@@ -884,8 +891,18 @@ const Details = () => {
 					</ul>
 
 					<ul>
-						<li>크기</li>
-						<li>310 x 370 x 120 mm</li>
+						<li>제조자</li>
+						<li>프라이탁</li>
+					</ul>
+
+					<ul>
+						<li>제조국</li>
+						<li>스위스</li>
+					</ul>
+
+					<ul>
+						<li>취급시 주의사항</li>
+						<li>뜨거운 곳에 장시간 두었을 경우 원단이 손상될 수 있으니 사용에 주의해 주시기 바랍니다</li>
 					</ul>
 				</ProductDetail>
 			</div>
@@ -895,15 +912,12 @@ const Details = () => {
 
 				<Recommend
 					modules={[Navigation, Pagination]}
-					slidesPerView={1}
+					slidesPerView={2}
 					spaceBetween={20}
 					loop={true}
 					pagination={{ clickable: true }}
 					navigation
 					breakpoints={{
-						401: {
-							slidesPerView:2,
-						},
 						601: {
 							slidesPerView:3,
 						}

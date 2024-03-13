@@ -10,7 +10,7 @@ import { AuthContext } from "../context/AuthContext";
 import { ProductContext } from "../context/ProductContext";
 const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
-const Wrap = styled.div`
+const Wrap = styled.header`
 	width:100%;
 	background-image:linear-gradient(to bottom, #000000, transparent);
 	position:fixed;
@@ -20,7 +20,7 @@ const Wrap = styled.div`
 	transition:0.1s;
 	background-color:transparent;
 `;
-const Content = styled.div`
+const Content = styled.nav`
 	width:100%;
 	max-width:1000px;
 	display:flex;
@@ -147,17 +147,17 @@ const Navigation = () => {
 
 	return (
 		<Wrap>
-				<Content>
-					<Link className="nav-logo" to="/">홈</Link>
+			<Content>
+				<Link className="nav-logo" to="/">홈</Link>
 
-					<ul className="nav-btnBox">
-						{
-							userInfo ? <li onClick={logoutHandler}>로그아웃({userInfo.name})</li>
-							: <li onClick={() => setModalView("login")}>로그인</li>
-						}
-					</ul>
-				</Content>
-			</Wrap>
+				<ul className="nav-btnBox">
+					{
+						userInfo ? <li onClick={logoutHandler}>로그아웃({userInfo.name})</li>
+						: <li onClick={() => setModalView("login")}>로그인</li>
+					}
+				</ul>
+			</Content>
+		</Wrap>
 	)
 }
 

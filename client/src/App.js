@@ -4,14 +4,11 @@ import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
 import MainPage from "./pages/MainPage";
 
 const Container = styled.div`
   margin:0 auto;
-  /* padding:100px 0 0;
-  @media ${props => props.theme.tablet} {
-		padding:100px 0 0;
-  } */
 `;
 
 const App = () => {
@@ -22,6 +19,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<MainPage />} />
       </Routes>
+      <Footer />
     </Container>
   )
 }

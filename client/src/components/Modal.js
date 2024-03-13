@@ -114,7 +114,7 @@ const Popup = styled.div`
       }
       &-details{
         width:95%;
-        padding:40px 15px;
+        padding:40px 15px 50px;
         >div{
           &::-webkit-scrollbar{
             &-thumb{

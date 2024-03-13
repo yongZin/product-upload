@@ -357,8 +357,6 @@ const UploadForm = () => {
         color,
       });
 
-      console.log({ res });
-
       setProducts((prevData) => [res.data, ...prevData]);
       setProductsAll((prevData) => [res.data, ...prevData]);
       toast.success("업로드 성공");

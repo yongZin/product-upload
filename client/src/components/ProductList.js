@@ -516,14 +516,14 @@ const Loading = styled.div`
 		}
 	}
 `;
-const Wrap = styled.div`
+const Wrap = styled.section`
 	width:100%;
 	max-width:1000px;
 	margin:0 auto;
 	padding:60px 10px;
 	font-size:0;
 	@media ${props => props.theme.mobile} {
-		padding:0;
+		padding:0 0 60px;
 		&.background{
 			&:before{
 				content:"";
