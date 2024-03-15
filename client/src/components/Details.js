@@ -318,6 +318,7 @@ const TopImages = styled(Swiper)`
 	display:inline-block;
 	vertical-align:top;
 	font-size:0;
+	position:relative;
 	.swiper{
 		&-button{
 			&-prev,
@@ -385,8 +386,9 @@ const ProductInfo = styled.div`
 		max-width:500px;
 		margin:0 auto;
 		p{
-			line-height:1.4;
+			line-height:1.3;
 			font-size:16px;
+			font-family:var(--f-reular);
 			word-break:keep-all;
 			strong{
 				display:block;
@@ -401,7 +403,7 @@ const ProductInfo = styled.div`
 		}
 	}
 	&.on{
-		max-height:400px;
+		max-height:800px;
 		${(MoreBtn)}{
 			display:block;
 		}
@@ -462,6 +464,16 @@ const ProductDetail = styled.div`
 		}
 		&:last-child{
 			border-bottom:0;
+		}
+	}
+	@media ${props => props.theme.tablet} {
+		ul{
+			border-color:#eee;
+			li{
+				&:last-child{
+					border-color:#eee;
+				}
+			}
 		}
 	}
 `;
@@ -581,6 +593,7 @@ const Recommend = styled(Swiper)`
 	padding:20px;
 	border-radius:4px;
 	background-color:rgba(0,0,0,0.1);
+	position:relative;
 	.swiper{
 		&-slide{
 			ul{
@@ -658,10 +671,21 @@ const Details = () => {
 		const item = products.find((item) => item._id === productId);
 		
 		if (item) {
-			const updatedDetails = item.details.map((detail, index) => {
-				return detail.replace(/<img src="">/g, `<img src="https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.detailImages[index].key}">`)
-			});
+			const updatedDetails = item.details.map((detail) => {
+				const findImg = /<img src="">/g;
 
+				let detailIndex = 0;
+
+				const updatedDetail = detail.replace(findImg, () => {
+					const replacement = `<img src="https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.detailImages[detailIndex].key}">`;
+
+					detailIndex++;
+
+					return replacement;
+				});
+
+				return updatedDetail;
+			});
 
 			setProduct((prevProduct) => ({
 				...prevProduct,
