@@ -221,8 +221,8 @@ const UploadForm = () => {
   const [mainImgChecked, setMainImgChecked] = useState(0);
   const {setModalView, setClose} = useContext(ModalContext);
   const {
-    setProductsAll,
     setProducts,
+    productsAll, setProductsAll,
     name, setName,
     price, setPrice,
     mainImages, setMainImages,
@@ -342,6 +342,10 @@ const UploadForm = () => {
         return axios.post(presigned.url, formData);
       }));
 
+      const typeFilter = productsAll.filter(item => item.type === type);
+      const typeIndex = typeFilter.length + 1;
+      const newName = `${name}_${String(typeIndex).padStart(3, "0")}`
+
       const res = await axios.post("/upload", {
         mainImages: mainPresignedData.data.map((data) => ({
           imageKey: data.imageKey,
@@ -349,7 +353,7 @@ const UploadForm = () => {
         detailImages: detailPresignedData.data.map((data) => ({
           imageKey: data.imageKey,
         })),
-        name,
+        name: newName,
         price,
         details,
         type,
