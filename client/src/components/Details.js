@@ -327,6 +327,7 @@ const TopImages = styled(Swiper)`
 				height:35px;
 				color:#000;
 				background-color:rgba(0,0,0,0.1);
+				z-index:1000;
 				&:after{
 					font-size:15px;
 				}
@@ -452,7 +453,7 @@ const ProductDetail = styled.div`
 		border-bottom:1px solid #ccc;
 		li{
 			width:25%;
-			padding:18px 20px;
+			padding:15px 20px;
 			font-size:14px;
 			color:#414141;
 			&:last-child{
@@ -590,7 +591,7 @@ const CloseBtn = styled.button`
 `;
 const Recommend = styled(Swiper)`
 	margin-bottom:20px;
-	padding:20px;
+	padding:30px 20px;
 	border-radius:4px;
 	background-color:rgba(0,0,0,0.1);
 	position:relative;
@@ -625,6 +626,7 @@ const Recommend = styled(Swiper)`
 				height:35px;
 				color:#000;
 				background-color:rgba(0,0,0,0.1);
+				z-index:1000;
 				&:after{
 					font-size:15px;
 				}
@@ -931,48 +933,50 @@ const Details = () => {
 				</ProductDetail>
 			</div>
 
-			<div>
-				<DetailTitle>추천 상품</DetailTitle>
+			{recommendedProducts && recommendedProducts.length > 0 &&
+				<div>
+					<DetailTitle>추천 상품</DetailTitle>
 
-				<Recommend
-					modules={[Navigation, Pagination]}
-					slidesPerView={2}
-					spaceBetween={20}
-					loop={true}
-					pagination={{ clickable: true }}
-					navigation
-					breakpoints={{
-						601: {
-							slidesPerView:3,
-						}
-					}}
-				>
-					{recommendedProducts && recommendedProducts.map((item) => (
-						<SwiperSlide key={item._id}>
-							<ul
-								onClick={() => {
-									handleClose()
+					<Recommend
+						modules={[Navigation, Pagination]}
+						slidesPerView={2}
+						spaceBetween={20}
+						loop={true}
+						pagination={{ clickable: true }}
+						navigation
+						breakpoints={{
+							601: {
+								slidesPerView:3,
+							}
+						}}
+					>
+						{recommendedProducts.map((item) => (
+							<SwiperSlide key={item._id}>
+								<ul
+									onClick={() => {
+										handleClose()
 
-									setTimeout(() => {
-										productDetails(item._id);
-										setModalView("details");
-									}, 400);
-								}}
-							>
-								<li className="item-image">
-									<img
-										key={item.mainImages[0]._id}
-										src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.mainImages[0].key}`}
-										alt="추천상품 이미지"
-									/>	
-								</li>
-								<li className="item-name">{item.name}</li>
-								<li className="item-price">{item.price}</li>
-							</ul>
-						</SwiperSlide>
-					))}
-				</Recommend>
-			</div>
+										setTimeout(() => {
+											productDetails(item._id);
+											setModalView("details");
+										}, 400);
+									}}
+								>
+									<li className="item-image">
+										<img
+											key={item.mainImages[0]._id}
+											src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.mainImages[0].key}`}
+											alt="추천상품 이미지"
+										/>	
+									</li>
+									<li className="item-name">{item.name}</li>
+									<li className="item-price">{item.price}</li>
+								</ul>
+							</SwiperSlide>
+						))}
+					</Recommend>
+				</div>
+			}
 
 			<CloseBtn type="button" onClick={() => handleClose()}></CloseBtn>
 		</Wrap>
