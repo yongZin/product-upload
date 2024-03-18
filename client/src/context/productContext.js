@@ -115,10 +115,11 @@ export const ProductProvider = (prop) => {
 	};
 
 	const resetData = () => {
+    setPreviews([]);
 		setName("");
     setPrice("");
     setMainImages([]);
-    setPreviews([]);
+		setDetailImages([]);
     setDetails([]);
     setType("");
     setMaterial("");

@@ -200,6 +200,32 @@ const BtnBox = styled.div`
         background-color:rgba(0, 198, 4, 0.65);
       }
     }
+    &.loading{
+      position:relative;
+      color:transparent;
+      pointer-events:none;
+      &:before{
+        content:"";
+        width:25px;
+        height:25px;
+        border-radius:50%;
+        border:5px solid #eee;
+        border-bottom-color:#ccc;
+        animation:rotation 0.6s linear infinite;
+        position:absolute;
+        top:calc(50% - 13px);
+        left:calc(50% - 13px);
+        box-sizing:border-box;
+      }
+      @keyframes rotation {
+        0%{
+          transform:rotate(0deg);
+        }
+        100%{
+          transform:rotate(360deg);
+        }
+      }
+    }
   }
   @media ${props => props.theme.tablet} {
     button{
@@ -219,6 +245,7 @@ const BtnBox = styled.div`
 const UploadForm = () => {
 	const inputRef = useRef();
   const [mainImgChecked, setMainImgChecked] = useState(0);
+  const [loading, setLoading] = useState(false);
   const {setModalView, setClose} = useContext(ModalContext);
   const {
     setProducts,
@@ -306,6 +333,8 @@ const UploadForm = () => {
         !color
       ) throw new Error("모든 정보를 입력해주세요.");
 
+      setLoading(true);
+
       const mainPresignedData = await axios.post("/upload/presigned", {
         contentTypes: mainImages.map((image) => image.type)
       });
@@ -364,6 +393,7 @@ const UploadForm = () => {
       setProducts((prevData) => [res.data, ...prevData]);
       setProductsAll((prevData) => [res.data, ...prevData]);
       toast.success("업로드 성공");
+      setLoading(false);
 
       setTimeout(() => {
         resetData();
@@ -381,10 +411,11 @@ const UploadForm = () => {
 
   const resetData = () => {
     setClose(true);
+    setPreviews([]);
     setName("");
     setPrice("");
     setMainImages([]);
-    setPreviews([]);
+    setDetailImages([]);
     setDetails([]);
     setType("");
     setMaterial("");
@@ -503,7 +534,7 @@ const UploadForm = () => {
 
       <BtnBox>
         <button type="button" onClick={() => resetData()}>닫기</button>
-        <button type="submit">업로드</button>
+        <button type="submit" className={loading ? "loading" : ""}>업로드</button>
       </BtnBox>
 		</form>
 	)
