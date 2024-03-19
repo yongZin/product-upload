@@ -21,7 +21,7 @@ export const ProductProvider = (prop) => {
 	const [selectedProduct, setSelectedProduct] = useState();
 	const [uploadLoad, setUploadLoad] = useState(false);
 	const [uploadError, setUploadError] = useState(false);
-	const [srotFilterValue, setSrotFilterValue] = useState("new");
+	const [sortFilterValue, setSortFilterValue] = useState("new");
 	const [colorFilterValue, setColorFilterValue] = useState("");
 	const [typeFilterValue, setTypeFilterValue] = useState("");
 	const [totalProductCount, setTotalProductCount] = useState("");
@@ -36,7 +36,7 @@ export const ProductProvider = (prop) => {
 			.get(`/upload`, {
 				params: {
 					lastid: lastProductId,
-					sort: srotFilterValue,
+					sort: sortFilterValue,
 					color: colorFilterValue,
 					type: typeFilterValue,
 				}
@@ -55,7 +55,7 @@ export const ProductProvider = (prop) => {
 			.finally(() => {
 				setUploadLoad(false);
 			});
-	}, [uploadLoad, lastProductId, srotFilterValue, colorFilterValue, typeFilterValue]);
+	}, [uploadLoad, lastProductId, sortFilterValue, colorFilterValue, typeFilterValue]);
 
 	useEffect(() => {
 		setProducts([]);
@@ -67,7 +67,7 @@ export const ProductProvider = (prop) => {
 		axios
 			.get(`/upload`, {
 				params: {
-					sort: srotFilterValue,
+					sort: sortFilterValue,
 					color: colorFilterValue,
 					type: typeFilterValue,
 				}
@@ -86,7 +86,11 @@ export const ProductProvider = (prop) => {
 			.finally(() => {
 				setUploadLoad(false);
 			});
-	}, [srotFilterValue, colorFilterValue, typeFilterValue]);
+	}, [sortFilterValue, colorFilterValue, typeFilterValue]);
+
+	useEffect(() => {
+		console.log(lastProductId);
+	}, [lastProductId])
 
 	useEffect(() => {//productsAll에 상품정보 담기(모든 상품 저장)
 		setUploadLoad(true);
@@ -141,7 +145,7 @@ export const ProductProvider = (prop) => {
 		selectedProduct, setSelectedProduct,
 		uploadLoad, setUploadLoad,
 		uploadError,
-		srotFilterValue, setSrotFilterValue,
+		sortFilterValue, setSortFilterValue,
 		colorFilterValue, setColorFilterValue,
 		typeFilterValue, setTypeFilterValue,
 		totalProductCount, setTotalProductCount,
