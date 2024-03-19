@@ -9,9 +9,9 @@ const ProductSchma = new mongoose.Schema(
 			userID: { type: String, required: true },
 		},
 		key: { type: String, required: true },
-		likes: [{ type: mongoose.Types.ObjectId }],
+		likes: [{ type: mongoose.Types.ObjectId, index: true }],
     name: { type: String, required: true },
-    price: { type: String, required: true },
+    price: { type: Number, required: true, index: true },
     mainImages: [
       {
         key: { type: String, required: true },

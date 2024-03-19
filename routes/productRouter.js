@@ -91,6 +91,7 @@ productRouter.get("/", async(req, res) => { //DB(상품리스트) 불러오기
 		let query = lastid ? { _id: { $lt: lastid } } : {};
 		let sortOption = {};
 		let filterCountQuery;
+		let productsQuery;
 
 		if (color) {
 			query.color = color;
@@ -110,23 +111,32 @@ productRouter.get("/", async(req, res) => { //DB(상품리스트) 불러오기
 		switch (sort) {
       case "new":
         sortOption = { _id: -1 }; // 최신 상품순
+				productsQuery = Product.find(query).sort(sortOption).limit(6);
         break;
       case "likes":
-        sortOption = { likes: -1 }; // 인기순
+        // sortOption = { likes: -1, _id: -1 }; // 인기순
+				productsQuery = Product.aggregate([
+					{ $match: query },
+					{ $addFields: { likesLength: { $size: "$likes" } } },
+					{ $sort: { likesLength: -1, _id: -1 } },
+					{ $limit: 6 }
+			]);
         break;
       case "highPrice":
-        sortOption = { price: -1 }; // 높은 가격순
+        sortOption = { price: -1, _id: -1 }; // 높은 가격순
+				productsQuery = Product.find(query).sort(sortOption).limit(6);
         break;
       case "lowPrice":
-        sortOption = { price: 1 }; // 낮은 가격순
+        sortOption = { price: 1, _id: -1 }; // 낮은 가격순
+				productsQuery = Product.find(query).sort(sortOption).limit(6);
         break;
       default:
         sortOption = { _id: -1 }; // 기본은 최신 상품순
+				productsQuery = Product.find(query).sort(sortOption).limit(6);
     }
 
-		const productsQuery = Product.find(query).sort(sortOption).limit(6);
+		// const productsQuery = Product.find(query).sort(sortOption).limit(6);
 		const totalProductCountQuery = Product.countDocuments({});
-
 		const [products, totalProductCount, filterCount] = await Promise.all([
 			productsQuery,
 			totalProductCountQuery,
@@ -150,6 +160,23 @@ productRouter.get("/all", async (req, res) => { //DB(모든정보) 불러오기
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+productRouter.get('/recommend', async (req, res) => {
+  try {
+    const { type, id } = req.query;
+    const filter = type ? { type } : {}; //type이 있으면 해당 type으로 필터링
+
+    const recommendedProducts = await Product.aggregate([
+      { $match: { ...filter, _id: { $ne: id } } }, //같은 type에서 현재 상품 제외
+      { $sample: { size: 6 } } //랜덤으로 6개의 상품 가져오기
+    ]);
+
+    res.json(recommendedProducts);
+  } catch (error) {
+    console.error('Error fetching random products:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 

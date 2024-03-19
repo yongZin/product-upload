@@ -555,7 +555,7 @@ const ProductList = () => {
 		uploadError,
 		totalProductCount,
 		uploadLoad, setUploadLoad,
-		srotFilterValue, setSrotFilterValue,
+		sortFilterValue, setSortFilterValue,
 		colorFilterValue, setColorFilterValue,
 		typeFilterValue, setTypeFilterValue,
 		loadMoreProduct,
@@ -603,13 +603,13 @@ const ProductList = () => {
 	const filterHandler = (filterType, target) => { //필터 이벤트
 		switch (filterType) {
 			case "default":
-				setSrotFilterValue("new");
+				setSortFilterValue("new");
 				setColorFilterValue("");
 				setTypeFilterValue("");
 
 				break;
 			case "sort":
-				setSrotFilterValue(target);
+				setSortFilterValue(target);
 
 				break;
 			case "color":
@@ -646,7 +646,7 @@ const ProductList = () => {
 				{item.name}
 			</li>
 
-			<li className="item-price">{item.price}</li>
+			<li className="item-price">{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</li>
 		</Item>
   ));
 
@@ -670,7 +670,7 @@ const ProductList = () => {
 					<div>
 						<button
 							type="button"
-							className={classnames({ on: srotFilterValue})}
+							className={classnames({ on: sortFilterValue})}
 							onClick={() => setMobileFilter(true)}
 						>
 							상품정렬
@@ -715,10 +715,10 @@ const ProductList = () => {
 										type="radio"
 										name="filterSrot"
 										value={option.value}
-										checked={srotFilterValue === option.value}
+										checked={sortFilterValue === option.value}
 										onChange={() => {
 											filterHandler("sort",option.value);
-											setSrotFilterValue(option.value);
+											setSortFilterValue(option.value);
 										}}
 									/>
 									<label htmlFor={option.value}>

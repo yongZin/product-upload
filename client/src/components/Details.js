@@ -700,13 +700,26 @@ const Details = () => {
 		}
 	}, [products, productId]);
 
-	useEffect(() => { //추천상품 불러오기(현재 상품을 제외한 같은 종류의 상품)
-		if (product) {
-				const filteredProducts = products.filter((item) => item.type === product.type && item._id !== product._id);
+	useEffect(() => {
+    const fetchData = async () => {
+			if (!product) return;
 
-				setRecommendedProducts(filteredProducts.slice(0, 6));
-		}
-	}, [product, products, setRecommendedProducts]);
+      try {
+        const response = await axios.get("/upload/recommend", {
+					params: {
+						type: product.type,
+						id: product._id
+					}
+				});
+
+        setRecommendedProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching recommended products:', error);
+      }
+    };
+
+    fetchData();
+  }, [product]);
 
 	useEffect(() => { //좋아요 유무 확인
 		if (
@@ -823,7 +836,7 @@ const Details = () => {
 				<TopInfo>
 					<TopText>
 						<p>{product.name}</p>
-						<p className="price">{product.price}</p>
+						<p className="price">{product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
 					</TopText>
 
 					<TopEtc>
@@ -970,7 +983,7 @@ const Details = () => {
 										/>	
 									</li>
 									<li className="item-name">{item.name}</li>
-									<li className="item-price">{item.price}</li>
+									<li className="item-price">{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</li>
 								</ul>
 							</SwiperSlide>
 						))}

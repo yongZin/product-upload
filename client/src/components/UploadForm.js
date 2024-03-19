@@ -136,6 +136,7 @@ const ImgPreview = styled.div`
       inset:0;
       cursor:pointer;
       img{
+        height:100%;
         pointer-events:none;
       }
     }
@@ -312,11 +313,16 @@ const UploadForm = () => {
 		
 		if (!value) return;
 
-    const numberValue = value.replace(/[^0-9]/g, '');
-		const numberWithCommas = numberValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const numberValue = parseInt(value.replace(/[^0-9]/g, ''), 10) || 0;
+    // const numberValue = value.replace(/[^0-9]/g, '');
+		// const numberWithCommas = numberValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-    setPrice(numberWithCommas);
+    setPrice(numberValue);
   };
+
+  const numberWithCommas = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -476,7 +482,7 @@ const UploadForm = () => {
 				label="상품가격"
 				placeholder="ex) 248000"
         type="text"
-				value={price}
+				value={numberWithCommas(price)}
 				onChange={(e) => priceCommaToNumber(e)}
 			/>
       
