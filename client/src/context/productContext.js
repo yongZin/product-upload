@@ -7,7 +7,8 @@ export const ProductInfoContext = createContext();
 export const ProductQuillContext = createContext();
 
 export const ProductProvider = (prop) => {
-	const [products, setProducts] = useState([]); //상품 리스트용
+	const [products, setProducts] = useState([]); //전체상품
+	const [productsList, setProductsList] = useState([]); //상품 리스트용
 	const [productsAll, setProductsAll] = useState([]); //상품 필터용
 	const [name, setName] = useState("");
 	const [price, setPrice] = useState("");
@@ -25,41 +26,59 @@ export const ProductProvider = (prop) => {
 	const [colorFilterValue, setColorFilterValue] = useState("");
 	const [typeFilterValue, setTypeFilterValue] = useState("");
 	const [totalProductCount, setTotalProductCount] = useState("");
-	const [lastProductId, setLastProductId] = useState("");
+	// const [lastProductId, setLastProductId] = useState("");
+	// const [lastProductPrice, setLastProductPrice] = useState();
+
+	// const loadMoreProduct = useCallback(() => {
+	// 	if (uploadLoad || !lastProductId) return;
+
+	// 	setUploadLoad(true);
+
+	// 	axios
+	// 		.get(`/upload`, {
+	// 			params: {
+	// 				lastid: lastProductId,
+	// 				lastPrice: lastProductPrice,
+	// 				sort: sortFilterValue,
+	// 				color: colorFilterValue,
+	// 				type: typeFilterValue,
+	// 			}
+	// 		})
+	// 		.then((result) => {
+	// 			if (result.data.products.length > 0) {
+	// 				setProducts((prevData) => [...prevData, ...result.data.products]);
+	// 				setLastProductId(result.data.products[result.data.products.length - 1]._id);
+	// 				setLastProductPrice(result.data.products[result.data.products.length - 1].price);
+	// 				setTotalProductCount(result.data.productCount);
+
+					
+	// 				console.log(result.data);
+	// 			}
+	// 		})
+	// 		.catch((error) => {
+	// 			console.error(error);
+	// 			setUploadError(error);
+	// 		})
+	// 		.finally(() => {
+	// 			setUploadLoad(false);
+	// 		});
+	// }, [uploadLoad, lastProductId, lastProductPrice, sortFilterValue, colorFilterValue, typeFilterValue]);
 
 	const loadMoreProduct = useCallback(() => {
-		if (uploadLoad || !lastProductId) return;
-
+		if (uploadLoad) return;
 		setUploadLoad(true);
-
-		axios
-			.get(`/upload`, {
-				params: {
-					lastid: lastProductId,
-					sort: sortFilterValue,
-					color: colorFilterValue,
-					type: typeFilterValue,
-				}
-			})
-			.then((result) => {
-				if (result.data.products.length > 0) {
-					setProducts((prevData) => [...prevData, ...result.data.products]);
-					setLastProductId(result.data.products[result.data.products.length - 1]._id);
-					setTotalProductCount(result.data.productCount);
-				}
-			})
-			.catch((error) => {
-				console.error(error);
-				setUploadError(error);
-			})
-			.finally(() => {
-				setUploadLoad(false);
-			});
-	}, [uploadLoad, lastProductId, sortFilterValue, colorFilterValue, typeFilterValue]);
+		
+		const startIndex = productsList.length;
+		const endIndex = startIndex + 6;
+		const newProducts = products.slice(startIndex, endIndex);
+		
+		setProductsList((prevProducts) => [...prevProducts, ...newProducts]);
+		setUploadLoad(false);
+	}, [uploadLoad, products, productsList]);
 
 	useEffect(() => {
 		setProducts([]);
-		setLastProductId(null);
+		// setLastProductId(null);
 		setTotalProductCount(0);
 
 		setUploadLoad(true);
@@ -75,7 +94,8 @@ export const ProductProvider = (prop) => {
 			.then((result) => {
 				if (result.data.products.length > 0) {
 					setProducts(result.data.products);
-					setLastProductId(result.data.products[result.data.products.length - 1]._id);
+					// setLastProductId(result.data.products[result.data.products.length - 1]._id);
+					// setLastProductPrice(result.data.products[result.data.products.length - 1].price);
 					setTotalProductCount(result.data.productCount);
 				}
 			})
@@ -89,8 +109,9 @@ export const ProductProvider = (prop) => {
 	}, [sortFilterValue, colorFilterValue, typeFilterValue]);
 
 	useEffect(() => {
-		console.log(lastProductId);
-	}, [lastProductId])
+    const initialProducts = products.slice(0, 6);
+    setProductsList(initialProducts);
+	}, [products]);
 
 	useEffect(() => {//productsAll에 상품정보 담기(모든 상품 저장)
 		setUploadLoad(true);
@@ -132,6 +153,7 @@ export const ProductProvider = (prop) => {
 
 	const productContextValue = {
 		products, setProducts,
+		productsList, setProductsList,
 		productsAll, setProductsAll,
 		name, setName,
 		price, setPrice,

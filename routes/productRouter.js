@@ -84,15 +84,26 @@ productRouter.post(
 
 productRouter.get("/", async(req, res) => { //DB(상품리스트) 불러오기
 	try {
-		const { lastid, sort, color, type } = req.query;
+		const { lastid, lastPrice, sort, color, type } = req.query;
 
 		if(lastid && !mongoose.isValidObjectId(lastid)) throw new Error("lastid 오류");
 
-		let query = lastid ? { _id: { $lt: lastid } } : {};
-		let sortOption = {};
+		let query = {};
 		let filterCountQuery;
 		let productsQuery;
 
+		if (lastid) {
+			query._id = { $lt: lastid };
+		} 
+		if (lastPrice) {
+			const priceCondition = parseFloat(lastPrice);
+
+			if (sort === "highPrice") {
+				query.price = { $lt: priceCondition };
+			} else if (sort === "lowPrice") {
+				query.price = { $gt: priceCondition };
+			}
+		}
 		if (color) {
 			query.color = color;
 			filterCountQuery = Product.countDocuments({ color });
@@ -109,33 +120,29 @@ productRouter.get("/", async(req, res) => { //DB(상품리스트) 불러오기
 		}
 
 		switch (sort) {
-      case "new":
-        sortOption = { _id: -1 }; // 최신 상품순
-				productsQuery = Product.find(query).sort(sortOption).limit(6);
-        break;
-      case "likes":
-        // sortOption = { likes: -1, _id: -1 }; // 인기순
+			case "new":
+				productsQuery = Product.find(query).sort({ _id: -1 })
+				// .limit(6);
+				break;
+			case "highPrice":
+				productsQuery = Product.find(query).sort({ price: -1, _id: -1 })
+				// .limit(6);
+				break;
+			case "lowPrice":
+				productsQuery = Product.find(query).sort({ price: 1, _id: -1 })
+				// .limit(6);
+				break;
+			case "likes":
 				productsQuery = Product.aggregate([
-					{ $match: query },
-					{ $addFields: { likesLength: { $size: "$likes" } } },
-					{ $sort: { likesLength: -1, _id: -1 } },
-					{ $limit: 6 }
-			]);
-        break;
-      case "highPrice":
-        sortOption = { price: -1, _id: -1 }; // 높은 가격순
-				productsQuery = Product.find(query).sort(sortOption).limit(6);
-        break;
-      case "lowPrice":
-        sortOption = { price: 1, _id: -1 }; // 낮은 가격순
-				productsQuery = Product.find(query).sort(sortOption).limit(6);
-        break;
-      default:
-        sortOption = { _id: -1 }; // 기본은 최신 상품순
-				productsQuery = Product.find(query).sort(sortOption).limit(6);
-    }
+						{ $match: query },
+						{ $addFields: { likesLength: { $size: "$likes" } } },
+						{ $sort: { likesLength: -1, _id: -1 } }
+				]);
+				break;
+			default:
+				productsQuery = Product.find(query).sort({ _id: -1 }).limit(6);
+		}
 
-		// const productsQuery = Product.find(query).sort(sortOption).limit(6);
 		const totalProductCountQuery = Product.countDocuments({});
 		const [products, totalProductCount, filterCount] = await Promise.all([
 			productsQuery,

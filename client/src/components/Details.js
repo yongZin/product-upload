@@ -668,7 +668,7 @@ const Details = () => {
 	const [error, setError] = useState(false);
 	const wrapRef = useRef();
 	const productId = selectedProduct._id;
-	
+
 	useEffect(() => { //선택한 상품 정보 DB에서 찾아오기
 		const item = products.find((item) => item._id === productId);
 		

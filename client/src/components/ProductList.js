@@ -550,10 +550,11 @@ const Wrap = styled.section`
 
 const ProductList = () => {
 	const {
-		products,
+		// products,
 		productsAll,
 		uploadError,
 		totalProductCount,
+		productsList, setProductsList,
 		uploadLoad, setUploadLoad,
 		sortFilterValue, setSortFilterValue,
 		colorFilterValue, setColorFilterValue,
@@ -606,6 +607,7 @@ const ProductList = () => {
 				setSortFilterValue("new");
 				setColorFilterValue("");
 				setTypeFilterValue("");
+				setProductsList(productsList.slice(0, 6));
 
 				break;
 			case "sort":
@@ -625,10 +627,10 @@ const ProductList = () => {
 		}
 	};
 	
-	const productList = products.map((item, index) => (
+	const productList = productsList.map((item, index) => (
 		<Item
 			key={item._id}
-			ref={index + 1 === products.length ? elementRef : undefined}
+			ref={index + 1 === productsList.length ? elementRef : undefined}
 			onClick={() => {
 				productDetails(item._id);
 				setModalView("details");
