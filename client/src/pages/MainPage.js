@@ -96,7 +96,7 @@ const MainPage = () => {
 	const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth' // 부드러운 스크롤 효과 적용
+      behavior: "smooth"
     });
   };
 
@@ -115,12 +115,6 @@ const MainPage = () => {
 					onClick={scrollToTop}
 				></button>
 			</ScrollTopBtn>
-
-			{/* <ScrollTopBtn
-				type="button"
-				className={showButton ? "on" : ""}
-				onClick={scrollToTop}
-			/> */}
 
       {modalView !== "off" &&
         <Modal>

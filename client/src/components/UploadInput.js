@@ -75,27 +75,14 @@ const ColorRadio = styled.div`
 	margin:0 4px 4px 0;
 	position:relative;
 	input{
-		/* display:none; */
-		width:1px;
-		height:1px;
-		margin:-1px;
-		overflow:hidden;
-		position:absolute;
-		clip:rect(0 0 0 0);
-		clip-path:polygon(0 0, 0 0, 0 0);
+		display:none;
 		&:checked{
 			& + label{
-				background-color:#aaa;
+				padding:0;
 				&:before{
-					content:"";
-					width:5px;
-					height:8px;
-					border-right:2px solid #111;
-					border-bottom:2px solid #111;
-					position:absolute;
-					top:49%;
-					left:50%;
-					transform:translate(-50%,-50%) rotate(45deg);
+					width:6px;
+					height:11px;
+					opacity:1;
 				}
 			}
 		}
@@ -103,37 +90,50 @@ const ColorRadio = styled.div`
 		&#purple,
 		&#blue,
 		&#red{
-			&:checked{
-				& + label{
-					&:before{
-						border-right:2px solid #fff;
-						border-bottom:2px solid #fff;
-					}
+			& + label{
+				&:before{
+					border-right-color:#fff;
+					border-bottom-color:#fff;
 				}
 			}
 		}
 	}
 	label{
+		width:30px;
+		height:30px;
 		display:block;
-		padding:4px;
+		padding:5px;
 		font-size:0;
 		border-radius:50%;
-		border:1px solid #bbb;
-		background-color:#ccc;
+		background-color:#aaa;
 		box-sizing:border-box;
 		transition:0.3s;
 		position:relative;
 		cursor:pointer;
+		&:before{
+			content:"";
+			width:4px;
+			height:8px;
+			border-right:2px solid #111;
+			border-bottom:2px solid #111;
+			position:absolute;
+			top:48%;
+			left:50%;
+			transform:translate(-50%,-50%) rotate(45deg);
+			transition:0.3s;
+			opacity:0;
+		}
 		span{
-			width:20px;
-			height:20px;
+			width:100%;
+			height:100%;
 			display:block;
 			border-radius:50%;
-			line-height:20px;
+			transition:0.3s;
 		}
 		&:hover{
-			background-color:#aaa;
-			border:1px solid #bbb;
+			&:before{
+				opacity:0.5;
+			}
 		}
 	}
 	@media ${props => props.theme.tablet} {

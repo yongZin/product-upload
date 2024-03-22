@@ -1,9 +1,7 @@
 //상품 업로드 컴포넌트
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
-// import { v4 as uuid } from 'uuid';
-// import mime from "mime-types";
 import { toast } from "react-toastify";
 import Quill from "./Quill";
 import UploadInput from "./UploadInput";
@@ -190,11 +188,53 @@ const BtnBox = styled.div`
       color:#fff;
       background-color:rgba(0, 198, 4, 0.5);
       &:disabled{
-        color:#bbb;
-        background-color:rgba(204, 204, 204, 0.5);
+        color:#aaa;
+        background-color:#bbb;
+        position:relative;
         cursor:no-drop;
+        &:before{
+          content:"모든 정보를 입력해주세요";
+          width:100px;
+          padding:5px;
+          font-size:12px;
+          border-radius: 6px;
+          border:1px solid rgba(0, 0, 0, 0.1);
+          color: #333;
+          background-color:#c2c2c2;
+          position:absolute;
+          top:-44px;
+          left:50%;
+          box-sizing: border-box;
+          opacity:0;
+          transition:0.2s;
+          pointer-events:none;
+          transform: translateX(-50%);
+        }
+        &:after{
+          content:"";
+          width:7px;
+          height:7px;
+          background-color:#c2c2c2;
+          position:absolute;
+          top:-7px;
+          left:40%;
+          border-bottom:1px solid rgba(0, 0, 0, 0.1);
+          border-right:1px solid rgba(0, 0, 0, 0.1);
+          opacity:0;
+          transition:0.2s;
+          pointer-events:none;
+          transform: translateX(-50%) rotate(45deg);
+        }
         &:hover{
-          background-color:rgba(204, 204, 204, 0.5);
+          background-color:#bbb;
+          &:before{
+            top:-51px;
+            opacity:1;
+          }
+          &:after{
+            top:-14px;
+            opacity:1;
+          }
         }
       }
       &:hover{
@@ -231,6 +271,19 @@ const BtnBox = styled.div`
   @media ${props => props.theme.tablet} {
     button{
       font-size:16px;
+      &:last-child{
+        &:disabled{
+          color:#bbb;
+          background-color:rgba(204, 204, 204, 0.5);
+          cursor:no-drop;
+          &:hover{
+            background-color:rgba(204, 204, 204, 0.5);
+          }
+        }
+        &:hover{
+          background-color:rgba(0, 198, 4, 0.65);
+        }
+      }
     }
   }
   @media ${props => props.theme.mobile} {
@@ -247,6 +300,7 @@ const UploadForm = () => {
 	const inputRef = useRef();
   const [mainImgChecked, setMainImgChecked] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   const {setModalView, setClose} = useContext(ModalContext);
   const {
     setProducts,
@@ -261,6 +315,12 @@ const UploadForm = () => {
     material, setMaterial,
     color, setColor,
   } = useContext(ProductContext);
+
+  useEffect(() => { //상품정보 입력 유효성 검사
+    const allValuesFilled = [mainImages, detailImages, name, price, details, type, material, color].every(value => value);
+
+    setConfirm(allValuesFilled);
+  }, [mainImages, detailImages, name, price, details, type, material, color]);
 
   const imageHandler = async (e) => {
     const imageFiles = e.target.files; //파일정보 가져오기
@@ -314,8 +374,6 @@ const UploadForm = () => {
 		if (!value) return;
 
     const numberValue = parseInt(value.replace(/[^0-9]/g, ''), 10) || 0;
-    // const numberValue = value.replace(/[^0-9]/g, '');
-		// const numberWithCommas = numberValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
     setPrice(numberValue);
   };
@@ -540,7 +598,13 @@ const UploadForm = () => {
 
       <BtnBox>
         <button type="button" onClick={() => resetData()}>닫기</button>
-        <button type="submit" className={loading ? "loading" : ""}>업로드</button>
+        <button
+          type={confirm ? "submit" : "button"}
+          className={loading ? "loading" : ""}
+          disabled={!confirm}
+        >
+          업로드
+        </button>
       </BtnBox>
 		</form>
 	)

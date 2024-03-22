@@ -263,7 +263,7 @@ const Wrap = styled.div`
 		${DeleteBtn}{
 			position:relative;
 			&:before{
-				content:"임시관리자가 삭제할 수 없는 상품입니다.";
+				content:"임시관리자가 삭제할 수 없는 상품입니다";
 				width:130px;
 				padding:5px;
 				font-size:12px;
@@ -304,11 +304,11 @@ const Wrap = styled.div`
 					opacity:1;
 				}
 				svg{
-				opacity:1;
-				&:last-child{
-					opacity:0;
+					opacity:1;
+					&:last-child{
+						opacity:0;
+					}
 				}
-			}
 			}
 		}
 	}
