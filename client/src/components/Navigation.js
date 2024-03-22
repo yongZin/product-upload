@@ -94,38 +94,34 @@ const Navigation = () => {
 		}));
 	}, [guestProducts, products, setProducts, productsAll, setProductsAll]);
   
-  useEffect(() => { //pc용 임시관리자 상품 삭제
-		const preventClose = async (e) => {
+  useEffect(() => { //임시관리자 상품 삭제
+		const preventClose = (e) => { //pc전용 (beforeunload)
 			e.preventDefault();
 			e.returnValue = ""; //Chrome에서 동작하도록;
 	
 			deleteGuestProducts()
 		};
 
+		const mobilePreventClose = () => { //mobile전용 (visibilitychange)
+			if (document.visibilityState === "hidden") deleteGuestProducts();
+		}
+
     if(userInfo && (userInfo.userID === GUEST_ID)) {
-			window.addEventListener("beforeunload", preventClose);
+			if ("ontouchstart" in window) { //터치 이벤트인 경우(터치가 가능한 노트북 포함)
+				window.addEventListener("visibilitychange", mobilePreventClose);
+			} else {
+				window.addEventListener("beforeunload", preventClose);
+			}
 
       return () => {
-        window.removeEventListener("beforeunload", preventClose);
+				if ("ontouchstart" in window) { //터치 이벤트인 경우(터치가 가능한 노트북 포함)
+					window.removeEventListener("visibilitychange", mobilePreventClose);
+				} else {
+					window.removeEventListener("beforeunload", preventClose);
+				}
       };
     }
   }, [userInfo, deleteGuestProducts]);
-
-	useEffect(() => { //모바일 기기용 임시관리자 상품 삭제
-		const preventClose = (e) => {
-			e.preventDefault();
-
-			deleteGuestProducts();
-		};
-	
-		if (userInfo && userInfo.userID === GUEST_ID) {
-			window.addEventListener("pagehide", preventClose);
-
-			return () => {
-				window.removeEventListener("pagehide", preventClose);
-			};
-		}
-	}, [userInfo, deleteGuestProducts]);
 
 	useEffect(() => {
 		setTimeout(() => {
