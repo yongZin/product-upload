@@ -93,25 +93,39 @@ const Navigation = () => {
 			return !guestProducts.find((item) => item._id === product._id);
 		}));
 	}, [guestProducts, products, setProducts, productsAll, setProductsAll]);
-
-	const preventClose = useCallback(async (e) => {
-    e.preventDefault();
-    e.returnValue = ""; //Chrome에서 동작하도록;
-
-		deleteGuestProducts()
-  }, [deleteGuestProducts]);
   
-  useEffect(() => {
+  useEffect(() => { //pc용 임시관리자 상품 삭제
+		const preventClose = async (e) => {
+			e.preventDefault();
+			e.returnValue = ""; //Chrome에서 동작하도록;
+	
+			deleteGuestProducts()
+		};
+
     if(userInfo && (userInfo.userID === GUEST_ID)) {
-      (() => {
-        window.addEventListener("beforeunload", preventClose);
-      })();
+			window.addEventListener("beforeunload", preventClose);
 
       return () => {
         window.removeEventListener("beforeunload", preventClose);
       };
     }
-  }, [userInfo, preventClose]);
+  }, [userInfo, deleteGuestProducts]);
+
+	useEffect(() => { //모바일 기기용 임시관리자 상품 삭제
+		const preventClose = (e) => {
+			e.preventDefault();
+
+			deleteGuestProducts();
+		};
+	
+		if (userInfo && userInfo.userID === GUEST_ID) {
+			window.addEventListener("pagehide", preventClose);
+
+			return () => {
+				window.removeEventListener("pagehide", preventClose);
+			};
+		}
+	}, [userInfo, deleteGuestProducts]);
 
 	useEffect(() => {
 		setTimeout(() => {
