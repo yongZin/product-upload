@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
+import { TbBoxOff } from "react-icons/tb";
 const ADMIN_ID = process.env.REACT_APP_ADMIN_ID; //관리자 확인용
 const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
@@ -499,21 +500,59 @@ const UploadBtn = styled.button`
 	}
 `;
 const Loading = styled.div`
-	width:35px;
-	height:35px;
-	display:block;
-	margin:0 auto;
-	border-radius:50%;
-	border:5px solid #eee;
-	border-bottom-color:#ccc;
-	animation:rotation 0.6s linear infinite;
-	@keyframes rotation {
+	width:calc(33.333% - 12px);
+	display:inline-block;
+	vertical-align:top;
+	margin:0 6px 20px;
+	overflow:hidden;
+	&:before,&:after{
+		content:"";
+		display:block;
+		border-radius:3px;
+		background-image:linear-gradient(to right, #ddd 0%, #f1f1f1 20%, #ddd 40%, #ddd 100%);
+		background-size:1000px 104px;
+		animation:skeleton 1s linear infinite forwards;
+	}
+	&:before{
+		margin-bottom:12px;
+		padding-top:100%;
+	}
+	&:after{
+		height:39px;
+		display:block;
+	}
+	@media ${props => props.theme.tablet} {
+		width:calc(50% - 12px);
+  }
+	@media ${props => props.theme.mobile_xs} {
+		width:90%;
+		max-width:320px;
+		display:block;
+		margin:0 auto 40px;
+	}
+	@keyframes skeleton {
 		0%{
-			transform:rotate(0deg);
+			background-position:-468px 0;
 		}
 		100%{
-			transform:rotate(360deg);
+			background-position:468px 0;
 		}
+	}
+`;
+const Empty = styled.div`
+	width:100%;
+	height:calc(100vh - 400px);
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	font-size:16px;
+	text-align:center;
+	color:#717171;
+	svg{
+		display:block;
+		margin-bottom:20px;
+		font-size:70px;
 	}
 `;
 const Wrap = styled.section`
@@ -807,7 +846,13 @@ const ProductList = () => {
 
 				{productList}
 
-				{uploadLoad && <Loading />}
+				{productList.length === 0 && !uploadLoad && !uploadError &&
+					<Empty><TbBoxOff />현재 선택한 조건으로는 상품을 찾을 수 없습니다</Empty>
+				}
+
+				{uploadLoad && Array.from({length: 6}).map((_, index) => (
+					<Loading key={index} />
+				))}
 				{uploadError && <p>Error...</p>}
 			</ProductListWrap>
 		</Wrap>
