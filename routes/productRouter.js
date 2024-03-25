@@ -11,6 +11,8 @@ const { s3, getSignedUrl } = require("../aws");
 const { DeleteObjectsCommand } = require("@aws-sdk/client-s3");
 const { v4: uuid } = require("uuid");
 const mime = require("mime-types");
+const cron = require('node-cron');
+const { GUEST_ID } = process.env;
 
 productRouter.post("/presigned", async (req, res) => {
 	try {
@@ -48,6 +50,13 @@ productRouter.post(
 		if(!req.user) throw new Error("권한이 없습니다."); //로그인 유무 확인
 
 		const { name, price, mainImages, detailImages, details, type, material, color } = req.body;
+
+		let expiresIn = null;
+
+		if (req.user.userID === GUEST_ID) { //임시관리자인 경우
+			expiresIn = new Date();
+			expiresIn.setMinutes(expiresIn.getMinutes() + 10); //10분 후 만료
+		}
 		
 		const product = await new Product({
 			user: {
@@ -72,6 +81,7 @@ productRouter.post(
 			type: type,
 			material: material,
 			color: color,
+			expiresIn: expiresIn
 		}).save();
 
 		res.json(product);
@@ -261,6 +271,23 @@ productRouter.patch("/:productId/unlike", async (req, res) => { //좋아요 취�
 	} catch (error) {
 		console.log(error);
 		res.status(400).json({ message: error.message });
+	}
+});
+
+cron.schedule("*/10 * * * *", async () => {
+	try {
+		const currentTime = new Date();
+		const expiredProducts = await Product.find({
+			"user.userID": GUEST_ID,
+			expiresAt: { $lt: new Date(currentTime.getTime() + 10 * 60000) }
+			// 현재 시간에서 10분 이후의 시간보다 작은 경우
+		});
+
+		for (const product of expiredProducts) {
+			await Product.findByIdAndDelete(product._id);
+		}
+	} catch (error) {
+		console.error(error);
 	}
 });
 

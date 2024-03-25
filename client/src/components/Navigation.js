@@ -93,6 +93,19 @@ const Navigation = () => {
 			return !guestProducts.find((item) => item._id === product._id);
 		}));
 	}, [guestProducts, products, setProducts, productsAll, setProductsAll]);
+
+	const logoutHandler = useCallback(async () => {
+		try {
+			await deleteGuestProducts();
+			await axios.patch("/users/logout");
+			setUserInfo();
+
+			toast.success("로그아웃");
+		} catch (error) {
+			console.error(error);
+			toast.error(error.message);
+		}
+	}, [deleteGuestProducts, setUserInfo]);
   
   useEffect(() => { //임시관리자 상품 삭제
 		const preventClose = (e) => { //pc전용 (beforeunload)
@@ -142,18 +155,20 @@ const Navigation = () => {
 		}, 100);
 	}, [userInfo, products]);
 
-	const logoutHandler = async () => {
-		try {
-			await deleteGuestProducts();
-			await axios.patch("/users/logout");
-			setUserInfo();
+	useEffect(() => {
+		const checkSessionExpire = setInterval(() => {
+			if (
+				userInfo && userInfo.expiresAt &&
+				new Date(userInfo.expiresAt) < new Date()
+			) {
+				logoutHandler()
+			}
+		}, 60000);
 
-			toast.success("로그아웃");
-		} catch (error) {
-			console.error(error);
-			toast.error(error.message);
-		}
-	};
+		return () => clearInterval(checkSessionExpire);
+	}, [userInfo, logoutHandler])
+
+	
 
 	return (
 		<Wrap>

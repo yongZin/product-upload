@@ -21,6 +21,9 @@ userRouter.post("/register", async (req, res) => {
 		}).save();
 
 		const session = user.sessions[0];
+		const expiresAt = new Date();
+
+		expiresAt.setMinutes(expiresAt.getMinutes() + 30);
 
 		res.json({
 			message: "회원가입 성공",
@@ -43,17 +46,21 @@ userRouter.patch("/login", async (req, res) => {
 
 		if (!isValid) throw new Error("입력하신 정보가 옳바르지 않습니다.");
 
-		user.sessions.push({ createdAt: new Date() });
+		const expiresAt = new Date();
+
+		expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+		user.sessions.push({ createdAt: new Date(), expiresAt });
 
 		const session = user.sessions[user.sessions.length - 1];
 
 		await user.save();
-
+		console.log(expiresAt);
 		res.json({
 			message: "로그인 성공",
 			sessionId: session._id,
 			name: user.name,
 			userID: user._id,
+			expiresAt: session.expiresAt
 		});
 	} catch (error) {
 		console.log(error);
@@ -105,18 +112,5 @@ userRouter.get("/userInfo/products", async (req, res) => { // 세션id를 가진
 		res.status(400).json({ message: error.message });
 	}
 });
-
-// userRouter.get("/userInfo/products", async (req, res) => {
-// 	try {
-// 		if(!req.user) return;
-		
-// 		const producus = await Product.find({ "user._id": req.user.id }); //특정 아이디의 이미지만 찾기
-		
-// 		res.json(producus);
-// 	} catch (error) {
-// 		console.log(error);
-// 		res.status(400).json({ message: error.message });
-// 	}
-// });
 
 module.exports = { userRouter };
