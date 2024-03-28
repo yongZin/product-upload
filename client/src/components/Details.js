@@ -320,6 +320,9 @@ const TopImages = styled(Swiper)`
 	font-size:0;
 	position:relative;
 	.swiper{
+		&-wrapper{
+			z-index:-1;
+		}
 		&-button{
 			&-prev,
 			&-next{
@@ -596,6 +599,9 @@ const Recommend = styled(Swiper)`
 	background-color:rgba(0,0,0,0.1);
 	position:relative;
 	.swiper{
+		&-wrapper{
+			z-index:-1;
+		}
 		&-slide{
 			ul{
 				font-size:0;
