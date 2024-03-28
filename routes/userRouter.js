@@ -54,7 +54,7 @@ userRouter.patch("/login", async (req, res) => {
 		const session = user.sessions[user.sessions.length - 1];
 
 		await user.save();
-		console.log(expiresAt);
+		
 		res.json({
 			message: "로그인 성공",
 			sessionId: session._id,
