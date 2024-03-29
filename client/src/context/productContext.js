@@ -20,49 +20,13 @@ export const ProductProvider = (prop) => {
 	const [material, setMaterial] = useState("");
 	const [color, setColor] = useState("");
 	const [selectedProduct, setSelectedProduct] = useState();
+	const [confirm, setConfirm] = useState(false);
 	const [uploadLoad, setUploadLoad] = useState(false);
 	const [uploadError, setUploadError] = useState(false);
 	const [sortFilterValue, setSortFilterValue] = useState("new");
 	const [colorFilterValue, setColorFilterValue] = useState("");
 	const [typeFilterValue, setTypeFilterValue] = useState("");
 	const [totalProductCount, setTotalProductCount] = useState("");
-	// const [lastProductId, setLastProductId] = useState("");
-	// const [lastProductPrice, setLastProductPrice] = useState();
-
-	// const loadMoreProduct = useCallback(() => {
-	// 	if (uploadLoad || !lastProductId) return;
-
-	// 	setUploadLoad(true);
-
-	// 	axios
-	// 		.get(`/upload`, {
-	// 			params: {
-	// 				lastid: lastProductId,
-	// 				lastPrice: lastProductPrice,
-	// 				sort: sortFilterValue,
-	// 				color: colorFilterValue,
-	// 				type: typeFilterValue,
-	// 			}
-	// 		})
-	// 		.then((result) => {
-	// 			if (result.data.products.length > 0) {
-	// 				setProducts((prevData) => [...prevData, ...result.data.products]);
-	// 				setLastProductId(result.data.products[result.data.products.length - 1]._id);
-	// 				setLastProductPrice(result.data.products[result.data.products.length - 1].price);
-	// 				setTotalProductCount(result.data.productCount);
-
-					
-	// 				console.log(result.data);
-	// 			}
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error(error);
-	// 			setUploadError(error);
-	// 		})
-	// 		.finally(() => {
-	// 			setUploadLoad(false);
-	// 		});
-	// }, [uploadLoad, lastProductId, lastProductPrice, sortFilterValue, colorFilterValue, typeFilterValue]);
 
 	const loadMoreProduct = useCallback(() => {
 		if (uploadLoad) return;
@@ -78,7 +42,6 @@ export const ProductProvider = (prop) => {
 
 	useEffect(() => {
 		setProducts([]);
-		// setLastProductId(null);
 		setTotalProductCount(0);
 
 		setUploadLoad(true);
@@ -94,8 +57,6 @@ export const ProductProvider = (prop) => {
 			.then((result) => {
 				if (result.data.products.length > 0) {
 					setProducts(result.data.products);
-					// setLastProductId(result.data.products[result.data.products.length - 1]._id);
-					// setLastProductPrice(result.data.products[result.data.products.length - 1].price);
 					setTotalProductCount(result.data.productCount);
 				}
 			})
@@ -165,6 +126,7 @@ export const ProductProvider = (prop) => {
 		material, setMaterial,
 		color, setColor,
 		selectedProduct, setSelectedProduct,
+		confirm, setConfirm,
 		uploadLoad, setUploadLoad,
 		uploadError,
 		sortFilterValue, setSortFilterValue,

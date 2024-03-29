@@ -1,9 +1,10 @@
 //로그인 컴포넌트
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import UserInput from "./UserInput";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
+import { ProductContext } from "../context/ProductContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 const GUEST_ID = process.env.REACT_APP_GUEST_LOGIN_ID; //임시관리자 ID
@@ -65,6 +66,32 @@ const SubmitBtn = styled.button`
 	border:1px solid #555;
 	color:#fff;
 	background-color:#333;
+	&.loading{
+		position:relative;
+		color:transparent;
+		pointer-events:none;
+		&:before{
+			content:"";
+			width:25px;
+			height:25px;
+			border-radius:50%;
+			border:5px solid #eee;
+			border-bottom-color:#aaa;
+			animation:rotation 0.6s linear infinite;
+			position:absolute;
+			top:calc(50% - 13px);
+			left:calc(50% - 13px);
+			box-sizing:border-box;
+		}
+		@keyframes rotation {
+			0%{
+				transform:rotate(0deg);
+			}
+			100%{
+				transform:rotate(360deg);
+			}
+		}
+	}
 	&:hover{
 		background-color:#555;
 	}
@@ -103,10 +130,10 @@ const FootBth = styled.ul`
 		margin:0 10px;
 		padding:4px 8px;
 		font-size:14px;
-		color:#777;
+		color:#555;
 		transition:0.2s;
 		&:hover{
-			color:#444;
+			color:#222;
 		}
 	}
 	@media ${props => props.theme.tablet} {
@@ -123,14 +150,18 @@ const FootBth = styled.ul`
 `;
 
 const LoginForm = () => {
+	const {confirm, setConfirm} = useContext(ProductContext);
 	const {
 		setModalView,
 		setClose,
 		handleClose
 	} = useContext(ModalContext);
-	const {setUserInfo} = useContext(AuthContext);
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
+	const {
+		resetData,
+		setUserInfo,
+		username, setUsername,
+		password, setPassword
+	} = useContext(AuthContext);
 
 	const loginHandler = async (e) => {
 		try {
@@ -138,6 +169,8 @@ const LoginForm = () => {
 
 			if(username.length < 3 || password.length < 6)
 				throw new Error("입력하신 정보가 올바르지 않습니다.");
+
+			setConfirm(true);
 
 			const result = await axios.patch(
 				"/users/login",
@@ -151,6 +184,8 @@ const LoginForm = () => {
 			});
 			
 			handleClose();
+			resetData();
+			setConfirm(false);
 			toast.success("로그인 성공");
 		} catch (error) {
 			console.error(error.response);
@@ -207,6 +242,7 @@ const LoginForm = () => {
 						<li>
 							<button
 								type="submit"
+								className={confirm ? "loading" : ""}
 								onClick={guestHandler}
 							>
 								관리자 로그인

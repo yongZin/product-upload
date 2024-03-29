@@ -6,6 +6,10 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 	const [userInfo, setUserInfo] = useState();
+	const [name, setName] = useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
+	const [passwordCheck, setPasswordCheck] = useState("");
 
 	useEffect(() => {
 		const sessionId = localStorage.getItem("sessionId"); //로그인시 세션ID 저장
@@ -37,9 +41,25 @@ export const AuthProvider = ({ children }) => {
 			delete axios.defaults.headers.common.sessionid;
 		} 
 	}, [userInfo]);
+
+	const resetData = () => {
+		setName("");
+		setUsername("");
+		setPassword("");
+		setPasswordCheck("");
+	}
+
+	const AuthContextValue = {
+		userInfo, setUserInfo,
+		name, setName,
+		username, setUsername,
+		password, setPassword,
+		passwordCheck, setPasswordCheck,
+		resetData
+	}
 	
 	return(
-		<AuthContext.Provider value={{userInfo, setUserInfo}}>
+		<AuthContext.Provider value={AuthContextValue}>
 			{children}
 		</AuthContext.Provider>
 	);

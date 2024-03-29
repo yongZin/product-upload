@@ -300,7 +300,6 @@ const UploadForm = () => {
 	const inputRef = useRef();
   const [mainImgChecked, setMainImgChecked] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [confirm, setConfirm] = useState(false);
   const {setModalView, setClose} = useContext(ModalContext);
   const {
     setProducts,
@@ -311,16 +310,18 @@ const UploadForm = () => {
     previews, setPreviews,
     details, setDetails,
     detailImages, setDetailImages,
+    confirm, setConfirm,
     type, setType,
     material, setMaterial,
     color, setColor,
+    setTotalProductCount
   } = useContext(ProductContext);
 
   useEffect(() => { //상품정보 입력 유효성 검사
     const allValuesFilled = [mainImages, detailImages, name, price, details, type, material, color].every(value => value);
 
     setConfirm(allValuesFilled);
-  }, [mainImages, detailImages, name, price, details, type, material, color]);
+  }, [mainImages, detailImages, name, price, details, type, material, color, setConfirm]);
 
   const imageHandler = async (e) => {
     const imageFiles = e.target.files; //파일정보 가져오기
@@ -456,19 +457,16 @@ const UploadForm = () => {
 
       setProducts((prevData) => [res.data, ...prevData]);
       setProductsAll((prevData) => [res.data, ...prevData]);
-      toast.success("업로드 성공");
+      setTotalProductCount((prevCount) => prevCount + 1);
+
       setLoading(false);
-
-      setTimeout(() => {
-        resetData();
-      }, 1000);
-
+      resetData();
+      toast.success("업로드 성공");
     } catch (error) {
       const errorMessage = error.response && error.response.data && error.response.data.message
         ? error.response.data.message
         : error.message;
       toast.error(errorMessage);
-      // resetData();
       console.error(error);
     }
   };

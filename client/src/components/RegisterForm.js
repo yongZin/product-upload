@@ -1,9 +1,10 @@
 //회원가입 컴포넌트
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import UserInput from "./UserInput";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
+import { ProductContext } from "../context/ProductContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -58,6 +59,32 @@ const SubmitBtn = styled.button`
 	border:1px solid rgba(0, 198, 4, 0.5);
 	color:#fff;
 	background-color:rgba(0, 198, 4, 0.5);
+	&.loading{
+		position:relative;
+		color:transparent;
+		pointer-events:none;
+		&:before{
+			content:"";
+			width:25px;
+			height:25px;
+			border-radius:50%;
+			border:5px solid #eee;
+			border-bottom-color:#ccc;
+			animation:rotation 0.6s linear infinite;
+			position:absolute;
+			top:calc(50% - 13px);
+			left:calc(50% - 13px);
+			box-sizing:border-box;
+		}
+		@keyframes rotation {
+			0%{
+				transform:rotate(0deg);
+			}
+			100%{
+				transform:rotate(360deg);
+			}
+		}
+	}
 	&:hover{
 		border-color:rgba(0, 198, 4, 0.6);
 		background-color:rgba(0, 198, 4, 0.65);
@@ -68,12 +95,16 @@ const SubmitBtn = styled.button`
 `;
 
 const RegisterForm = () => {
+	const {confirm, setConfirm} = useContext(ProductContext);
 	const {setModalView, setClose} = useContext(ModalContext);
-	const {setUserInfo} = useContext(AuthContext);
-	const [name, setName] = useState("");
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [passwordCheck, setPasswordCheck] = useState("");
+	const {
+		resetData,
+		setUserInfo,
+		name, setName,
+		username, setUsername,
+		password, setPassword,
+		passwordCheck, setPasswordCheck
+	} = useContext(AuthContext);	
 
 	const onSubmit = async (e) => {
 		try {
@@ -85,6 +116,8 @@ const RegisterForm = () => {
 				throw new Error("비밀번호를 6글자 이상으로 해주세요.");
 			if(password !== passwordCheck)
 				throw new Error("비밀번호를 확인해주세요.");
+
+			setConfirm(true);
 
 			const result = await axios.post("/users/register", {
 				name,
@@ -98,8 +131,10 @@ const RegisterForm = () => {
 				name: result.data.name,
 			});
 
-			toast.success("회원가입 완료");
 			handleClose();
+			resetData();
+			setConfirm(false);
+			toast.success("회원가입 완료");
 		} catch (error) {
 			console.error(error);
 			toast.error(error.message);
@@ -151,7 +186,7 @@ const RegisterForm = () => {
 
 					<BtnBox>
 						<CloseBtn type="button" onClick={handleClose}>닫기</CloseBtn>
-						<SubmitBtn type="submit">회원가입</SubmitBtn>
+						<SubmitBtn type="submit" className={confirm ? "loading" : ""}>회원가입</SubmitBtn>
 					</BtnBox>
 				</form>
 			</div>
