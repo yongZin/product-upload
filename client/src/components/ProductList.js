@@ -846,7 +846,7 @@ const ProductList = () => {
 
 				{productList}
 
-				{productList.length === 0 && !uploadLoad && !uploadError &&
+				{colorFilterValue && typeFilterValue && productList.length === 0 &&
 					<Empty><TbBoxOff />현재 선택한 조건으로는 상품을 찾을 수 없습니다</Empty>
 				}
 
