@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext"
 import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
@@ -509,10 +510,13 @@ const BrandStory = styled.div`
 				font-size:14px;
 				padding-bottom:2px;
 			}
-			button{
+			a{
+				display:inline-block;
 				margin-top:8px;
 				padding:3px 8px;
 				font-size:11px;
+				color:#333;
+				text-decoration:none;
 				border-radius:4px;
 				background-color:rgba(255, 255, 255, 0.5);
 			}
@@ -900,7 +904,8 @@ const Details = () => {
 						<li>프라이탁</li>
 						<li>오래된 트럭 방수포로 만들어진 실용적이고 도시적인 감각의 가방</li>
 						<li>
-							<button type="button">BRAND STORY</button>
+							{/* <button type="button">BRAND STORY</button> */}
+							<Link to="https://yongzin.github.io/scroll/scroll.html" target="_blank">BRAND STORY</Link>
 						</li>
 					</ul>
 				</BrandStory>
