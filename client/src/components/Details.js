@@ -1,5 +1,5 @@
 //상품 상세화면 컴포넌트
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -316,7 +316,7 @@ const Wrap = styled.div`
 `;
 const TopImages = styled(Swiper)`
 	width:45%;
-	display:inline-block;
+	display:inline-block !important;
 	vertical-align:top;
 	font-size:0;
 	position:relative;
@@ -670,13 +670,16 @@ const Details = () => {
 		productsAll, setProductsAll,
 		selectedProduct,
 		productDetails,
+		setTotalProductCount
 	} = useContext(ProductContext);
 	const {setModalView, handleClose} = useContext(ModalContext);
 	const [product, setProduct] = useState();
 	const [recommendedProducts, setRecommendedProducts] = useState();
 	const [hasLiked, setHasLiked] = useState(false);
 	const [error, setError] = useState(false);
+	const [infoCheck, setInfoCheck] = useState(false);
 	const wrapRef = useRef();
+	const infoRef = useRef();
 	const productId = selectedProduct._id;
 
 	useEffect(() => { //선택한 상품 정보 DB에서 찾아오기
@@ -742,8 +745,24 @@ const Details = () => {
 
 	}, [userInfo, selectedProduct]);
 
+	const InformationCheck = useCallback(() => {
+		if (infoRef.current) {
+			const contentHeight = infoRef.current.offsetHeight;
+
+			if (contentHeight >= 800 && !infoCheck) setInfoCheck(true);
+		}
+	}, [infoCheck]);
+
 	if (error) return <h3>Error...</h3>;
 	else if (!product) return <h3>Loading...</h3>;
+
+	const productInformation = product.details.map((content, index) => {
+		const renderContent = <div key={index} dangerouslySetInnerHTML={{ __html: content }} />;
+
+		if (index === product.details.length - 1) InformationCheck();
+
+		return renderContent;
+	})
 
 	const likeHandler = async () => { //좋아요 이벤트
 		if(!userInfo) {
@@ -785,6 +804,8 @@ const Details = () => {
 		try {
 			if(!window.confirm("정말 삭제 하시겠습니까?")) return;
 			
+			setTotalProductCount((prevCount) => prevCount - 1);
+
 			handleClose();
 
 			setTimeout(async () => {
@@ -912,19 +933,20 @@ const Details = () => {
 
 				<DetailTitle>상품 정보</DetailTitle>
 
-				<ProductInfo className="on">
-					{product.details.map((content, index) => (
-						<div key={index} dangerouslySetInnerHTML={{ __html: content }} />
-					))}
+				<ProductInfo
+					ref={infoRef}
+					className={infoCheck && "on"}
+				>
+					{productInformation}
 
-					<MoreBtn
+					{infoCheck && <MoreBtn
 						type="button"
 						onClick={(e) => {
 							e.target.parentElement.classList.toggle("on")
 						}}
 					>
 						더보기
-					</MoreBtn>
+					</MoreBtn>}
 				</ProductInfo>
 			</div>
 
@@ -957,7 +979,7 @@ const Details = () => {
 				</ProductDetail>
 			</div>
 
-			{recommendedProducts && recommendedProducts.length > 0 &&
+			{recommendedProducts && recommendedProducts.length > 1 &&
 				<div>
 					<DetailTitle>추천 상품</DetailTitle>
 

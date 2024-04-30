@@ -11,9 +11,7 @@ export const ModalProvider = (prop) => {
     if (modalView !== "off") {
 			document.body.classList.add("scroll-fix");
 		} else if (modalView === "off") {
-			setTimeout(() => {
-				document.body.classList.remove("scroll-fix");
-			}, 500);
+			document.body.classList.remove("scroll-fix");
 		}
   }, [modalView])
 
