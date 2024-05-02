@@ -8,6 +8,7 @@ import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
 import Details from "../components/Details";
 import { ModalContext } from "../context/ModalContext";
+import { AuthContext } from "../context/AuthContext";
 import freitagBG from "../components/images/truck.jpg";
 
 const BrandInfo = styled.section`
@@ -74,8 +75,10 @@ const ScrollTopBtn = styled.div`
 `;
 
 const MainPage = () => {
-	const {modalView} = useContext(ModalContext);
+	const {modalView, setModalView} = useContext(ModalContext);
+	const {userInfo} = useContext(AuthContext);
 	const [showButton, setShowButton] = useState(false);
+	const [loginCheck, setLoginCheck] = useState(false);
 
 	const handleScroll = () => {
     if (window.scrollY > 100) {
@@ -93,12 +96,20 @@ const MainPage = () => {
     };
 	}, []);
 
+	useEffect(() => {
+		if (!userInfo && !loginCheck) {
+			setModalView("login");
+			setLoginCheck(true);
+		}
+	}, [userInfo, loginCheck, setModalView])
+
 	const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
   };
+
 
 	return (
 		<main>
