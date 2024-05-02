@@ -49,7 +49,7 @@ const Popup = styled.div`
     &-user{ //로그인 & 회원가입
       width:65%;
       max-width:600px;
-      padding-bottom:40px;
+      padding-bottom:30px;
     }
     &-details{  //상품 상세
       width:82%;

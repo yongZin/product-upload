@@ -13,12 +13,35 @@ const GUEST_PWD = process.env.REACT_APP_GUEST_LOGIN_PWD; //임시관리자 Passw
 const Wrap = styled.div`
 	width:100%;
 	margin:0 auto;
+	>div{
+		&:after{
+			content:"⚠️ 관리자 로그인을 통해 상품 업로드 권한을 부여 받아보세요!";
+			display:block;
+			margin-top:15px;
+			font-size:13px;
+			text-align:center;
+			color:#666;
+			word-break:keep-all;
+		}
+	}
 	h3{
 		margin-bottom:40px;
 		text-align:center;
 		font-size:30px;
 	}
+	@media ${props => props.theme.tablet} {
+		>div{
+			&:after{
+				color:#777;
+			}
+		}
+	}
 	@media ${props => props.theme.mobile} {
+		>div{
+			&:after{
+				font-size:12px;
+			}
+		}
 		h3{
 			font-size:25px;
 		}
@@ -101,7 +124,7 @@ const SubmitBtn = styled.button`
 `;
 const FootBth = styled.ul`
 	width:100%;
-	margin-top:50px;
+	margin-top:40px;
 	display:flex;
 	justify-content:center;
 	align-items:center;
