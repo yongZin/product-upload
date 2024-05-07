@@ -6,6 +6,7 @@ export const ModalContext = createContext();
 export const ModalProvider = (prop) => {
 	const [modalView, setModalView] = useState("off");
 	const [close, setClose] = useState(false);
+	const [loginCheck, setLoginCheck] = useState(true);
 
 	useEffect(() => {
     if (modalView !== "off") {
@@ -28,6 +29,7 @@ export const ModalProvider = (prop) => {
 		<ModalContext.Provider value={{
 			modalView, setModalView,
 			close, setClose,
+			loginCheck, setLoginCheck,
 			handleClose
 			}}>
 			{prop.children}

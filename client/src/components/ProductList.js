@@ -602,7 +602,7 @@ const ProductList = () => {
 		toggleClick,
 		productDetails
 	} = useContext(ProductContext);
-	const {setModalView} = useContext(ModalContext);
+	const {setModalView, setLoginCheck} = useContext(ModalContext);
 	const {userInfo} = useContext(AuthContext);
 	const [mobileFilter, setMobileFilter] = useState(false);
 	const elementRef = useRef();
@@ -616,6 +616,35 @@ const ProductList = () => {
 		"red", "orange", "yellow", "saddlebrown", "antiquewhite",
 		"green", "blue", "purple", "pink", "white", "gray", "black", "etc"
 	];
+
+	const productList = productsList.map((item, index) => (
+		<Item
+			key={item._id}
+			ref={index + 1 === productsList.length ? elementRef : undefined}
+			onClick={() => {
+				productDetails(item._id);
+				setModalView("details");
+			}}
+		>
+			<li className="item-image">
+				<img
+					key={item.mainImages[0]._id}
+					src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.mainImages[0].key}`}
+					alt="상품 이미지"
+				/>
+			</li>
+
+			<li className="item-name">
+				{item.name}
+			</li>
+
+			<li className="item-price">{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</li>
+		</Item>
+  ));
+
+	useEffect(() => { //상품 렌더링 후 로그인 유무 확인
+		if (!userInfo && productList.length > 0) setLoginCheck(false);
+	}, [userInfo, productList, setLoginCheck]);
 
 	useEffect(() => {
 		if (mobileFilter) {
@@ -666,30 +695,7 @@ const ProductList = () => {
 		}
 	};
 	
-	const productList = productsList.map((item, index) => (
-		<Item
-			key={item._id}
-			ref={index + 1 === productsList.length ? elementRef : undefined}
-			onClick={() => {
-				productDetails(item._id);
-				setModalView("details");
-			}}
-		>
-			<li className="item-image">
-				<img
-					key={item.mainImages[0]._id}
-					src={`https://yongzin.s3.ap-northeast-2.amazonaws.com/raw/${item.mainImages[0].key}`}
-					alt="상품 이미지"
-				/>
-			</li>
-
-			<li className="item-name">
-				{item.name}
-			</li>
-
-			<li className="item-price">{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</li>
-		</Item>
-  ));
+	
 
 	const productListLoding = uploadLoad
 		? Array.from({length: 6}).map((_, index) => (
