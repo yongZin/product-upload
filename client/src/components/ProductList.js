@@ -499,7 +499,7 @@ const UploadBtn = styled.button`
 		margin:0 auto 40px;
 	}
 `;
-const Loading = styled.div`
+const ListLoading = styled.div`
 	width:calc(33.333% - 12px);
 	display:inline-block;
 	vertical-align:top;
@@ -691,6 +691,12 @@ const ProductList = () => {
 		</Item>
   ));
 
+	const productListLoding = uploadLoad
+		? Array.from({length: 6}).map((_, index) => (
+			<ListLoading key={index} />
+			))
+		: productList;
+
 	return (
 		<Wrap
 			className={mobileFilter ? "background" : ""}
@@ -844,15 +850,12 @@ const ProductList = () => {
 					<UploadBtn type="button" onClick={() => setModalView("upload")} />
 				}
 
-				{productList}
+				{productListLoding}
 
 				{colorFilterValue && typeFilterValue && productList.length === 0 &&
 					<Empty><TbBoxOff />현재 선택한 조건으로는 상품을 찾을 수 없습니다</Empty>
 				}
-
-				{uploadLoad && Array.from({length: 6}).map((_, index) => (
-					<Loading key={index} />
-				))}
+				
 				{uploadError && <p>Error...</p>}
 			</ProductListWrap>
 		</Wrap>

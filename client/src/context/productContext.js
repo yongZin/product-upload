@@ -69,8 +69,9 @@ export const ProductProvider = (prop) => {
 			});
 	}, [sortFilterValue, colorFilterValue, typeFilterValue]);
 
-	useEffect(() => {
+	useEffect(() => { //렌더링시 첫 상품 로드
     const initialProducts = products.slice(0, 6);
+		
     setProductsList(initialProducts);
 	}, [products]);
 
