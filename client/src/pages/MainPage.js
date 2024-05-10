@@ -9,6 +9,7 @@ import RegisterForm from "../components/RegisterForm";
 import Details from "../components/Details";
 import Loading from "../components/Loading";
 import { ModalContext } from "../context/ModalContext";
+import { ProductContext } from "../context/ProductContext";
 import freitagBG from "../components/images/truck.jpg";
 
 const BrandInfo = styled.section`
@@ -75,6 +76,7 @@ const ScrollTopBtn = styled.div`
 `;
 
 const MainPage = () => {
+	const {loadingFinish} = useContext(ProductContext);
 	const {modalView, setModalView, loginCheck} = useContext(ModalContext);
 	const [showButton, setShowButton] = useState(false);
 
@@ -108,12 +110,11 @@ const MainPage = () => {
 
 	return (
 		<main>
-			{loginCheck &&
+			{loadingFinish &&
 				<Loading />
 			}
-      <BrandInfo>
-        {/* 오래된 트럭 방수 천을 기본 원단으로 삼아 자전거 바퀴 속 고무, 폐차 안전벨트를 더해 가방을 만듭니다. 낡아 버려질 것들이 세상에 단 하나뿐인 실용적이고 도시적인 프라이탁 가방으로 완성됩니다. */}
-      </BrandInfo>
+
+      <BrandInfo />
       
       <ProductList/>
 

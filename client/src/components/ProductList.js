@@ -694,8 +694,6 @@ const ProductList = () => {
 				break;
 		}
 	};
-	
-	
 
 	const productListLoding = uploadLoad
 		? Array.from({length: 6}).map((_, index) => (

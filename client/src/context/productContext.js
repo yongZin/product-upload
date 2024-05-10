@@ -27,6 +27,7 @@ export const ProductProvider = (prop) => {
 	const [colorFilterValue, setColorFilterValue] = useState("");
 	const [typeFilterValue, setTypeFilterValue] = useState("");
 	const [totalProductCount, setTotalProductCount] = useState("");
+	const [loadingFinish, setLoadingFinish] = useState(false);
 
 	const loadMoreProduct = useCallback(() => {
 		if (uploadLoad) return;
@@ -58,6 +59,7 @@ export const ProductProvider = (prop) => {
 				if (result.data.products.length > 0) {
 					setProducts(result.data.products);
 					setTotalProductCount(result.data.productCount);
+					setLoadingFinish(true);
 				}
 			})
 			.catch((error) => {
@@ -72,7 +74,9 @@ export const ProductProvider = (prop) => {
 	useEffect(() => { //렌더링시 첫 상품 로드
     const initialProducts = products.slice(0, 6);
 		
-    setProductsList(initialProducts);
+    if (products) {
+			setProductsList(initialProducts);
+		}
 	}, [products]);
 
 	useEffect(() => {//productsAll에 상품정보 담기(모든 상품 저장)
@@ -134,6 +138,7 @@ export const ProductProvider = (prop) => {
 		colorFilterValue, setColorFilterValue,
 		typeFilterValue, setTypeFilterValue,
 		totalProductCount, setTotalProductCount,
+		loadingFinish, setLoadingFinish,
 		loadMoreProduct,
 		toggleClick,
 		productDetails,

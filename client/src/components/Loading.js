@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import styled from "styled-components";
 import logo from "./images/logo-reverse.svg";
 import { ProductContext } from "../context/ProductContext";
@@ -39,11 +39,11 @@ const Wrap = styled.div`
 	background-color:#fff;
 	position:fixed;
 	inset:0;
-	transition:1s;
 	z-index:1000;
 	&.on{
-		transform:scale(10);
+		transition:0.8s;
 		opacity:0;
+		transform:scale(10);
 		${(Logo)}{
 			&:before{
 				display:none;
@@ -53,10 +53,18 @@ const Wrap = styled.div`
 `;
 
 const Loading = () => {
-	const {productsList} = useContext(ProductContext);
+	const {loadingFinish, setLoadingFinish} = useContext(ProductContext);
+
+	useEffect(() => {
+		if (loadingFinish) {
+			setTimeout(() => {
+				setLoadingFinish(false);
+			}, 1000);
+		}
+	}, [loadingFinish, setLoadingFinish])
 
 	return (
-		<Wrap className={productsList.length > 0 && "on"}>
+		<Wrap className={loadingFinish && "on"}>
 			<Logo />
 		</Wrap>
 	)
