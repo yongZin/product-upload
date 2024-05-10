@@ -1,6 +1,37 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import logo from "./images/logo-reverse.svg";
+import { ProductContext } from "../context/ProductContext";
 
+const Logo = styled.div`
+	width:300px;
+	height:100px;
+	background:url(${logo}) no-repeat;
+	transition:0.3s;
+	position:relative;
+	&:before{
+		content:"";
+		width:100%;
+		background-color:red;
+		box-shadow:0 0 20px 10px rgba(255,255,255,0.5);
+		position:absolute;
+		top:0;
+		left:0;
+		animation:shine 1.5s linear infinite forwards;
+	}
+	@media ${props => props.theme.mobile} {
+		width:240px;
+		height:80px;
+	}
+	@keyframes shine {
+		0%{
+			top:0;
+		}
+		50%,100%{
+			top:80px;
+		}
+	}
+`
 const Wrap = styled.div`
 	display:flex;
 	justify-content:center;
@@ -8,75 +39,25 @@ const Wrap = styled.div`
 	background-color:#fff;
 	position:fixed;
 	inset:0;
+	transition:1s;
 	z-index:1000;
-`;
-const Logo = styled.div`
-	width:50px;
-	height:36px;
-	display:flex;
-	animation:bound 0.4s alternate infinite ease;
-	&:before{
-		content:"";
-		width:46%;
-		height:100%;
-		display:block;
-		background-color:#000;
-	}
-	&:after{
-		content:"";
-		width:54%;
-		height:75%;
-		display:block;
-		border-top:12px solid #000;
-		border-bottom:11px solid #000;
-		background-color:transparent;
-		box-sizing:border-box;
-	}
-	@keyframes bound {
-		0%{
-			width:90px;
-			height:32px;
-			transform:translateY(40px);
-		}
-		25%{
-			width:50px;
-			height:36px;
-		}
-		100%{
-			transform:translateY(0);
-		}
-	}
-`;
-const Shadow = styled.div`
-	width:50px;
-	height:4px;
-	display:block;
-	margin:28px auto 0;
-	box-shadow:0px 12px 7px 0 #000;
-	transform-origin:50%;
-	animation:shadow 0.4s alternate infinite ease;
-	@keyframes shadow {
-		0%{
-			width:90px;
-		}
-		25%{
-			width:50px;
-			opacity:0.7;
-		}
-		100%{
-			width:10px;
-			opacity:0.4;
+	&.on{
+		transform:scale(10);
+		opacity:0;
+		${(Logo)}{
+			&:before{
+				display:none;
+			}
 		}
 	}
 `;
 
 const Loading = () => {
+	const {productsList} = useContext(ProductContext);
+
 	return (
-		<Wrap>
-			<div>
-				<Logo />
-				<Shadow />
-			</div>
+		<Wrap className={productsList.length > 0 && "on"}>
+			<Logo />
 		</Wrap>
 	)
 }
