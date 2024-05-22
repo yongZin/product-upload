@@ -39,5 +39,5 @@
 > ![mime-type](https://img.shields.io/badge/mime--type-404040?style=for-the-badge)
 > - DATABASE  
 > ![mongodb](https://img.shields.io/badge/mongodb-47A248?style=for-the-badge&logo=mongodb&logoColor=fff)
-> - SERVER  
+> - INFRA  
 > ![mongodb](https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon_aws&logoColor=fff)
