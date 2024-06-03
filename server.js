@@ -32,5 +32,3 @@ mongoose
 		app.listen(MY_APP_PORT, () => console.log("PORT : " + MY_APP_PORT))
 	})
 	.catch((error) => console.log(error));
-	// admin
-	// NqEGY6y8EuPljCn9
