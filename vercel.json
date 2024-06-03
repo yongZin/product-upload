@@ -7,14 +7,11 @@
     },
     {
       "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "client/build" }
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/upload/(.*)", "dest": "/upload/$1" },
-    { "src": "/users/(.*)", "dest": "/users/$1" },
-    { "src": "/(.*)", "dest": "/server.js" }
+    { "src": "/(.*)", "dest": "/" }
   ]
 }
