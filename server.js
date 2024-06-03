@@ -12,11 +12,7 @@ mongoose
 	.connect(MONGO_URI)
 	.then(() => {
 		console.log("MongoDB 연결");
-
-		app.use(express.static(path.join(__dirname, "client", "build")));
-		app.get("/*", (req, res) => {
-      res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-    });
+		
 		// app.use(express.static("build")); //빌드한 경우 경로
     // app.get("/", (req, res) => {
     //   res.sendFile(__dirname + "/build/index.html");
@@ -27,6 +23,11 @@ mongoose
 		app.use(authentication); //유저인증 미들웨어
 		app.use("/upload", productRouter); //"upload"가 들어가면 productRouter 실행
 		app.use("/users", userRouter); // "users"가 들어가면 userRouter실행
+
+		app.use(express.static(path.join(__dirname, "client", "build")));
+		app.get("/*", (req, res) => {
+      res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+    });
 
 		app.listen(MY_APP_PORT, () => console.log("PORT : " + MY_APP_PORT))
 	})
