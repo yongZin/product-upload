@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const { productRouter } = require("./routes/productRouter");
 const { userRouter } = require("./routes/userRouter");
 const app = express();
-const { MONGO_URI, PORT } = process.env;
+const { MONGO_URI, MY_APP_PORT } = process.env;
 const {authentication} = require("./middleware/authentication");
 
 mongoose
@@ -24,7 +24,7 @@ mongoose
 		app.use("/upload", productRouter); //"upload"가 들어가면 productRouter 실행
 		app.use("/users", userRouter); // "users"가 들어가면 userRouter실행
 
-		app.listen(PORT, () => console.log("PORT : " + PORT))
+		app.listen(MY_APP_PORT, () => console.log("PORT : " + MY_APP_PORT))
 	})
 	.catch((error) => console.log(error));
 	// admin

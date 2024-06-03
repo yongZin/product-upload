@@ -2,13 +2,13 @@
 require("dotenv").config();
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { createPresignedPost } = require("@aws-sdk/s3-presigned-post");
-const { AWS_ACCESS_KEY, AWS_SECRET_KEY} = process.env;
+const { MY_APP_AWS_ACCESS_KEY, MY_APP_AWS_SECRET_KEY} = process.env;
 
 const s3 = new S3Client({
 	region: "ap-northeast-2",
 	credentials: {
-		secretAccessKey: AWS_SECRET_KEY,
-		accessKeyId: AWS_ACCESS_KEY,
+		secretAccessKey: MY_APP_AWS_SECRET_KEY,
+		accessKeyId: MY_APP_AWS_ACCESS_KEY,
 	}
 });
 
