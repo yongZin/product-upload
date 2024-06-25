@@ -2,7 +2,7 @@
 
 > 업사이클링 브랜드 프라이탁의 쇼핑몰로 회원가입과 로그인이 가능하며 유저 권한에 따라 상품을 업로드 및 삭제할 수 있고, 사용자는 마음에 드는 상품에 좋아요를 표시할 수 있습니다. 또한 상품 정렬 및 필터 기능을 통해 원하는 상품을 찾을 수 있습니다.
 
-[🛍️ 포트폴리오_보러가기](https://port-0-product-upload-otjl2clhzyopb4.sel4.cloudtype.app/){:target="_blank"}
+[🛍️ 포트폴리오_보러가기](https://port-0-product-upload-otjl2clhzyopb4.sel4.cloudtype.app/)
 
 ![preview](https://github.com/yongZin/yongZin/blob/main/images/gif/product_upload.gif?raw=true)
 
