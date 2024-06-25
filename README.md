@@ -4,12 +4,12 @@
 
 <br>
 
-> ### 미리 보기
-> [🛍️ 포트폴리오_보러가기](https://port-0-product-upload-otjl2clhzyopb4.sel4.cloudtype.app/)
+[🛍️ 포트폴리오_보러가기](https://port-0-product-upload-otjl2clhzyopb4.sel4.cloudtype.app/)
 
 <br>
 
-![preview](https://github.com/yongZin/yongZin/blob/main/images/gif/product_upload.gif?raw=true)
+> ### 미리 보기
+> ![preview](https://github.com/yongZin/yongZin/blob/main/images/gif/product_upload.gif?raw=true)
 
 > ### 주요 기능
 > - 회원가입
