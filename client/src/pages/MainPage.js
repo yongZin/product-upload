@@ -10,14 +10,18 @@ import Details from "../components/Details";
 import Loading from "../components/Loading";
 import { ModalContext } from "../context/ModalContext";
 import { ProductContext } from "../context/ProductContext";
+// import { AuthContext } from "../context/AuthContext";
 import freitagBG from "../components/images/truck.jpg";
+// const GUEST_ID = process.env.REACT_APP_GUEST_LOGIN_ID; //임시관리자 ID
+// const GUEST_PWD = process.env.REACT_APP_GUEST_LOGIN_PWD; //임시관리자 Password
 
 const BrandInfo = styled.section`
 	width:100%;
 	height:500px;
 	background:url(${freitagBG}) no-repeat;
-	background-position:center;
-	background-size:cover;
+	background-attachment:fixed;
+	background-position:top center;
+	background-size:auto 500px;
 	position:relative;
 	z-index:10;
 	transition:0.3s;
@@ -29,12 +33,15 @@ const BrandInfo = styled.section`
 	}
 	@media ${props => props.theme.tablet} {
 		height:350px;
+		background-size:auto 350px;
 	}
 	@media ${props => props.theme.mobile} {
 		height:250px;
+		background-size:auto 250px;
 	}
 	@media ${props => props.theme.mobile_xs} {
 		height:180px;
+		background-size:auto 180px;
 	}
 `;
 const ScrollTopBtn = styled.div`
@@ -76,8 +83,9 @@ const ScrollTopBtn = styled.div`
 `;
 
 const MainPage = () => {
-	const {loadingFinish} = useContext(ProductContext);
 	const {modalView, setModalView, loginCheck} = useContext(ModalContext);
+	const {loadingFinish} = useContext(ProductContext);
+	// const {setUsername, setPassword, loginHandler} = useContext(AuthContext);
 	const [showButton, setShowButton] = useState(false);
 
 	const handleScroll = () => {
@@ -98,7 +106,15 @@ const MainPage = () => {
 
 	useEffect(() => { //로그인 유도(상품 렌더링 후)
 		if (!loginCheck) setModalView("login");
-	}, [loginCheck, setModalView])
+	}, [loginCheck, setModalView]);
+
+	// useEffect(() => { //로그인 유도(상품 렌더링 후)
+	// 	if (!loginCheck) {
+	// 		setUsername(GUEST_ID);
+	// 		setPassword(GUEST_PWD);
+	// 		loginHandler({ preventDefault: () => {} });
+	// 	};
+	// }, [loginCheck, setModalView, setUsername, setPassword, loginHandler]);
 
 	const scrollToTop = () => {
     window.scrollTo({
