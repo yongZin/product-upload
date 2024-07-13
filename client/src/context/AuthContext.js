@@ -1,6 +1,8 @@
 //회원정보 관련 컴포넌트
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { toast } from "react-toastify";
 import axios from "axios";
+import { ModalContext } from "./ModalContext";
 
 export const AuthContext = createContext();
 
@@ -10,6 +12,8 @@ export const AuthProvider = ({ children }) => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [passwordCheck, setPasswordCheck] = useState("");
+	const [loginLoad, setLoginLoag] = useState(false);
+	const {handleClose, setLoginCheck} = useContext(ModalContext);
 
 	useEffect(() => {
 		const sessionId = localStorage.getItem("sessionId"); //로그인시 세션ID 저장
@@ -42,6 +46,37 @@ export const AuthProvider = ({ children }) => {
 		} 
 	}, [userInfo]);
 
+	const loginHandler = async (e) => {
+		try {
+			e.preventDefault();
+
+			if(username.length < 3 || password.length < 6)
+				throw new Error("입력하신 정보가 올바르지 않습니다.");
+
+			setLoginLoag(true);
+
+			const result = await axios.patch(
+				"/users/login",
+				{ username, password }
+			);
+
+			setUserInfo({
+				userID: result.data.userID,
+				sessionId: result.data.sessionId,
+				name: result.data.name,
+			});
+			
+			handleClose();
+			resetData();
+			setLoginLoag(false);
+			setLoginCheck(true);
+			toast.success("로그인 성공");
+		} catch (error) {
+			console.error(error.response);
+			toast.error(error.response.data.message);
+		}
+	};
+
 	const resetData = () => {
 		setName("");
 		setUsername("");
@@ -55,7 +90,8 @@ export const AuthProvider = ({ children }) => {
 		username, setUsername,
 		password, setPassword,
 		passwordCheck, setPasswordCheck,
-		resetData
+		loginLoad, setLoginLoag,
+		loginHandler, resetData
 	}
 	
 	return(

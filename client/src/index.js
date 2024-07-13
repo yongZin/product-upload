@@ -15,18 +15,18 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <ProductProvider>
-          <ModalProvider>
+      <ModalProvider>
+        <AuthProvider>
+          <ProductProvider>
             <ThemeProvider theme={theme}>
               <Suspense fallback={<Loading />}>
                 <App />
               </Suspense>
               <GlobalStyle />
             </ThemeProvider>
-          </ModalProvider>
-        </ProductProvider>
-      </AuthProvider>
+          </ProductProvider>
+        </AuthProvider>
+      </ModalProvider>
     </BrowserRouter>
   // </React.StrictMode>
 );

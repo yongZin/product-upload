@@ -4,9 +4,6 @@ import styled from "styled-components";
 import UserInput from "./UserInput";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
-import { ProductContext } from "../context/ProductContext";
-import { toast } from "react-toastify";
-import axios from "axios";
 const GUEST_ID = process.env.REACT_APP_GUEST_LOGIN_ID; //임시관리자 ID
 const GUEST_PWD = process.env.REACT_APP_GUEST_LOGIN_PWD; //임시관리자 Password
 
@@ -173,48 +170,17 @@ const FootBth = styled.ul`
 `;
 
 const LoginForm = () => {
-	const {confirm, setConfirm} = useContext(ProductContext);
 	const {
 		setModalView,
 		setClose,
 		handleClose
 	} = useContext(ModalContext);
 	const {
-		resetData,
-		setUserInfo,
 		username, setUsername,
-		password, setPassword
+		password, setPassword,
+		loginLoad,
+		loginHandler
 	} = useContext(AuthContext);
-
-	const loginHandler = async (e) => {
-		try {
-			e.preventDefault();
-
-			if(username.length < 3 || password.length < 6)
-				throw new Error("입력하신 정보가 올바르지 않습니다.");
-
-			setConfirm(true);
-
-			const result = await axios.patch(
-				"/users/login",
-				{ username, password }
-			);
-
-			setUserInfo({
-				userID: result.data.userID,
-				sessionId: result.data.sessionId,
-				name: result.data.name,
-			});
-			
-			handleClose();
-			resetData();
-			setConfirm(false);
-			toast.success("로그인 성공");
-		} catch (error) {
-			console.error(error.response);
-			toast.error(error.response.data.message);
-		}
-	};
 
 	const guestHandler = () => {
 		setUsername(GUEST_ID);
@@ -243,7 +209,7 @@ const LoginForm = () => {
 
 					<BtnBox>
 						<CloseBtn type="button" onClick={handleClose}>닫기</CloseBtn>
-						<SubmitBtn type="submit">로그인</SubmitBtn>
+						<SubmitBtn type="submit" className={loginLoad && "loading"}>로그인</SubmitBtn>
 					</BtnBox>
 
 					<FootBth>
@@ -263,13 +229,7 @@ const LoginForm = () => {
 							</button>
 						</li>
 						<li>
-							<button
-								type="submit"
-								className={confirm ? "loading" : ""}
-								onClick={guestHandler}
-							>
-								관리자 로그인
-							</button>
+							<button type="submit" onClick={guestHandler}>관리자 로그인</button>
 						</li>
 					</FootBth>
 				</form>
