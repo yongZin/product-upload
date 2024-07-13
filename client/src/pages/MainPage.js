@@ -31,6 +31,10 @@ const BrandInfo = styled.section`
 		inset:0;
 		background-color:rgba(255,255,255,0.1);
 	}
+	@media ${props => props.theme.pc} {
+		background-size:100%;
+    background-position:center -50px;
+	}
 	@media ${props => props.theme.tablet} {
 		height:350px;
 		background-size:auto 350px;
