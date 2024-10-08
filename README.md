@@ -4,7 +4,7 @@
 
 <br>
 
-[🛍️ 포트폴리오_보러가기](https://port-0-product-upload-otjl2clhzyopb4.sel4.cloudtype.app/)
+[🛍️ 포트폴리오_보러가기](https://yongzin-upload.vercel.app/)
 
 <br>
 
