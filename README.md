@@ -24,9 +24,48 @@
 > - TOASTIFY를 활용한 alert
 > - useContext를 활용한 상태관리
 
+<br>
+
+<table>
+	<tr>
+		<th colspan="2">기술 스택</th>
+	</tr>
+	<tr>
+		<td>FRONT</td>
+		<td>
+			<img src="https://img.shields.io/badge/react-20232a?style=for-the-badge&logo=react" />
+			<img src="https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=ffd35b" />
+			<img src="https://img.shields.io/badge/react--toastify-f99c19?style=for-the-badge" />
+			<img src="https://img.shields.io/badge/react--Quill-252739?style=for-the-badge" />
+			<img src="https://img.shields.io/badge/axios-804e95?style=for-the-badge" />
+		</td>
+	</tr>
+	<tr>
+		<td>BACK</td>
+		<td>
+			<img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=node.js&logoColor=fff" />
+			<img src="https://img.shields.io/badge/express-000?style=for-the-badge&logo=express&logoColor=fff" />
+			<img src="https://img.shields.io/badge/multer-f79839?style=for-the-badge" />
+			<img src="https://img.shields.io/badge/uuid-24282a?style=for-the-badge" />
+			<img src="https://img.shields.io/badge/mime--type-404040?style=for-the-badge" />
+		</td>
+	</tr>
+	<tr>
+		<td>DATABASE</td>
+		<td>
+			<img src="https://img.shields.io/badge/mongodb-47A248?style=for-the-badge&logo=mongodb&logoColor=fff" />
+		</td>
+	</tr>
+	<tr>
+		<td>INFRA</td>
+		<td>
+			<img src="https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon_aws&logoColor=fff" />
+		</td>
+	</tr>
+</table>
 
 
-> ### 기술 스택
+<!-- > ### 기술 스택
 > - FRONT  
 > ![react](https://img.shields.io/badge/react-20232a?style=for-the-badge&logo=react)
 > ![styled-components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=ffd35b)
@@ -42,5 +81,4 @@
 > - DATABASE  
 > ![mongodb](https://img.shields.io/badge/mongodb-47A248?style=for-the-badge&logo=mongodb&logoColor=fff)
 > - INFRA  
-> ![mongodb](https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon_aws&logoColor=fff)
-
+> ![mongodb](https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon_aws&logoColor=fff) -->
