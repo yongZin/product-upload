@@ -22,7 +22,8 @@
 > - 상품 정렬 및 필터
 > - 반응형 UI
 > - TOASTIFY를 활용한 alert
-> - useContext를 활용한 상태관리
+> - Context API를 활용한 클라이언트 상태 관리
+> - React Query를 활용한 서버 상태 관리
 
 <br>
 
