@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-// import App from "./App";
 import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ProductProvider }  from "./context/ProductContext";
 import { AuthProvider } from './context/AuthContext';
 import { ModalProvider } from './context/ModalContext';
@@ -12,9 +12,12 @@ import Loading from "./components/Loading";
 
 const App = lazy(() => import('./App'));
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const queryClient = new QueryClient();
+
 root.render(
-  // <React.StrictMode>
-    <BrowserRouter>
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
       <ModalProvider>
         <AuthProvider>
           <ProductProvider>
@@ -27,6 +30,6 @@ root.render(
           </ProductProvider>
         </AuthProvider>
       </ModalProvider>
-    </BrowserRouter>
-  // </React.StrictMode>
+    </QueryClientProvider>
+  </BrowserRouter>
 );
