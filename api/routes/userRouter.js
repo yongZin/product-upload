@@ -73,7 +73,7 @@ userRouter.patch("/logout", async (req, res) => {
 		if (!req.user) throw new Error("로그인정보 오류");
 
 		await User.updateOne( //로그아웃시 세션ID 삭제
-			{ _id: req.user.id },
+			{ _id: req.user.id, "sessions._id": req.headers.sessionid },
 			{ $pull: { sessions: { _id: req.headers.sessionid } } } //배열 수정(세션ID 삭제)
 		);
 

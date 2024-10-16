@@ -1,7 +1,7 @@
 //회원정보 관련 컴포넌트
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
-import { useLogin, useUserInfo } from "../hooks/useAuth";
+import { useLogin, useLogout, useUserInfo } from "../hooks/useAuth";
 import { ModalContext } from "./ModalContext";
 
 export const AuthContext = createContext();
@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
 	const {handleClose, setLoginCheck} = useContext(ModalContext);
 
 	const login = useLogin();
+	const logout = useLogout();
 	const sessionId = localStorage.getItem("sessionId");
 
 	const { data: userData } = useUserInfo(sessionId);
@@ -36,8 +37,8 @@ export const AuthProvider = ({ children }) => {
 			throw new Error("입력하신 정보가 올바르지 않습니다.");
 
 			const result = await login.mutateAsync({ username, password });
-		
-			setUserInfo({ //유저 정보 저장
+						
+			setUserInfo({
 				sessionId: result.sessionId,
 				name: result.name,
 				userId: result.userID,
@@ -55,6 +56,19 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
+	const logoutHandler = () => {
+		logout.mutate(undefined, {
+			onSuccess: () => {
+				setUserInfo(null);
+				toast.success("로그아웃");
+			},
+			onError: (error) => {
+				console.error(error);
+        toast.error("로그아웃 실패");
+			}
+		});
+	};
+
 	const resetData = () => {
 		setUsername("");
 		setPassword("");
@@ -65,7 +79,8 @@ export const AuthProvider = ({ children }) => {
 		username, setUsername,
 		password, setPassword,
 		loginLoad, setLoginLoag,
-		loginHandler, resetData
+		loginHandler, logoutHandler,
+		resetData
 	}
 	
 	return(

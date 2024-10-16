@@ -1,5 +1,5 @@
 //유저 API
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 export const useLogin = () => {
@@ -10,7 +10,29 @@ export const useLogin = () => {
 			return response.data;
 		}
 	});
-}
+};
+
+export const useLogout = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async () => {
+			const sessionId = localStorage.getItem("sessionId");
+			const response = await axios.patch("/api/users/logout", null, {
+				headers: { sessionid: sessionId },
+			});
+
+			return response.data;
+		},
+		onSuccess: () => {
+			localStorage.removeItem("sessionId");
+			queryClient.removeQueries("userInfo");
+		},
+    onError: (error) => {
+      console.error("Logout error:", error.response?.data || error.message);
+    }
+	});
+};
 
 export const useUserInfo = (sessionId) => {
 	return useQuery({

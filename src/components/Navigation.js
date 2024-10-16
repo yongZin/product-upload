@@ -73,7 +73,7 @@ const Content = styled.nav`
 
 const Navigation = () => {
 	const {setModalView} = useContext(ModalContext);
-	const {userInfo, setUserInfo} = useContext(AuthContext);
+	const {userInfo, logoutHandler} = useContext(AuthContext);
 	const {
 		products, setProducts,
 		productsAll, setProductsAll
@@ -94,18 +94,16 @@ const Navigation = () => {
 		}));
 	}, [guestProducts, products, setProducts, productsAll, setProductsAll]);
 
-	const logoutHandler = useCallback(async () => {
+	const HandleLogout = useCallback(async () => {
 		try {
 			await deleteGuestProducts();
-			await axios.patch("/api/users/logout");
-			setUserInfo();
 
-			toast.success("로그아웃");
+			logoutHandler();
 		} catch (error) {
 			console.error(error);
 			toast.error(error.message);
 		}
-	}, [deleteGuestProducts, setUserInfo]);
+	}, [deleteGuestProducts, logoutHandler]);
   
   useEffect(() => { //임시관리자 상품 삭제
 		const preventClose = (e) => { //pc전용 (beforeunload)
@@ -168,8 +166,6 @@ const Navigation = () => {
 		return () => clearInterval(checkSessionExpire);
 	}, [userInfo, logoutHandler])
 
-	
-
 	return (
 		<Wrap>
 			<Content>
@@ -177,7 +173,7 @@ const Navigation = () => {
 
 				<ul className="nav-btnBox">
 					{
-						userInfo ? <li onClick={logoutHandler}>로그아웃({userInfo.name})</li>
+						userInfo ? <li onClick={HandleLogout}>로그아웃({userInfo.name})</li>
 						: <li onClick={() => setModalView("login")}>로그인</li>
 					}
 				</ul>
