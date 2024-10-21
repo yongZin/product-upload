@@ -6,7 +6,7 @@ import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
 import { ProductContext } from "../context/ProductContext";
 import { toast } from "react-toastify";
-import axios from "axios";
+import apiClient from "../clientAPI/apiClient";
 
 const Wrap = styled.div`
 	width:100%;
@@ -104,7 +104,7 @@ const RegisterForm = () => {
 		username, setUsername,
 		password, setPassword,
 		passwordCheck, setPasswordCheck
-	} = useContext(AuthContext);	
+	} = useContext(AuthContext);
 
 	const onSubmit = async (e) => {
 		try {
@@ -119,7 +119,7 @@ const RegisterForm = () => {
 
 			setConfirm(true);
 
-			const result = await axios.post("/api/users/register", {
+			const result = await apiClient.post("/users/register", {
 				name,
 				username,
 				password
@@ -185,7 +185,10 @@ const RegisterForm = () => {
 					/>
 
 					<BtnBox>
-						<CloseBtn type="button" onClick={handleClose}>닫기</CloseBtn>
+						<CloseBtn type="button" onClick={() => {
+							handleClose();
+							resetData();
+						}}>닫기</CloseBtn>
 						<SubmitBtn type="submit" className={confirm ? "loading" : ""}>회원가입</SubmitBtn>
 					</BtnBox>
 				</form>

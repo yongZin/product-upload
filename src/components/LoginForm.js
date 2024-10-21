@@ -179,7 +179,8 @@ const LoginForm = () => {
 		username, setUsername,
 		password, setPassword,
 		loginLoad,
-		loginHandler
+		loginHandler,
+		resetData
 	} = useContext(AuthContext);
 
 	const guestHandler = () => {
@@ -208,7 +209,10 @@ const LoginForm = () => {
 					/>
 
 					<BtnBox>
-						<CloseBtn type="button" onClick={handleClose}>닫기</CloseBtn>
+						<CloseBtn type="button" onClick={() => {
+							handleClose();
+							resetData();
+						}}>닫기</CloseBtn>
 						<SubmitBtn type="submit" className={loginLoad && "loading"}>로그인</SubmitBtn>
 					</BtnBox>
 
@@ -218,8 +222,9 @@ const LoginForm = () => {
 								type="button"
 								onClick={() => {
 									setClose(true);
-
+									
 									setTimeout(() => {
+										resetData();
 										setModalView("register");
 										setClose(false);
 									}, 300);

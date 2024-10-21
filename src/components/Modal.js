@@ -144,7 +144,7 @@ const Popup = styled.div`
 `;
 
 const Modal = ({ children }) => {
-  const {resetData} = useContext(ProductContext);
+  const {resetProductForm} = useContext(ProductContext);
   const {
     modalView,
     close,
@@ -156,7 +156,7 @@ const Modal = ({ children }) => {
       <Background
         className={close ? "form-close" : ""}
         onClick={() => {
-          resetData();
+          resetProductForm();
           handleClose();
         }}
       />

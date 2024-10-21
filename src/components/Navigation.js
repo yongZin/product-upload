@@ -3,11 +3,11 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import logo from "./images/logo.svg";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
 import { ProductContext } from "../context/ProductContext";
+import apiClient from "../clientAPI/apiClient";
 const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
 const Wrap = styled.header`
@@ -82,7 +82,7 @@ const Navigation = () => {
 
 	const deleteGuestProducts = useCallback(async () => {
 		for (const item of guestProducts) {
-			await axios.delete(`/api/upload/${item._id}`);
+			await apiClient.delete(`/upload/${item._id}`);
 		}
 	
 		setProducts(products.filter((product) => {
@@ -137,8 +137,8 @@ const Navigation = () => {
 	useEffect(() => {
 		setTimeout(() => {
 			if (userInfo && userInfo.userID === GUEST_ID) {
-				axios
-					.get("/api/users/userInfo/products")
+				apiClient
+					.get("/users/userInfo/products")
 					.then((result) => {
 						setGuestProducts(result.data);
 						// setConfirm(true);

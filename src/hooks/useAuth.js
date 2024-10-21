@@ -1,11 +1,11 @@
 //유저 API
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import apiClient from "../clientAPI/apiClient";
 
 export const useLogin = () => {
 	return useMutation({
 		mutationFn: async (userData) => {
-			const response = await axios.patch("/api/users/login", userData);
+			const response = await apiClient.patch("/users/login", userData);
 
 			return response.data;
 		}
@@ -17,10 +17,7 @@ export const useLogout = () => {
 
 	return useMutation({
 		mutationFn: async () => {
-			const sessionId = localStorage.getItem("sessionId");
-			const response = await axios.patch("/api/users/logout", null, {
-				headers: { sessionid: sessionId },
-			});
+			const response = await apiClient.patch("/users/logout", null);
 
 			return response.data;
 		},
@@ -38,7 +35,7 @@ export const useUserInfo = (sessionId) => {
 	return useQuery({
 		queryKey: ["userInfo", sessionId],
 		queryFn: async () => {
-			const response = await axios.get("/api/users/userInfo", {
+			const response = await apiClient.get("/users/userInfo", {
 				headers: { sessionid: sessionId },
 			});
 

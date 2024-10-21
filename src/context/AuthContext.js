@@ -8,8 +8,10 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 	const [userInfo, setUserInfo] = useState();
+	const [name, setName] = useState("");
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [passwordCheck, setPasswordCheck] = useState("");
 	const [loginLoad, setLoginLoag] = useState(false);
 	const {handleClose, setLoginCheck} = useContext(ModalContext);
 
@@ -70,14 +72,18 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const resetData = () => {
+		setName("");
 		setUsername("");
 		setPassword("");
+		setPasswordCheck("");
 	}
 
 	const AuthContextValue = {
 		userInfo, setUserInfo,
+		name, setName,
 		username, setUsername,
 		password, setPassword,
+		passwordCheck, setPasswordCheck,
 		loginLoad, setLoginLoag,
 		loginHandler, logoutHandler,
 		resetData
