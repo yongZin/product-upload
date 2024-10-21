@@ -589,15 +589,13 @@ const Wrap = styled.section`
 
 const ProductList = () => {
 	const {
-		// products,
 		productsAll,
 		uploadError,
 		totalProductCount,
 		productsList, setProductsList,
 		uploadLoad, setUploadLoad,
-		sortFilterValue, setSortFilterValue,
-		colorFilterValue, setColorFilterValue,
-		typeFilterValue, setTypeFilterValue,
+		filters,
+		updateFilter, resetFilters,
 		loadMoreProduct,
 		toggleClick,
 		productDetails
@@ -672,22 +670,14 @@ const ProductList = () => {
 	const filterHandler = (filterType, target) => { //필터 이벤트
 		switch (filterType) {
 			case "default":
-				setSortFilterValue("new");
-				setColorFilterValue("");
-				setTypeFilterValue("");
+				resetFilters();
 				setProductsList(productsList.slice(0, 6));
 
 				break;
 			case "sort":
-				setSortFilterValue(target);
-
-				break;
 			case "color":
-				setColorFilterValue(target);
-
-				break;
 			case "type":
-				setTypeFilterValue(target);
+				updateFilter(filterType, target);
 
 				break;
 			default:
@@ -721,7 +711,7 @@ const ProductList = () => {
 					<div>
 						<button
 							type="button"
-							className={classnames({ on: sortFilterValue})}
+							className={classnames({ on: filters.sort})}
 							onClick={() => setMobileFilter(true)}
 						>
 							상품정렬
@@ -729,7 +719,7 @@ const ProductList = () => {
 
 						<button
 							type="button"
-							className={classnames({ on: colorFilterValue})}
+							className={classnames({ on: filters.color})}
 							onClick={() => setMobileFilter(true)}
 						>
 							색상
@@ -737,7 +727,7 @@ const ProductList = () => {
 
 						<button
 							type="button"
-							className={classnames({ on: typeFilterValue})}
+							className={classnames({ on: filters.type})}
 							onClick={() => setMobileFilter(true)}
 						>
 							종류
@@ -766,11 +756,8 @@ const ProductList = () => {
 										type="radio"
 										name="filterSrot"
 										value={option.value}
-										checked={sortFilterValue === option.value}
-										onChange={() => {
-											filterHandler("sort",option.value);
-											setSortFilterValue(option.value);
-										}}
+										checked={filters.sort === option.value}
+										onChange={() => filterHandler("sort",option.value)}
 									/>
 									<label htmlFor={option.value}>
 										<span>{option.label}</span>
@@ -796,11 +783,8 @@ const ProductList = () => {
 										type="radio"
 										name="filterColor"
 										value={option}
-										checked={colorFilterValue === option}
-										onChange={() => {
-											filterHandler("color", option);
-											setColorFilterValue(option);
-										}}
+										checked={filters.color === option}
+										onChange={() => filterHandler("color", option)}
 									/>
 									<label htmlFor={`${option}2`}>
 										<span
@@ -828,11 +812,8 @@ const ProductList = () => {
 										type="radio"
 										name="filterType"
 										value={option}
-										checked={typeFilterValue === option}
-										onChange={() => {
-											filterHandler("type", option);
-											setTypeFilterValue(option);
-										}}
+										checked={filters.type === option}
+										onChange={() => filterHandler("type", option)}
 									/>
 									<label htmlFor={`${option}2`}>
 										<span>{option}</span>
@@ -856,7 +837,7 @@ const ProductList = () => {
 
 				{productListLoding}
 
-				{colorFilterValue && typeFilterValue && productList.length === 0 &&
+				{filters.color && filters.type && productList.length === 0 &&
 					<Empty><TbBoxOff />현재 선택한 조건으로는 상품을 찾을 수 없습니다</Empty>
 				}
 				

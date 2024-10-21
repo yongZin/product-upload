@@ -71,7 +71,7 @@ const UploadReactQuill = styled(ReactQuill)`
 
 const Quill = () => {
 	const quillRef = useRef();
-	const {setDetails, setDetailImages} = useContext(ProductContext);
+	const { productForm, updateProductForm } = useContext(ProductContext);
 
 	const purifyHandler = (value) => {
 		deleteImageHandler(value);
@@ -80,7 +80,7 @@ const Quill = () => {
     const cleanedValue = sanitizedHTML.replace(/(<img[^>]*src=)"[^"]*"/g, '$1""'); //base64 이미지 소스 지우기
 		const arrayHTML = cleanedValue.replace(/<p><\/p>|<p><br><\/p>/g, ""); //불필요한 태그 삭제
 
-    setDetails(arrayHTML);
+		updateProductForm("details", arrayHTML);
 	};
 
 	const deleteImageHandler = (value) => { //에디터에서 삭제된 이미지 찾아 지우기
@@ -88,7 +88,9 @@ const Quill = () => {
 		let htmlDoc = parser.parseFromString(value, "text/html");
 		let imgSrcValues = Array.from(htmlDoc.getElementsByTagName("img")).map(img => img.getAttribute("src")); //img태그 소스 가져오기
 
-		setDetailImages(prevImages => prevImages.filter(image => imgSrcValues.includes(image.dataUrl)));
+		const filterdeImages = productForm.detailImages.filter((image) => imgSrcValues.includes(image.dataUrl));
+
+		updateProductForm("detailImages", filterdeImages);
 	};
 
 	const imageHandler = () => {
@@ -105,8 +107,10 @@ const Quill = () => {
 			fileReader.onload = async (e) => {
 				const imgSrc = e.target.result;
 
-				// setDetailImages((prevImages) => [...prevImages, imageFile]);
-				setDetailImages((prevImages) => [...prevImages, { file: imageFile, dataUrl: imgSrc }]);
+				updateProductForm("detailImages", [
+					...productForm.detailImages,
+					{ file: imageFile, dataUrl: imgSrc }
+				]);
 				
 				const range = quillRef.current.getEditor().getSelection();
 				

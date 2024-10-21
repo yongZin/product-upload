@@ -7,6 +7,7 @@ import Quill from "./Quill";
 import UploadInput from "./UploadInput";
 import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
+import apiClient from "../clientAPI/apiClient";
 
 const ImgWrap = styled.div`
   margin:40px 0 30px;
@@ -304,33 +305,29 @@ const UploadForm = () => {
   const {
     setProducts,
     productsAll, setProductsAll,
-    name, setName,
-    price, setPrice,
-    mainImages, setMainImages,
+    productForm,
+    updateProductForm,
+    resetProductForm,
     previews, setPreviews,
-    details, setDetails,
-    detailImages, setDetailImages,
     confirm, setConfirm,
-    type, setType,
-    material, setMaterial,
-    color, setColor,
     setTotalProductCount
   } = useContext(ProductContext);
 
   useEffect(() => { //상품정보 입력 유효성 검사
+    const { mainImages, detailImages, name, price, details, type, material, color } = productForm;
     const allValuesFilled = [mainImages, detailImages, name, price, details, type, material, color].every(value => value);
 
     setConfirm(allValuesFilled);
-  }, [mainImages, detailImages, name, price, details, type, material, color, setConfirm]);
+  }, [productForm, setConfirm]);
 
   const imageHandler = async (e) => {
     const imageFiles = e.target.files; //파일정보 가져오기
-    setMainImages(imageFiles);
+    const currentMainImages = productForm.mainImages;
 
-    if (mainImages.length + imageFiles.length > 4) {
+    if (currentMainImages.length + imageFiles.length > 4) {
       toast.error("대표 이미지는 최대 4개까지 업로드 가능합니다.");
-    } else{
-      const newImages = [...new Set([...mainImages, ...imageFiles])];
+    } else {
+      const newImages = [...new Set([...currentMainImages, ...imageFiles])];
 
       const imagePreviews = await Promise.all(
         [...imageFiles].map(async (file) => {
@@ -349,18 +346,16 @@ const UploadForm = () => {
         })
       )
 
-      setMainImages(newImages); 
+      updateProductForm("mainImages", newImages);
       setPreviews((prevPreviews) => [...prevPreviews, ...imagePreviews]);
     }
   }
 
   const imageDeleteHandler = (index) => {
-
-    setMainImages((prevMainImages) => {
-      const newMainImages = [...prevMainImages];
-      newMainImages.splice(index, 1);
-      return newMainImages;
-    });
+    const newMainImages = [...productForm.mainImages];
+    
+    newMainImages.splice(index, 1);
+    updateProductForm('mainImages', newMainImages);
 
     setPreviews((prevPreviews) => {
       const newPreviews = [...prevPreviews];
@@ -376,7 +371,7 @@ const UploadForm = () => {
 
     const numberValue = parseInt(value.replace(/[^0-9]/g, ''), 10) || 0;
 
-    setPrice(numberValue);
+    updateProductForm("price", numberValue);
   };
 
   const numberWithCommas = (number) => {
@@ -386,25 +381,20 @@ const UploadForm = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    const { mainImages, detailImages, name, price, details, type, material, color } = productForm;
+
     try {
-      if (
-        !mainImages ||
-        !detailImages ||
-        !name ||
-        !price ||
-        !details ||
-        !type ||
-        !material ||
-        !color
-      ) throw new Error("모든 정보를 입력해주세요.");
+      if (!mainImages || !detailImages || !name || !price || !details || !type || !material || !color) {
+        throw new Error("모든 정보를 입력해주세요.");
+      }
 
       setLoading(true);
 
-      const mainPresignedData = await axios.post("/api/upload/presigned", {
+      const mainPresignedData = await apiClient.post("/upload/presigned", {
         contentTypes: mainImages.map((image) => image.type)
       });
 
-      const detailPresignedData = await axios.post("/api/upload/presigned", {
+      const detailPresignedData = await apiClient.post("/upload/presigned", {
         contentTypes: detailImages.map((image) => image.file.type)
       });
 
@@ -440,7 +430,7 @@ const UploadForm = () => {
       const typeIndex = typeFilter.length + 1;
       const newName = `${name}_${String(typeIndex).padStart(3, "0")}`
 
-      const res = await axios.post("/api/upload", {
+      const res = await apiClient.post("/upload", {
         mainImages: mainPresignedData.data.map((data) => ({
           imageKey: data.imageKey,
         })),
@@ -463,25 +453,17 @@ const UploadForm = () => {
       resetData();
       toast.success("업로드 성공");
     } catch (error) {
-      const errorMessage = error.response && error.response.data && error.response.data.message
-        ? error.response.data.message
-        : error.message;
+      const errorMessage = error.response?.data?.message || error.message;
       toast.error(errorMessage);
       console.error(error);
+      setLoading(false);
     }
   };
 
   const resetData = () => {
     setClose(true);
     setPreviews([]);
-    setName("");
-    setPrice("");
-    setMainImages([]);
-    setDetailImages([]);
-    setDetails([]);
-    setType("");
-    setMaterial("");
-    setColor("");
+    resetProductForm();
 
     setTimeout(() => {
       setModalView("off");
@@ -494,15 +476,13 @@ const UploadForm = () => {
   const firstMainImageCheck = (index) => {
     setMainImgChecked(index);
 
-    setMainImages((prevMainImages) => {
-      const newMainImages = [...prevMainImages]; 
-      const selectedImage = newMainImages[index];
-  
-      newMainImages.splice(index, 1);
-      newMainImages.unshift(selectedImage);
-  
-      return newMainImages; 
-    });
+    const newMainImages = [...productForm.mainImages];
+    const selectedImage = newMainImages[index];
+
+    newMainImages.splice(index, 1);
+    newMainImages.unshift(selectedImage);
+
+    updateProductForm("mainImages", newMainImages);
   }
 
 	const previewsImg = previews && previews.map((preview,index) => (
@@ -530,15 +510,15 @@ const UploadForm = () => {
 				label="상품명"
 				placeholder="ex) F41 HAWAII FIVE-O"
         type="text"
-				value={name}
-				onChange={(e) => setName(e.target.value)}
+				value={productForm.name}
+				onChange={(e) => updateProductForm('name', e.target.value)}
 			/>
 
 			<UploadInput
 				label="상품가격"
 				placeholder="ex) 248000"
         type="text"
-				value={numberWithCommas(price)}
+				value={numberWithCommas(productForm.price)}
 				onChange={(e) => priceCommaToNumber(e)}
 			/>
       
@@ -563,34 +543,29 @@ const UploadForm = () => {
         </ImgPreview>
       </ImgWrap>
 
-			<Quill
-				details={details}
-        detailImages={detailImages}
-				setDetails={setDetails}
-        setDetailImages={setDetailImages}
-			/>
+			<Quill />
 
 			<UploadInput
 				label="종류"
 				placeholder="ex) 메신저백"
         type="text"
-				value={type}
-				onChange={(e) => setType(e.target.value)}
+				value={productForm.type}
+				onChange={(e) => updateProductForm("type", e.target.value)}
 			/>
 
 			<UploadInput
 				label="소재"
 				placeholder="ex) 타프원단"
         type="text"
-				value={material}
-				onChange={(e) => setMaterial(e.target.value)}
+				value={productForm.material}
+				onChange={(e) => updateProductForm("material", e.target.value)}
 			/>
 
       <UploadInput
         label="색상"
         type="radio"
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
+        value={productForm.color}
+        onChange={(e) => updateProductForm("color", e.target.value)}
         colorOptions={["red", "orange", "yellow", "saddlebrown", "antiquewhite", "green", "blue", "purple", "pink", "white", "gray", "black", "etc"]}
       />
 
