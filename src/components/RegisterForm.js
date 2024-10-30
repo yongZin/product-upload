@@ -6,7 +6,7 @@ import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
 import { ProductContext } from "../context/ProductContext";
 import { toast } from "react-toastify";
-import apiClient from "../clientAPI/apiClient";
+import { useRegister } from "../hooks/useAuth";
 
 const Wrap = styled.div`
 	width:100%;
@@ -105,31 +105,30 @@ const RegisterForm = () => {
 		password, setPassword,
 		passwordCheck, setPasswordCheck
 	} = useContext(AuthContext);
+	const register = useRegister();
+
 
 	const onSubmit = async (e) => {
 		try {
 			e.preventDefault();
-			
-			if(username.length < 3)
-				throw new Error("아이디를 3글자 이상으로 해주세요.");
-			if(password.length < 6)
-				throw new Error("비밀번호를 6글자 이상으로 해주세요.");
 			if(password !== passwordCheck)
 				throw new Error("비밀번호를 확인해주세요.");
 
 			setConfirm(true);
 
-			const result = await apiClient.post("/users/register", {
+			const data = await register.mutateAsync({
 				name,
 				username,
 				password
 			});
 
-			setUserInfo({ //유저정보 저장
-				userID: result.data.userID,
-				sessionId: result.data.sessionId,
-				name: result.data.name,
-			});
+			localStorage.setItem("sessionId", data.sessionId);
+
+			setUserInfo({
+				userId: data.userID,
+				essionId: data.sessionId,
+				name: data.name,
+			})
 
 			handleClose();
 			resetData();

@@ -1,13 +1,12 @@
 //상단 헤더 컴포넌트(내비게이션)
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import logo from "./images/logo.svg";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ModalContext } from "../context/ModalContext";
 import { AuthContext } from "../context/AuthContext";
-import { ProductContext } from "../context/ProductContext";
-import apiClient from "../clientAPI/apiClient";
+import { useGuestProducts, useDeleteGuestProducts } from "../hooks/useAuth";
 const GUEST_ID = process.env.REACT_APP_GUEST_ID; //게스트 확인용
 
 const Wrap = styled.header`
@@ -74,50 +73,40 @@ const Content = styled.nav`
 const Navigation = () => {
 	const {setModalView} = useContext(ModalContext);
 	const {userInfo, logoutHandler} = useContext(AuthContext);
-	const {
-		products, setProducts,
-		productsAll, setProductsAll
-	} = useContext(ProductContext);
-	const [guestProducts, setGuestProducts] = useState([]);
 
-	const deleteGuestProducts = useCallback(async () => {
-		for (const item of guestProducts) {
-			await apiClient.delete(`/upload/${item._id}`);
-		}
-	
-		setProducts(products.filter((product) => {
-			return !guestProducts.find((item) => item._id === product._id);
-		}));
-
-		setProductsAll(productsAll.filter((product) => {
-			return !guestProducts.find((item) => item._id === product._id);
-		}));
-	}, [guestProducts, products, setProducts, productsAll, setProductsAll]);
+	const { data: guestProducts = [] } = useGuestProducts();
+	const deleteGuestProducts = useDeleteGuestProducts();
 
 	const HandleLogout = useCallback(async () => {
 		try {
-			await deleteGuestProducts();
+			if (guestProducts.length > 0) {
+        await deleteGuestProducts.mutateAsync(guestProducts);
+      }
 
 			logoutHandler();
 		} catch (error) {
 			console.error(error);
 			toast.error(error.message);
 		}
-	}, [deleteGuestProducts, logoutHandler]);
+	}, [guestProducts, deleteGuestProducts, logoutHandler]);
   
   useEffect(() => { //임시관리자 상품 삭제
 		const preventClose = (e) => { //pc전용 (beforeunload)
 			e.preventDefault();
 			e.returnValue = ""; //Chrome에서 동작하도록;
 	
-			deleteGuestProducts()
+			if (guestProducts.length > 0) {
+        deleteGuestProducts.mutate(guestProducts);
+      }
 		};
 
 		const mobilePreventClose = () => { //mobile전용 (visibilitychange)
-			if (document.visibilityState === "hidden") deleteGuestProducts();
+			if (document.visibilityState === "hidden" && guestProducts.length > 0) {
+        deleteGuestProducts.mutate(guestProducts);
+      }
 		}
 
-    if(userInfo && (userInfo.userID === GUEST_ID)) {
+    if(userInfo?.userID === GUEST_ID) {
 			if ("ontouchstart" in window) { //터치 이벤트인 경우(터치가 가능한 노트북 포함)
 				window.addEventListener("visibilitychange", mobilePreventClose);
 			} else {
@@ -132,26 +121,7 @@ const Navigation = () => {
 				}
       };
     }
-  }, [userInfo, deleteGuestProducts]);
-
-	useEffect(() => {
-		setTimeout(() => {
-			if (userInfo && userInfo.userID === GUEST_ID) {
-				apiClient
-					.get("/users/userInfo/products")
-					.then((result) => {
-						setGuestProducts(result.data);
-						// setConfirm(true);
-					})
-					.catch((error) => {
-						toast.error(error.response.data.message)
-						console.error(error);
-					})
-			} else{
-				setGuestProducts([]);
-			}
-		}, 100);
-	}, [userInfo, products]);
+  }, [userInfo, guestProducts, deleteGuestProducts]);
 
 	useEffect(() => {
 		const checkSessionExpire = setInterval(() => {
