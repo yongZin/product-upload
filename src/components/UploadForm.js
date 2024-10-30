@@ -1,13 +1,14 @@
 //상품 업로드 컴포넌트
 import React, { useState, useRef, useContext, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import Quill from "./Quill";
 import UploadInput from "./UploadInput";
 import { ProductContext } from "../context/ProductContext";
 import { ModalContext } from "../context/ModalContext";
-import apiClient from "../clientAPI/apiClient";
+import { useProductsAll, useUpload } from "../hooks/useProduct";
+// import apiClient from "../clientAPI/apiClient";
 
 const ImgWrap = styled.div`
   margin:40px 0 30px;
@@ -303,15 +304,14 @@ const UploadForm = () => {
   const [loading, setLoading] = useState(false);
   const {setModalView, setClose} = useContext(ModalContext);
   const {
-    setProducts,
-    productsAll, setProductsAll,
     productForm,
     updateProductForm,
     resetProductForm,
     previews, setPreviews,
     confirm, setConfirm,
-    setTotalProductCount
   } = useContext(ProductContext);
+  const { productsAll } = useProductsAll();
+  const { createPresigned, uploadS3, createProduct } = useUpload();
 
   useEffect(() => { //상품정보 입력 유효성 검사
     const { mainImages, detailImages, name, price, details, type, material, color } = productForm;
@@ -326,29 +326,32 @@ const UploadForm = () => {
 
     if (currentMainImages.length + imageFiles.length > 4) {
       toast.error("대표 이미지는 최대 4개까지 업로드 가능합니다.");
-    } else {
-      const newImages = [...new Set([...currentMainImages, ...imageFiles])];
 
-      const imagePreviews = await Promise.all(
-        [...imageFiles].map(async (file) => {
-          return new Promise((resolve, reject) => {
-            try {
-              const fileReader = new FileReader();
-              fileReader.readAsDataURL(file);
-              fileReader.onload = (e) => resolve({
-                imgSrc: e.target.result,
-                fileName: file.name
-              })
-            } catch (error) {
-              reject(error);
-            }
-          })
-        })
-      )
-
-      updateProductForm("mainImages", newImages);
-      setPreviews((prevPreviews) => [...prevPreviews, ...imagePreviews]);
+      return;
     }
+
+    const newImages = [...new Set([...currentMainImages, ...imageFiles])];
+
+    const imagePreviews = await Promise.all(
+      [...imageFiles].map(async (file) => {
+        return new Promise((resolve, reject) => {
+          try {
+            const fileReader = new FileReader();
+
+            fileReader.readAsDataURL(file);
+            fileReader.onload = (e) => resolve({
+              imgSrc: e.target.result,
+              fileName: file.name
+            });
+          } catch (error) {
+            reject(error);
+          }
+        })
+      })
+    );
+
+    updateProductForm("mainImages", newImages);
+    setPreviews((prevPreviews) => [...prevPreviews, ...imagePreviews]);
   }
 
   const imageDeleteHandler = (index) => {
@@ -381,77 +384,50 @@ const UploadForm = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const { mainImages, detailImages, name, price, details, type, material, color } = productForm;
-
     try {
-      if (!mainImages || !detailImages || !name || !price || !details || !type || !material || !color) {
-        throw new Error("모든 정보를 입력해주세요.");
-      }
-
       setLoading(true);
 
-      const mainPresignedData = await apiClient.post("/upload/presigned", {
-        contentTypes: mainImages.map((image) => image.type)
+      const mainPresigned = await createPresigned.mutateAsync({
+        images: productForm.mainImages,
+        type: "main"
       });
 
-      const detailPresignedData = await apiClient.post("/upload/presigned", {
-        contentTypes: detailImages.map((image) => image.file.type)
+      let detailPresigned = null;
+      if (productForm.detailImages && productForm.detailImages.length > 0) {
+        detailPresigned = await createPresigned.mutateAsync({
+          images: productForm.detailImages,
+          type: "detail"
+        });
+      }
+
+      await uploadS3.mutateAsync({
+        presignedData: mainPresigned.presignedData,
+        images: productForm.mainImages
       });
 
-      await Promise.all(mainImages.map(async (file, index) => {
-        const { presigned } = mainPresignedData.data[index];
-        const formData = new FormData();
-      
-        for (const key in presigned.fields) {
-          formData.append(key, presigned.fields[key]);
-        }
-      
-        formData.append("Content-Type", file.type);
-        formData.append("file", file);
-      
-        return axios.post(presigned.url, formData);
-      }));
+      if (detailPresigned && detailPresigned.presignedData) {
+        await uploadS3.mutateAsync({
+          presignedData: detailPresigned.presignedData,
+          images: productForm.detailImages
+        });
+      }
 
-      await Promise.all(detailImages.map(async (file, index) => {
-        const { presigned } = detailPresignedData.data[index];
-        const formData = new FormData();
-      
-        for (const key in presigned.fields) {
-          formData.append(key, presigned.fields[key]);
-        }
-      
-        formData.append("Content-Type", file.file.type);
-        formData.append("file", file.file);
-      
-        return axios.post(presigned.url, formData);
-      }));
-
-      const typeFilter = productsAll.filter(item => item.type === type);
+      const typeFilter = productsAll.filter(item => item.type === productForm.type);
       const typeIndex = typeFilter.length + 1;
-      const newName = `${name}_${String(typeIndex).padStart(3, "0")}`
+      const newName = `${productForm.name}_${String(typeIndex).padStart(3, "0")}`
 
-      const res = await apiClient.post("/upload", {
-        mainImages: mainPresignedData.data.map((data) => ({
-          imageKey: data.imageKey,
-        })),
-        detailImages: detailPresignedData.data.map((data) => ({
-          imageKey: data.imageKey,
-        })),
-        name: newName,
-        price,
-        details,
-        type,
-        material,
-        color,
+      await createProduct.mutateAsync({
+        productData: {
+          ...productForm,
+          name: newName
+        },
+        mainPresignedData: mainPresigned.presignedData,
+        detailPresignedData: detailPresigned?.presignedData || []
       });
-
-      setProducts((prevData) => [res.data, ...prevData]);
-      setProductsAll((prevData) => [res.data, ...prevData]);
-      setTotalProductCount((prevCount) => prevCount + 1);
 
       setLoading(false);
-      resetData();
       toast.success("업로드 성공");
+      resetData();
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       toast.error(errorMessage);
@@ -462,7 +438,6 @@ const UploadForm = () => {
 
   const resetData = () => {
     setClose(true);
-    setPreviews([]);
     resetProductForm();
 
     setTimeout(() => {

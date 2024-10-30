@@ -71,6 +71,7 @@ const UploadReactQuill = styled(ReactQuill)`
 
 const Quill = () => {
 	const quillRef = useRef();
+	const prevImagesRef = useRef([]);
 	const { productForm, updateProductForm } = useContext(ProductContext);
 
 	const purifyHandler = (value) => {
@@ -86,11 +87,17 @@ const Quill = () => {
 	const deleteImageHandler = (value) => { //에디터에서 삭제된 이미지 찾아 지우기
 		let parser = new DOMParser();
 		let htmlDoc = parser.parseFromString(value, "text/html");
-		let imgSrcValues = Array.from(htmlDoc.getElementsByTagName("img")).map(img => img.getAttribute("src")); //img태그 소스 가져오기
+		let currentImages = Array.from(htmlDoc.getElementsByTagName("img")).map(img => img.getAttribute("src"));
 
-		const filterdeImages = productForm.detailImages.filter((image) => imgSrcValues.includes(image.dataUrl));
+		if (prevImagesRef.current.length > currentImages.length) {
+      // 삭제된 이미지가 있을 때만 deleteImageHandler 실행
+      const updatedImages = productForm.detailImages.filter((image) => 
+        currentImages.includes(image.dataUrl)
+      );
+      updateProductForm("detailImages", updatedImages);
+    }
 
-		updateProductForm("detailImages", filterdeImages);
+		prevImagesRef.current = currentImages;
 	};
 
 	const imageHandler = () => {
@@ -107,10 +114,14 @@ const Quill = () => {
 			fileReader.onload = async (e) => {
 				const imgSrc = e.target.result;
 
-				updateProductForm("detailImages", [
-					...productForm.detailImages,
-					{ file: imageFile, dataUrl: imgSrc }
-				]);
+				updateProductForm("detailImages", prevImages => {
+					const newImages = [...prevImages, {
+						type: imageFile.type,
+						file: imageFile,
+						dataUrl: imgSrc
+					}];
+          return newImages;
+        });
 				
 				const range = quillRef.current.getEditor().getSelection();
 				

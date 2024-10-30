@@ -592,13 +592,13 @@ const ProductList = () => {
 		productsAll,
 		uploadError,
 		totalProductCount,
-		productsList, setProductsList,
+		productsList,
 		uploadLoad, setUploadLoad,
 		filters,
 		updateFilter, resetFilters,
 		loadMoreProduct,
 		toggleClick,
-		productDetails
+		productDetails,
 	} = useContext(ProductContext);
 	const {setModalView, setLoginCheck} = useContext(ModalContext);
 	const {userInfo} = useContext(AuthContext);
@@ -671,7 +671,6 @@ const ProductList = () => {
 		switch (filterType) {
 			case "default":
 				resetFilters();
-				setProductsList(productsList.slice(0, 6));
 
 				break;
 			case "sort":
@@ -684,6 +683,7 @@ const ProductList = () => {
 				break;
 		}
 	};
+
 
 	const productListLoding = uploadLoad
 		? Array.from({length: 6}).map((_, index) => (
@@ -770,7 +770,7 @@ const ProductList = () => {
 					<ul>
 						<li className="on" onClick={(e) => toggleClick(e)}>색상</li>
 						<li>
-							{[...new Set(productsAll.map(item => item["color"]))]
+						{[...new Set(productsAll.map(item => item["color"]))]
 							.filter(color => predefinedColorOrder.includes(color))
 							.sort((a, b) => predefinedColorOrder.indexOf(a) - predefinedColorOrder.indexOf(b))
 							.map((option) => (

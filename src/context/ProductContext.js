@@ -1,21 +1,16 @@
 //상품 관련 컴포넌트
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import apiClient from "../clientAPI/apiClient";
+import { useProductList, useProductsAll } from "../hooks/useProduct";
 
 export const ProductContext = createContext();
-export const ProductInfoContext = createContext();
-export const ProductQuillContext = createContext();
 
 export const ProductProvider = (prop) => {
-	const [products, setProducts] = useState([]); //전체상품
 	const [productsList, setProductsList] = useState([]); //상품 리스트용
-	const [productsAll, setProductsAll] = useState([]); //상품 필터용
 	const [previews, setPreviews] = useState([]);
 	const [selectedProduct, setSelectedProduct] = useState();
 	const [confirm, setConfirm] = useState(false);
 	const [uploadLoad, setUploadLoad] = useState(false);
 	const [uploadError, setUploadError] = useState(false);
-	const [totalProductCount, setTotalProductCount] = useState("");
 	const [loadingFinish, setLoadingFinish] = useState(false);
 	const [productForm, setProductForm] = useState({
     name: "",
@@ -33,7 +28,18 @@ export const ProductProvider = (prop) => {
 		type: ""
 	});
 
-	const loadMoreProduct = useCallback(() => {
+	const { products, totalProductCount, isLoading } = useProductList(filters); //상품 리스트 API 훅
+	const { productsAll } = useProductsAll(); //필터용 모든 상품 정보 API 훅
+
+	useEffect(() => { //렌더링시 첫 상품 로드
+    const initialProducts = products.slice(0, 6);
+		
+    if (products) {
+			setProductsList(initialProducts);
+		}
+	}, [products]);
+
+	const loadMoreProduct = useCallback(() => { //무한 스크롤(6개씩 불러오기)
 		if (uploadLoad) return;
 		setUploadLoad(true);
 		
@@ -46,11 +52,20 @@ export const ProductProvider = (prop) => {
 	}, [uploadLoad, products, productsList]);
 
 	const updateProductForm = (field, value) => {
-		setProductForm((prev) => ({
-			...prev,
-			[field]: value
-		}));
-	};
+    setProductForm((prev) => {
+      if (typeof value === 'function') { // value가 함수인 경우 이전 상태를 기반으로 업데이트
+        return {
+          ...prev,
+          [field]: value(prev[field])
+        };
+      }
+      
+      return { // 일반적인 값인 경우 직접 업데이트
+        ...prev,
+        [field]: value
+      };
+    });
+  };
 
 	const updateFilter = (filterType, value) => {
 		setFilters((prev) => ({
@@ -58,59 +73,6 @@ export const ProductProvider = (prop) => {
 			[filterType]: value
 		}));
 	};
-
-	useEffect(() => {
-		setProducts([]);
-		setTotalProductCount(0);
-
-		setUploadLoad(true);
-
-		apiClient
-			.get("/upload", {
-				params: {
-					sort: filters.sort,
-					color: filters.color,
-					type: filters.type,
-				}
-			})
-			.then((result) => {
-				if (result.data.products.length > 0) {
-					setProducts(result.data.products);
-					setTotalProductCount(result.data.productCount);
-					setLoadingFinish(true);
-				}
-			})
-			.catch((error) => {
-				console.error(error);
-				setUploadError(error);
-			})
-			.finally(() => {
-				setUploadLoad(false);
-			});
-	}, [filters]);
-
-	useEffect(() => { //렌더링시 첫 상품 로드
-    const initialProducts = products.slice(0, 6);
-		
-    if (products) {
-			setProductsList(initialProducts);
-		}
-	}, [products]);
-
-	useEffect(() => {//productsAll에 상품정보 담기(모든 상품 저장)
-		setUploadLoad(true);
-
-		apiClient
-			.get("/upload/all")
-			.then((result) => setProductsAll((prevData) => [...prevData, ...result.data]))
-			.catch((error) => {
-				console.error(error);
-				setUploadError(error);
-			})
-			.finally(() => {
-				setUploadLoad(false);
-			});
-	}, []);
 
 	const productDetails = (itemID) => { //선택 상품의 정보를 상세화면으로 전달
 		const selectedItem = products.find((item) => item._id === itemID);
@@ -147,9 +109,9 @@ export const ProductProvider = (prop) => {
   };
 
 	const productContextValue = {
-		products, setProducts,
-		productsList, setProductsList,
-		productsAll, setProductsAll,
+		products,
+		productsList,
+		productsAll,
 		previews, setPreviews,
 		productForm, setProductForm,
 		selectedProduct, setSelectedProduct,
@@ -157,7 +119,7 @@ export const ProductProvider = (prop) => {
 		uploadLoad, setUploadLoad,
 		uploadError,
 		filters, setFilters,
-		totalProductCount, setTotalProductCount,
+		totalProductCount,
 		loadingFinish, setLoadingFinish,
 		updateProductForm,
 		resetProductForm,
@@ -166,6 +128,7 @@ export const ProductProvider = (prop) => {
 		loadMoreProduct,
 		toggleClick,
 		productDetails,
+		isLoading: isLoading
 	};
 	
 	return (

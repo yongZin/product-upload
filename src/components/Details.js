@@ -1,7 +1,6 @@
 //상품 상세화면 컴포넌트
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext"
@@ -11,6 +10,7 @@ import { AiOutlineHeart, AiFillHeart, AiTwotoneShopping } from "react-icons/ai";
 import { TbTrash, TbTrashX } from "react-icons/tb";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from 'swiper/modules';
+import { useProductDelete, useLike, useRecommended } from "../hooks/useProduct";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -666,21 +666,25 @@ const Recommend = styled(Swiper)`
 const Details = () => {
 	const {userInfo} = useContext(AuthContext);
 	const {
-		products, setProducts,
-		productsAll, setProductsAll,
+		products,
 		selectedProduct,
 		productDetails,
-		setTotalProductCount
 	} = useContext(ProductContext);
 	const {setModalView, handleClose} = useContext(ModalContext);
 	const [product, setProduct] = useState();
-	const [recommendedProducts, setRecommendedProducts] = useState();
 	const [hasLiked, setHasLiked] = useState(false);
 	const [error, setError] = useState(false);
 	const [infoCheck, setInfoCheck] = useState(false);
 	const wrapRef = useRef();
 	const infoRef = useRef();
 	const productId = selectedProduct._id;
+
+	const deleteProduct = useProductDelete();
+	const LikeProduct = useLike();
+	const { data: recommendedProducts } = useRecommended(
+		productId,
+		product?.type
+	);
 
 	useEffect(() => { //선택한 상품 정보 DB에서 찾아오기
 		const item = products.find((item) => item._id === productId);
@@ -713,26 +717,6 @@ const Details = () => {
 		}
 	}, [products, productId]);
 
-	useEffect(() => {
-    const fetchData = async () => {
-			if (!product) return;
-
-      try {
-        const response = await axios.get("/api/upload/recommend", {
-					params: {
-						type: product.type,
-						id: product._id
-					}
-				});
-
-        setRecommendedProducts(response.data);
-      } catch (error) {
-        console.error('Error fetching recommended products:', error);
-      }
-    };
-
-    fetchData();
-  }, [product]);
 
 	useEffect(() => { //좋아요 유무 확인
 		if (
@@ -745,7 +729,7 @@ const Details = () => {
 
 	}, [userInfo, selectedProduct]);
 
-	const InformationCheck = useCallback(() => {
+	const InformationCheck = useCallback(() => { //상품정보 컨텐츠 높이 확인
 		if (infoRef.current) {
 			const contentHeight = infoRef.current.offsetHeight;
 
@@ -754,10 +738,13 @@ const Details = () => {
 	}, [infoCheck]);
 
 	if (error) return <h3>Error...</h3>;
-	else if (!product) return <h3>Loading...</h3>;
+	if (!product) return <h3>Loading...</h3>;
 
 	const productInformation = product.details.map((content, index) => {
-		const renderContent = <div key={index} dangerouslySetInnerHTML={{ __html: content }} />;
+		//상품 정보 배열 풀기
+		const renderContent = (
+			<div key={index} dangerouslySetInnerHTML={{ __html: content }} />
+		);
 
 		if (index === product.details.length - 1) InformationCheck();
 
@@ -775,16 +762,7 @@ const Details = () => {
 			return;
 		}
 
-		const result = await axios.patch(`/api/upload/${productId}/${hasLiked ? "unlike" : "like"}`);
-
-		setProducts([
-			...products.filter((product) => product._id !== productId),
-			result.data
-		].sort((a, b) => {
-			if(a._id < b._id) return 1;
-			else return -1;
-		}));
-
+		LikeProduct.mutateAsync({ productId, hasLiked });
 		setHasLiked(!hasLiked);
 	};
 
@@ -801,23 +779,19 @@ const Details = () => {
 	};
 
 	const deleteHandler = async () => { //상품 삭제 이벤트
-		try {
-			if(!window.confirm("정말 삭제 하시겠습니까?")) return;
-			
-			setTotalProductCount((prevCount) => prevCount - 1);
+		if(!window.confirm("정말 삭제 하시겠습니까?")) return;
 
+		try {
 			handleClose();
 
 			setTimeout(async () => {
-				const result = await axios.delete(`/api/upload/${productId}`);
-				toast.success(result.data.message);
-				
-				setProducts(products.filter(product => product._id !== productId)); //삭제후 바로 리스트에서 제거
-				setProductsAll(productsAll.filter(product => product._id !== productId));
-			}, 300)
+				const result = await deleteProduct.mutateAsync(productId);
 
-		} catch (err) {
-			console.error(err.message);
+				toast.success(result.message);
+			}, 300)
+		} catch (error) {
+			console.error(error.message);
+			toast.error("삭제 중 오류가 발생했습니다.");
 		}
 	};
 
