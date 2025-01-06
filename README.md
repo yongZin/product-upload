@@ -1,4 +1,4 @@
-# Product Upload
+# Product Upload(클론 코딩)
 
 > 업사이클링 브랜드 프라이탁의 쇼핑몰로 회원가입과 로그인이 가능하며 유저 권한에 따라 상품을 업로드 및 삭제할 수 있고, 사용자는 마음에 드는 상품에 좋아요를 표시할 수 있습니다. 또한 상품 정렬 및 필터 기능을 통해 원하는 상품을 찾을 수 있습니다.
 
@@ -35,7 +35,7 @@
 		<td>FRONT</td>
 		<td>
 			<img src="https://img.shields.io/badge/react-20232a?style=for-the-badge&logo=react" />
-			<img src="https://img.shields.io/badge/react--context-20232a?style=for-the-badge&logo=react" />
+			<img src="https://img.shields.io/badge/Context--Api-000000?style=for-the-badge&logo=react" />
 			<img src="https://img.shields.io/badge/react--query-ff4154?style=for-the-badge&logo=reactquery&logoColor=fff" />
 			<img src="https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=ffd35b" />
 			<img src="https://img.shields.io/badge/react--toastify-f99c19?style=for-the-badge" />
@@ -62,7 +62,7 @@
 	<tr>
 		<td>INFRA</td>
 		<td>
-			<img src="https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon_aws&logoColor=fff" />
+			<img src="https://img.shields.io/badge/Amazon%20S3-232F3E?style=for-the-badge&logo=amazons3&logoColor=white)" />
 		</td>
 	</tr>
 </table>
