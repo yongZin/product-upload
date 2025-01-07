@@ -38,16 +38,22 @@ export const ProductProvider = (prop) => {
 		}
 	}, [products]);
 
+	useEffect(() => { //첫 상품 로드 전 로딩 애니메이션
+		if(productsList.length === 0) {
+			setUploadLoad(true);
+		} else{
+			setUploadLoad(false);
+		}
+	}, [productsList]);
+
 	const loadMoreProduct = useCallback(() => { //무한 스크롤(6개씩 불러오기)
 		if (uploadLoad) return;
-		setUploadLoad(true);
 		
 		const startIndex = productsList.length;
 		const endIndex = startIndex + 6;
 		const newProducts = products.slice(startIndex, endIndex);
 		
 		setProductsList((prevProducts) => [...prevProducts, ...newProducts]);
-		setUploadLoad(false);
 	}, [uploadLoad, products, productsList]);
 
 	const updateProductForm = (field, value) => {

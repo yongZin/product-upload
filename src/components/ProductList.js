@@ -598,8 +598,7 @@ const ProductList = () => {
 		updateFilter, resetFilters,
 		loadMoreProduct,
 		toggleClick,
-		productDetails,
-		isLoading
+		productDetails
 	} = useContext(ProductContext);
 	const {setModalView, setLoginCheck} = useContext(ModalContext);
 	const {userInfo} = useContext(AuthContext);
@@ -686,7 +685,7 @@ const ProductList = () => {
 	};
 
 
-	const productListLoding = isLoading || uploadLoad
+	const productListLoding = uploadLoad
 		? Array.from({length: 6}).map((_, index) => (
 			<ListLoading key={index} />
 			))
