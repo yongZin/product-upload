@@ -10,7 +10,6 @@ export const ProductProvider = (prop) => {
 	const [selectedProduct, setSelectedProduct] = useState();
 	const [confirm, setConfirm] = useState(false);
 	const [uploadLoad, setUploadLoad] = useState(false);
-	// const [uploadError, setUploadError] = useState(false);
 	const [loadingFinish, setLoadingFinish] = useState(false);
 	const [productForm, setProductForm] = useState({
     name: "",
