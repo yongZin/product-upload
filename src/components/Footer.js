@@ -10,7 +10,7 @@ const Copy = styled.div`
 
 const Footer = () => {
 	return (
-		<Copy>Copyright © 2024 YongZin. All rights reserved.</Copy>
+		<Copy>Copyright © YongZin. All rights reserved.</Copy>
 	)
 }
 
